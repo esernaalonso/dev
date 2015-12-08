@@ -1,0 +1,1053 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"fis",
+				"first_core_node	statement"
+			],
+			[
+				"las",
+				"last_core_node	statement"
+			],
+			[
+				"SolutionC",
+				"SolutionJointChainFK	class"
+			],
+			[
+				"prev_",
+				"prev_joint_node	statement"
+			],
+			[
+				"offset",
+				"offset_translation〔argument〕"
+			],
+			[
+				"new",
+				"new_core_node〔variable〕"
+			],
+			[
+				"master_node_s",
+				"master_node_shape_circle"
+			],
+			[
+				"master",
+				"master_node"
+			],
+			[
+				"get_c",
+				"get_channel_box"
+			],
+			[
+				"chann",
+				"channle_box	statement"
+			],
+			[
+				"validat",
+				"validate_build"
+			],
+			[
+				"valide",
+				"validate_remove	function"
+			],
+			[
+				"want",
+				"wanted_element	statement"
+			],
+			[
+				"ch",
+				"ch_widget	statement"
+			],
+			[
+				"ui",
+				"ui_widget	statement"
+			],
+			[
+				"Q",
+				"QWidget"
+			],
+			[
+				"item",
+				"itemAt"
+			],
+			[
+				"init",
+				"init_ui_signals	function"
+			],
+			[
+				"get_",
+				"get_solution_widget	function"
+			],
+			[
+				"fi",
+				"__file__"
+			],
+			[
+				"solu",
+				"solutions_generic	module"
+			],
+			[
+				"source",
+				"source_axes	param"
+			],
+			[
+				"ta",
+				"target_axes	param"
+			],
+			[
+				"align",
+				"align_nodes	function"
+			],
+			[
+				"all",
+				"all_joints	statement"
+			],
+			[
+				"close",
+				"closeTool〔function〕"
+			],
+			[
+				"lsit",
+				"listRelatives"
+			],
+			[
+				"node",
+				"node_types〔variable〕"
+			],
+			[
+				"target_",
+				"target_goal"
+			],
+			[
+				"targe",
+				"target_node〔variable〕"
+			],
+			[
+				"targ",
+				"target_node"
+			],
+			[
+				"children",
+				"children_solutions"
+			],
+			[
+				"chil",
+				"children_solutions"
+			],
+			[
+				"sol",
+				"solution_instance〔variable〕"
+			],
+			[
+				"remove_sol",
+				"remove_solution_goal"
+			],
+			[
+				"chil_sol",
+				"children_solutions"
+			],
+			[
+				"recur",
+				"recursive"
+			],
+			[
+				"get_sol",
+				"get_solution_from_ui_object"
+			],
+			[
+				"sele",
+				"selected_solution"
+			],
+			[
+				"get",
+				"get_solution_from_ui_object〔function〕"
+			],
+			[
+				"master_node",
+				"master_node_parent〔variable〕"
+			],
+			[
+				"parent",
+				"parent_item"
+			],
+			[
+				"sub",
+				"subtype"
+			],
+			[
+				"allo",
+				"allowed_parents"
+			],
+			[
+				"buil",
+				"build"
+			],
+			[
+				"dag",
+				"dag_node"
+			],
+			[
+				"childre",
+				"children_solutions"
+			],
+			[
+				"solutio",
+				"solution_instance"
+			],
+			[
+				"add",
+				"add_child_solution"
+			],
+			[
+				"all_",
+				"all_master_nodes〔variable〕"
+			],
+			[
+				"bran",
+				"branch_node"
+			],
+			[
+				"bra",
+				"branch_node"
+			],
+			[
+				"gru",
+				"groups"
+			],
+			[
+				"hie",
+				"hierarchy"
+			],
+			[
+				"recursive",
+				"recursively"
+			],
+			[
+				"child",
+				"children_nodes"
+			],
+			[
+				"list",
+				"listRelatives"
+			],
+			[
+				"use",
+				"uses"
+			],
+			[
+				"solution_tree",
+				"scene_solution_trees"
+			],
+			[
+				"rig",
+				"rig_groups"
+			],
+			[
+				"so",
+				"solution_manager"
+			],
+			[
+				"Solution",
+				"SolutionRoot"
+			],
+			[
+				"allowedpa",
+				"get_allowed_parents"
+			],
+			[
+				"re",
+				"return"
+			],
+			[
+				"branches",
+				"goals_branch_nodes"
+			],
+			[
+				"branch",
+				"branch_node"
+			],
+			[
+				"ali",
+				"align_branches"
+			],
+			[
+				"goals",
+				"goals_core_nodes"
+			],
+			[
+				"align_",
+				"align_node"
+			],
+			[
+				"goals_",
+				"goals_master_nodes"
+			],
+			[
+				"mater",
+				"goals_master_nodes"
+			],
+			[
+				"goal",
+				"goals_master_nodes"
+			],
+			[
+				"goa",
+				"goals_master_nodes"
+			],
+			[
+				"rename",
+				"rename_node"
+			],
+			[
+				"anim",
+				"anim_node"
+			],
+			[
+				"defo",
+				"deform_node"
+			],
+			[
+				"anim_",
+				"anim_node"
+			],
+			[
+				"defor",
+				"deform_prefix"
+			],
+			[
+				"deform",
+				"deform_node"
+			],
+			[
+				"crea",
+				"create_solution_fit"
+			],
+			[
+				"fit",
+				"fit_node"
+			],
+			[
+				"fit_",
+				"fit_prefix"
+			],
+			[
+				"upda",
+				"update_color"
+			],
+			[
+				"Sol",
+				"SolutionChildTest"
+			],
+			[
+				"chi",
+				"children_objects_sorted"
+			],
+			[
+				"bro",
+				"brtohers"
+			],
+			[
+				"type",
+				"type_index"
+			],
+			[
+				"get_chi",
+				"get_children_types_creatable"
+			],
+			[
+				"get_tree",
+				"get_tree_container_insert_index"
+			],
+			[
+				"container_ty",
+				"container_type"
+			],
+			[
+				"s",
+				"setText"
+			],
+			[
+				"curr",
+				"current_container"
+			],
+			[
+				"containe",
+				"container_object"
+			],
+			[
+				"contai",
+				"container_mediator"
+			],
+			[
+				"get_con",
+				"get_container_by_ui"
+			],
+			[
+				"new_pass",
+				"new_pass_group"
+			],
+			[
+				"ove",
+				"overrideset_container"
+			],
+			[
+				"override",
+				"overrideset"
+			],
+			[
+				"new_chi",
+				"new_children_container"
+			],
+			[
+				"overri",
+				"overrideIcon"
+			],
+			[
+				"lodset",
+				"lodsetIcon"
+			],
+			[
+				"objectset",
+				"objectsetIcon"
+			],
+			[
+				"overrid",
+				"overridesetIcon"
+			],
+			[
+				"Conta",
+				"ContainerNodeset"
+			],
+			[
+				"passGro",
+				"passGroupIcon"
+			],
+			[
+				"pass_tr",
+				"pass_trees"
+			],
+			[
+				"con",
+				"container_mediator"
+			],
+			[
+				"conta",
+				"container_trees"
+			],
+			[
+				"root",
+				"root_type"
+			],
+			[
+				"scene",
+				"scene_object"
+			],
+			[
+				"get_sce",
+				"get_scene_container_root_objects"
+			],
+			[
+				"scne",
+				"scene_container_root_objects"
+			],
+			[
+				"pass",
+				"pass_tree"
+			],
+			[
+				"obje",
+				"objectName"
+			],
+			[
+				"object",
+				"objectName"
+			],
+			[
+				"objec",
+				"objectName"
+			],
+			[
+				"contain",
+				"containers_tree"
+			],
+			[
+				"in",
+				"index"
+			],
+			[
+				"Con",
+				"ContainerOverride"
+			],
+			[
+				"getC",
+				"get_compound_name"
+			],
+			[
+				"lodse",
+				"lodsetIcon"
+			],
+			[
+				"layer",
+				"layersLoadIcon"
+			],
+			[
+				"light",
+				"lightsetIcon"
+			],
+			[
+				"set",
+				"setText"
+			],
+			[
+				"nodesets",
+				"nodesets_name_edit"
+			],
+			[
+				"nodeset",
+				"nodeset_current"
+			],
+			[
+				"file",
+				"file_nodesets_nodes"
+			],
+			[
+				"curre",
+				"current_nodesets_names"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "Packages/Python/Python.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 223.0,
+		"last_filter": "remove",
+		"selected_items":
+		[
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"intall",
+				"Package Control: Install Package"
+			],
+			[
+				"git",
+				"Github: Repository"
+			],
+			[
+				"github",
+				"Github: Repository"
+			],
+			[
+				"Snippet: ",
+				"Snippet: Function"
+			],
+			[
+				"remvoe",
+				"Package Control: Remove Package"
+			],
+			[
+				"python",
+				"Set Syntax: Python"
+			]
+		],
+		"width": 496.0
+	},
+	"console":
+	{
+		"height": 445.0,
+		"history":
+		[
+			"fdgfgdfg",
+			"sublimelinter_lint",
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib.request,os,sys; exec(\"if sys.version_info < (3,) or os.name != 'nt': raise OSError('This code is for Windows ST3 only!')\"); pr='Preferences.sublime-settings'; ip='ignored_packages'; n='Package Control'; s=sublime.load_settings(pr); ig=s.get(ip); ig.append(n); s.set(ip,ig); sublime.save_settings('Preferences.sublime-settings'); pf=n+'.sublime-package'; urllib.request.install_opener(urllib.request.build_opener(urllib.request.ProxyHandler())); by=urllib.request.urlopen('https://packagecontrol.io/'+pf.replace(' ','%20')).read(); open(os.path.join(sublime.installed_packages_path(),pf),'wb').write(by); ig.remove(n); s.set(ip,ig); sublime.save_settings(pr); print('Package Control: 3.0.0 upgrade successful!')",
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/P/dev",
+		"/P/dev/esa",
+		"/P/dev/esa/maya",
+		"/P/dev/esa/maya/modules",
+		"/P/dev/esa/maya/modules/pack",
+		"/P/dev/esa/maya/modules/pack/templateToolStdUI",
+		"/P/dev/esa/maya/python",
+		"/P/dev/esa/maya/python/lib/light",
+		"/P/dev/esa/maya/python/lib/rig",
+		"/P/dev/esa/maya/python/tool",
+		"/P/dev/esa/maya/python/tool/anim",
+		"/P/dev/esa/maya/python/tool/light",
+		"/P/dev/esa/maya/python/tool/misc",
+		"/P/dev/esa/maya/python/tool/rig",
+		"/P/dev/esa/maya/python/tool/template"
+	],
+	"file_history":
+	[
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Git/Git.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Git.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/tgit-st3/tgit-st3.sublime-settings",
+		"/P/dev/esa/maya/python/tool/rig/rigManager.py",
+		"/P/dev/esa/maya/python/lib/rig/utils.py",
+		"/P/dev/esa/maya/python/lib/rig/solutions_generic.py",
+		"/P/dev/esa/maya/python/lib/rig/solutions.py",
+		"/P/dev/esa/maya/modules/pack/templateToolStdUI/templateToolStdUI.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Git-StatusBar/Git-StatusBar.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Git-StatusBar.sublime-settings",
+		"/P/dev/esa/maya/python/test/testJoints.py",
+		"/P/dev/esa/maya/python/tool/light/passManager.py",
+		"/P/dev/esa/maya/python/lib/rig/modules.py",
+		"/P/dev/esa/maya/python/tool/misc/renamer.py",
+		"/P/dev/esa/maya/python/lib/ui.py",
+		"/P/dev/esa/maya/python/lib/inspector.py",
+		"/P/dev/esa/maya/python/lib/pack.py",
+		"/P/dev/esa/maya/python/tool/template/templateToolStdUI.py",
+		"/P/dev/esa/maya/python/tool/toolManager.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Anaconda/Anaconda.sublime-settings",
+		"/P/dev/esa/maya/python/tool/misc/channelBox.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/AutoSpell.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/AutoSpell/AutoSpell.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/P/dev/esa/maya/python/lib/rig/solutions_ui.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
+		"/P/dev/esa/maya/python/lib/utils.py",
+		"/C/Users/Eduardo/Desktop/jammOrientJoint.py",
+		"/P/dev/esa/maya/modules/pack/templateToolStd/templateToolStd.py",
+		"/P/dev/esa/maya/modules/pack/templateToolDock/templateToolDock.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/P/dev/esa/maya/python/tool/template/templateToolStd.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/AutoDocstring/AutoDocstring.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/JSON.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Anaconda/Default (Windows).sublime-keymap",
+		"/P/dev/esa/maya/python/lib/icons.py",
+		"/P/dev/esa/maya/python/tool/light/passManager.ui",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/auto_save.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/AutoDocstring.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Installed Packages/AutoDocstring.sublime-package",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Python PEP8 Autoformat/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/pep8_autoformat.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Python PEP8 Autoformat/pep8_autoformat.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeLinter/Default (Windows).sublime-keymap",
+		"/P/dev/esa/maya/python/lib/light/containers.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeCodeIntel/Default (Windows).sublime-mousemap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeCodeIntel/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeCodeIntel/SublimeCodeIntel.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Alignment/Default (Windows).sublime-keymap",
+		"/P/dev/esa/maya/python/lib/light/nodesets.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/auto-save/auto_save.sublime-settings",
+		"/P/dev/esa/maya/python/lib/rig.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Installed Packages/auto-save.sublime-package",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Python Flake8 Lint/Flake8Lint.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Python Flake8 Lint/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Jedi - Python autocompletion/Default.sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Fold Python/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Fold Python/FoldPython.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/auto-save/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/auto-save/README.md",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/FoldPython.sublime-settings",
+		"/P/dev/esa/maya/python/lib/rig/solutions-56.py",
+		"/P/dev/esa/maya/python/lib/rig/containers.py",
+		"/P/dev/esa/maya/python/lib/bake.py",
+		"/P/dev/esa/maya/python/tool/rig/advancedSkeleton5.py",
+		"/C/Users/Eduardo/Documents/maya/2016/scripts/userSetup.py",
+		"/C/Users/Eduardo/Documents/maya/2015-x64/scripts/userSetup.py",
+		"/C/Users/Eduardo/Documents/maya/2015-x64/Maya.env",
+		"/P/dev/esa/maya/python/script/bake/restoreBakedAnimationFromLocators.py",
+		"/P/dev/esa/maya/python/script/bake/bakeAnimationToLocators.py",
+		"/P/dev/esa/maya/python/lib/shader.py",
+		"/P/dev/esa/maya/modules/external/AdvancedSkeleton5/AdvancedSkeleton5.mel",
+		"/C/Users/Eduardo/AppData/Local/Temp/Rar$DIa0.211/AdvancedSkeleton5.mel",
+		"/C/Users/Eduardo/AppData/Local/Temp/Rar$DIa0.087/AdvancedSkeleton5.mel",
+		"/P/dev/esa/maya/python/lib/light/containersMediator.py",
+		"/P/dev/esa/maya/python/lib/ligh/nodesets.py",
+		"/P/dev/esa/maya/python/lib/passes.py",
+		"/P/scenes/maya/test/test_spheres_renderman_001.ma",
+		"/P/dev/esa/maya/python/mod/esa_init.mod",
+		"/P/dev/esa/maya/python/env/Maya2015.env",
+		"/P/dev/esa/maya/python/lib/external_loadAdvancedSkeleton5.mel",
+		"/P/dev/esa/maya/python/lib/external_loadAdvancedSkeleton4.mel",
+		"/P/dev/esa/maya/python/plug-ins/esa_init.py",
+		"/P/dev/esa/maya/python/lib/nodesets.py",
+		"/P/dev/esa/maya/python/tool/rig/advancedSkeleton4.py",
+		"/C/Users/Eduardo/Documents/maya/2015-x64/scripts/test.mel",
+		"/P/dev/esa/maya/python/env/Maya2016.env",
+		"/C/Users/Eduardo/Documents/maya/2016/Maya.env",
+		"/P/dev/esa/maya/python/lib/external.py",
+		"/P/scenes/maya/test/test_spheres_arnold_001.ma",
+		"/P/dev/esa/maya/python/tool/light/nodesetManager.py",
+		"/c/users/eduardo/appdata/local/temp/sublime-svn-1437104074/SVN",
+		"/C/Program Files/Autodesk/3ds Max 2014/3dsmax.exe.config",
+		"/C/Users/Eduardo/Desktop/testBlender.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/README.md",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/Default.sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/SublimeBlender.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/Default.sublime-commands",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Blender Development/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/examples/04_console_complete_import.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/examples/02_eval.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/examples/01_execute_script.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Package Control.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/Main.sublime-menu",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/MayaSublime/Default (Windows).sublime-keymap",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Blender Development/SublimeBlender.sublime-settings",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Installed Packages/Blender Development.sublime-package",
+		"/C/Users/Eduardo/Desktop/SublimeBlenderAddon-master/README.md",
+		"/C/Users/Eduardo/Desktop/zdsfghdfgsdfhdf.ma",
+		"/P/dev/esa/maya/mel/script/qickSelectionSetsExport.mel",
+		"/P/scenes/maya/test/testQuickSelectionSetsExport.mel",
+		"/C/Users/Eduardo/AppData/Local/Popcorn Time/src/app/settings.js",
+		"/C/Users/Eduardo/AppData/Local/Popcorn Time/src/app/lib/views/settings.js",
+		"/P/dev/esa/maya/modules/pack/renamer/renamer.py",
+		"/P/dev/esa/maya/python/tool/anim/bakeACPdynamics.py",
+		"/P/dev/esa/maya/modules/pack/bakeACPdynamics/bakeACPdynamics.py",
+		"/P/dev/esa/maya/modules/pack/projectionManager/projectionManager.py",
+		"/P/scenes/maya/test/testQSStree.qss",
+		"/P/scenes/maya/test/testQuickSelectionSetsExport.qss",
+		"/P/scenes/maya/test/testQuickSelectionSetsExport2.qss",
+		"/P/dev/esa/fabric/ext/custom/nonLinearMorpher/nlm_vertex.kl",
+		"/P/dev/esa/maya/python/env/Maya.env",
+		"/C/app/3d/fabricEngine2Beta/SpliceIntegrations/FabricSpliceMaya2016/FabricSpliceMaya.mod"
+	],
+	"find":
+	{
+		"height": 57.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			"P:\\dev\\esa\\maya\\python\\lib",
+			"P:\\dev\\esa\\maya\\python\\tool",
+			"P:\\dev\\esa\\",
+			"toolCage.",
+			"P:\\dev",
+			"P:\\develop\\maya\\toolCage\\toolCage\\external\\AdvancedSkeleton4"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"aim_node",
+			"joint_node_aim",
+			"segment_node",
+			"def fill",
+			"first_core_node",
+			"main_core_node",
+			"main_core_node_tag",
+			"	",
+			"\"	\"",
+			"	",
+			"checked",
+			"templateToolStd",
+			"TemplateToolStd",
+			"templateToolStd",
+			"TemplateToolStd",
+			"templateToolStd",
+			"TemplateToolStd",
+			"prev_segment_node",
+			"joint_node",
+			"self.tags[\"main\"]",
+			"\"master\"",
+			"goal",
+			"usa",
+			"goal",
+			"prev_core_node",
+			"segment_node",
+			"new_core_node",
+			"first_core_node",
+			"create_node_by_goal",
+			"size_z",
+			"size_y",
+			"sizeX",
+			"size_x",
+			"kwargs",
+			"remove solu",
+			"print",
+			":\n",
+			"align_core",
+			"align",
+			"def link",
+			"offset_translation",
+			"def conform",
+			"build",
+			"allowed_parents",
+			"to do",
+			"name",
+			"nod",
+			"canditate",
+			"name",
+			"to do",
+			"channel_box_nodes",
+			"to do",
+			"Description",
+			"channel_box_nodes",
+			"descript",
+			"channel",
+			"master_node_shape_circle",
+			"to do",
+			"radius",
+			"sweep",
+			"sections",
+			"degree",
+			"degree = kwargs[\"degree\"] if \"degree\" in kwargs else 3",
+			"radius",
+			"clear_solution_widget_layout",
+			"channle_box",
+			"pySideNodeEditor",
+			"channelBox",
+			"nodeEditor",
+			"NodeEditor",
+			"	",
+			".init",
+			"fill",
+			"get_ui_element_by_name",
+			")\n",
+			"fix_solution_trees_selection",
+			"select_solutions_nodes",
+			"fix_solution_trees_selection",
+			"self.upda",
+			"self.editin",
+			"sweep",
+			"radius",
+			"-----------------------",
+			"lambda",
+			"super",
+			"lambda",
+			"get_ui_element_by_name",
+			"def remove",
+			"signals",
+			"signal",
+			"signals",
+			"Desc",
+			"to do",
+			"Desc",
+			"to do",
+			"200",
+			"Desc",
+			"Type",
+			"header_labels",
+			"Desc",
+			"clear_solution_widget_layout",
+			"to do",
+			"load_selected_solution_widget",
+			"get_solution_widget",
+			"fix_solution_trees_selection",
+			"menu",
+			"solutions_generic",
+			"SolutionRoot",
+			"import",
+			"from",
+			"SolutionRoot",
+			"def get_ui",
+			"return",
+			"length",
+			"80",
+			"self",
+			"\n#",
+			"os.path.join",
+			"__file__",
+			"RenamerMainWidget",
+			"ui",
+			"	",
+			"xform",
+			"align_nodes",
+			"align",
+			"empty",
+			"align",
+			"state"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"    ",
+			"sections",
+			"sweep",
+			"    ",
+			"align",
+			"    ",
+			"\\\\",
+			"\"fit\"",
+			"recursive",
+			"right",
+			"ws=True, a=True",
+			"self.solution_classes",
+			"",
+			"build",
+			"built",
+			"colors",
+			"\"branch\"",
+			"\"core\"",
+			"\"master\"",
+			"    ",
+			"# print",
+			"",
+			"children=[]",
+			"create_container_from_scene_object",
+			"select_nodesets_objects",
+			"nodesetManager",
+			"esa.maya.python.",
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 29.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.450955414012,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 197.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "esa_sublime_project.sublime-project",
+	"replace":
+	{
+		"height": 110.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 350.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

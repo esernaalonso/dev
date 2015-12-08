@@ -1,0 +1,244 @@
+require Geometry;
+
+// Calculates the new vertex positions based in an original mesh, deformed meshes and multipliers and curvature values for each deformed mesh.
+function Vec3[] nlm_calaculateVertexPositions(in PolygonMesh mesh, in PolygonMesh[] channels, in Scalar[] multipliers, in Scalar[] curvatures)
+{
+	// Need to know the vertex number to give a result Vec3 array with proper numer of elements
+	Integer vertexNumber = mesh.pointCount();
+
+	// Creates the result Vec3 array and initializes it
+	Vec3 vertexPositions[];
+	vertexPositions.resize(0);
+	vertexPositions.resize(vertexNumber);
+
+	// First we must know the maximum distance walked by the vertices in each channel mesh
+	Scalar maxDistances[];
+	maxDistances.resize(0);
+	maxDistances.resize(channels.size());
+	
+	// Vector for the media of displacement of all vertex for each channel
+	Vec3 desplMedias[];
+	desplMedias.resize(0);
+	desplMedias.resize(channels.size());
+	for(Size i = 0; i < (channels.size()); ++i)
+	{
+		desplMedias[i] = Vec3(0,0,0);
+		maxDistances[i] = 0;
+	}
+	
+	// Loops every point in the original mesh
+	for(Size i = 0; i < vertexNumber; ++i)
+	{
+		// Need to know the original vertex position
+		Vec3 currentPos = mesh.getPointPosition(i);
+		
+		// Loops every deformed mesh
+		for(Size j = 0; j < (channels.size()); ++j)
+		{
+			// Only works if the deformed mesh has the same point number than the original
+			if (channels[j].pointCount() == vertexNumber)
+			{
+				// This represents the point position in the deformed mesh
+				Vec3 channelPos = channels[j].getPointPosition(i);
+				
+				// Distance between original and deformed
+				Scalar dist = channelPos.distanceTo(currentPos);
+				
+				// Keeps the longest distance
+				if (dist > maxDistances[j]) maxDistances[j] = dist;
+				
+				// Calculations for the desplMedias, add every vertex movement
+				desplMedias[j] += (channelPos - currentPos);
+			}
+		}
+	}
+
+	// Calculates the medias dividing by the vertex count
+	for(Size i = 0; i < (channels.size()); ++i) desplMedias[i] = desplMedias[i]/vertexNumber;
+
+	// This represents the origin of calculations.
+	// Most cases is the object pivot point
+	// But when a vertex is moving almost only in XZ plane (horizontally) or mostly in Y (vertically) is better to have some exception in count
+	Vec3 origin = Vec3(0,0,0);
+	
+	// Loops every point in the original mesh
+	for(Size i = 0; i < mesh.pointCount(); ++i)
+	{
+
+		// Need to know the original vertex position
+		Vec3 currentPos = mesh.getPointPosition(i);
+
+		// Also need a new position for this vertex and for it an additive value to sum the deformed meshes offsets
+		Vec3 newPos = Vec3(0,0,0);
+		Vec3 additive = Vec3(0,0,0);
+		
+		// Loops every deformed mesh
+		for(Size j = 0; j < (channels.size()); ++j)
+		{
+			// Only works if the deformed mesh has the same point number than the original
+			if (channels[j].pointCount() == vertexNumber)
+			{
+				// This represents the point position in the deformed mesh
+				Vec3 channelPos = channels[j].getPointPosition(i);
+				
+				// Distance between original and deformed
+				Scalar dist = channelPos.distanceTo(currentPos);
+				
+				// Only calculates if the position is different (a tolerance is needed to avoid errors)
+				if (dist > 0.001 && (multipliers[j] != 0))
+				{
+					// This calculates the final point using the channel multiplier
+					// This calculation is linear, no curve at all (traditional morphing)
+					// A - initial pos. B - final pos. M - multiplier (0 - 100)
+					// (B - A)*M/100
+					Vec3 maxDesp = channelPos - currentPos;
+					Vec3 linearPos = maxDesp*(multipliers[j]/100);
+					
+					// This is the origin of calculations for this vertex and morph
+					// But when a vertex is moving almost only in XZ plane (horizontally) or mostly in Y (vertically) is better to have some exception in count
+					Vec3 newOrigin = Vec3(0,0,0);
+
+					// Flag to avoid inverted curves in some cases
+					Boolean invNormal = false;
+
+					// EXCEPTIONS					
+					if (pow(desplMedias[j].y,2) < 0.001)
+					{
+						// If no dicplacement in vertical, the origin of calculations is moved to the same height
+						newOrigin.y = currentPos.y;
+					}
+					else
+					{
+						// If most of vertices are moving in the same direction and this direction is not a very vertical movement, the origin needs to adjusted to be at same XZ position than the original position. This way wide curvature can be avoid
+
+						// Cross vectors to determine if the media direction and current direction are similar
+						Vec3 par1 = desplMedias[j].cross(Vec3(0,1,0));
+						Vec3 par2 = maxDesp.cross(Vec3(0,1,0));
+
+						// If direction is pure Y, use Z to avoid bad divisor
+						if (par1.length() == 0 || par2.length() == 0)
+						{
+							par1 = desplMedias[j].cross(Vec3(0,0,1));
+							par2 = maxDesp.cross(Vec3(0,0,1));
+						}
+
+						par1.normalize();
+						par2.normalize();					
+					
+						// Flag to know if all movements are going to same direction					
+						Boolean sameDirection = false;
+
+						// This is to compare movement with media and know if they are in the same direction
+						if (par1.almostEqual(par2, 0.01) || par1.almostEqual(-par2, 0.01)) sameDirection = true;
+
+						// This is for determine if the direction is vertical
+						if (pow(desplMedias[j].y,2) > (pow(desplMedias[j].x,2) + pow(desplMedias[j].z,2))*10) sameDirection = false;
+						
+						// If same direction, adjust the origin XZ position
+						if (sameDirection)
+						{
+							newOrigin.x = currentPos.x;
+							newOrigin.z = currentPos.z;
+							
+							// If normals are opposite, it unifies them
+							if (par1.almostEqual(-par2, 0.01)) invNormal = true;
+						}
+					}
+															
+					// Only continue calculations if some conditions are true
+					Boolean process = true;
+
+					// Calculates two normals
+					// Not polygon or vertex normals, but direction between origin of calculations and the two points, original and moved
+					Vec3 currentNormal = currentPos - newOrigin;
+					Vec3 channelNormal = channelPos - newOrigin;
+
+					// Normalizes normals and if there is no movement the process is not necessary
+					if (currentNormal.length() > 0) currentNormal.normalize();
+					else process = false;
+					if (channelNormal.length() > 0) channelNormal.normalize();
+					else process = false;
+					
+					// If movement is in same direction from origin to current pos, curvature must be 0
+					Scalar dirAngle = 0;
+					if (process) dirAngle = abs(channelNormal.angleTo(currentNormal));
+					if (dirAngle <= 0.01) process = false;
+					
+					// If curvature is 0, is a linear movement
+					if (curvatures[j] <= 0) process = false;
+
+					// Only if process is required
+					if (process)
+					{					
+						// Cross product, creates an orthogonal direction to this direction normals (need to normalize after)
+						Vec3 crossNormal = currentNormal.cross(channelNormal);
+						crossNormal.normalize();
+											
+						// This defines the vertex linear movement direction (normalized after)
+						Vec3 desplDir = (channelPos - currentPos);
+						desplDir.normalize();
+						
+						// Cross product with last two normals, creates an orthogonal one, pointing inside the imaginarium circle that goes through the original and moved points, and with desired curvature
+						Vec3 midNormal = crossNormal.cross(desplDir);
+						midNormal.normalize();
+						
+						// If normal invert is necessary or requested
+						// This is relevant to calculate the center of rotation
+						if (invNormal) midNormal = midNormal.negate();
+						
+						// The half of linear displacement betwen orginal position and final one
+						Vec3 midPoint = (currentPos + channelPos)/2;
+
+						// The curvature depends on the distance moved compared with the biggest distance for each morph.
+						// This is the factor compared with distance
+						Scalar distFactor = maxDistances[j]/dist;
+						
+						// With midPoint and the midNormal is possible to calculate the center of the circle
+						// Using by default the distance between original and deformed point
+						// Curvature is an inverse multiplier. If you want more curvature, the center should be near the midPoint. If you want less curvature, the center should be far. If curvature tends to infinite, the movement becomes linear
+						// The curvature depends on the distance moved compared with the biggest distance for each morph
+						Vec3 center = midPoint + ((midNormal*dist)/curvatures[j])*distFactor;
+						
+						// Also the radius length is needed
+						Scalar radLength = currentPos.distanceTo(center);
+						
+						// Now the center is calculated, the only thig is needed is to rotate the original position direction from this center around this center
+						// To do this we need to define the circle plane and a normal from the center and then rotate this original point direction using this normal as an axis. We also need the angle between original pos and final one respect the center and divide it in 100 pieces. This way we can rotate using multiplier and angle.
+
+						// Rodrigue's formula for vector rotation
+						// vRot = v.cosA + (k x v)sinA + k(k.v)(1 - cosA)
+						
+						// Angle between two vectors
+						// a.b = |a||b|cosA -> A = arccos(a.b/|a||b|)
+
+						Vec3 vec1 = currentPos - center;
+						Vec3 vec2 = channelPos - center;
+						
+						Vec3 rotAxis = vec1.cross(vec2);
+						rotAxis.normalize();
+						
+						//Scalar maxAngle = acos(vec1.dot(vec2)/pow(radLength, 2));
+						Scalar maxAngle = vec1.angleTo(vec2);
+						Scalar rotAngle = (maxAngle/100)*multipliers[j];
+
+						Vec3 vRot = vec1*cos(rotAngle) + (rotAxis.cross(vec1))*sin(rotAngle) + rotAxis*(rotAxis.dot(vec1))*(1 - cos(rotAngle));
+						Vec3 curvePos = vRot + center - currentPos;
+
+						// Adds the curve position to the additive calculations
+						additive += curvePos;
+					}
+					else
+					{
+						// This is the linear movement case (traditional morphing)
+						additive += linearPos;
+					}
+				}
+			}
+		}
+
+		newPos = currentPos + additive;
+		vertexPositions[i] = newPos;
+	}
+
+	return vertexPositions;
+}

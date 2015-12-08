@@ -1,0 +1,30 @@
+// global proc asScriptLocatorProc (){}
+
+// global proc string asGetAdvancedSkeleton5Location ()
+// {
+// 	string $whatIs = `whatIs asScriptLocatorProc`;
+// 	// print ($whatIs+"\n\n");
+
+// 	string $fullPath = `substring $whatIs 25 999`;
+// 	// print ($fullPath+"\n\n");
+
+// 	string $buffer[];
+// 	int $numTok = `tokenize $fullPath "/\\" $buffer`;
+// 	// print $buffer;
+// 	// print ("\n\n");
+
+// 	int $numLetters = size($fullPath);
+// 	int $numLettersLastFolder = size($buffer[$numTok-1]);
+// 	int $numLettersPreLastFolder = size($buffer[$numTok-2]);
+// 	int $numLettersPrePreLastFolder = size($buffer[$numTok-3]);
+// 	string $scriptLocation = `substring $fullPath 1 ($numLetters-$numLettersLastFolder-1-$numLettersPreLastFolder-1-$numLettersPrePreLastFolder-1)`;
+// 	string $as5FilePath = $scriptLocation + "\\modules\\external\\AdvancedSkeleton5\\AdvancedSkeleton5.mel";
+// 	$as5FilePath = fromNativePath($as5FilePath);
+// 	// print ($as5FilePath+"\n\n");
+
+// 	return $as5FilePath;
+// }
+
+// string $as5File=`asGetAdvancedSkeleton5Location`;
+// eval ("source \""+$as5File+"\";");
+// AdvancedSkeleton5;

@@ -1,0 +1,31 @@
+#!/usr/bin/expect -f
+
+set force_conservative 0  ;# set to 1 to force conservative mode even if
+			  ;# script wasn't run conservatively originally
+if {$force_conservative} {
+	set send_slow {1 .1}
+	proc send {ignore arg} {
+		sleep .1
+		exp_send -s -- $arg
+	}
+}
+
+set timeout 5
+spawn mpcsu _destUser_
+match_max 100000
+expect -exact "\[sudo\] password for _currentUser_: "
+send -- "_password_\r"
+expect -exact "\r
+_destUser_@_currentMachine_:\[1m/usr/people/_destUser_ >\[0m "
+send -- "rm -f /usr/people/_destUser_/maya/2015-x64/modules/toolCageInit.mod"
+expect -exact "rm -f /usr/people/_destUser_/maya/2015-x64/modules/toolCageInit.mod"
+send -- "\r"
+expect -exact "\r\r
+_destUser_@_currentMachine_:\[1m/usr/people/_destUser_ >\[0m "
+send -- "cp /usr/people/_currentUser_/tools/toolCage/utils/toolCageInit.mod /usr/people/_destUser_/maya/2015-x64/modules/toolCageInit.mod"
+expect -exact "cp /usr/people/_currentUser_/tools/toolCage/utils/toolCageInit.mod /usr/people/_destUser_/maya/2015- x64/modules/toolCageInit.mod"
+send -- "\r"
+expect -exact "\r\r
+_destUser_@_currentMachine_:\[1m/usr/people/_destUser_ >\[0m "
+send -- "exit\r"
+expect eof

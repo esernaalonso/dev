@@ -1,0 +1,27 @@
+{
+  "objectType" : "Function",
+  "metadata" : {},
+  "title" : "nlm_meshDeform",
+  "ports" : [
+    {
+      "metadata" : {},
+      "name" : "mesh",
+      "portType" : "In",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "metadata" : {},
+      "name" : "vertexPositions",
+      "portType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "metadata" : {},
+      "name" : "outMesh",
+      "portType" : "IO",
+      "typeSpec" : "PolygonMesh"
+      }
+    ],
+  "extDeps" : {},
+  "code" : "dfgEntry {\n  outMesh = mesh.clone();\n  \n  for( Size i = 0; i < mesh.pointCount(); ++i ) {\n    outMesh.setPointPosition(i, vertexPositions[i]);    \n  }\n}\n"
+  }

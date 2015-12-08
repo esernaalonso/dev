@@ -1,0 +1,19 @@
+// global proc asScriptLocatorProc (){}
+
+// global proc string asGetScriptLocation ()
+// {
+// 	string $whatIs=`whatIs asScriptLocatorProc`;
+// 	string $fullPath=`substring $whatIs 25 999`;
+// 	string $buffer[];
+// 	int $numTok=`tokenize $fullPath "/" $buffer`;
+// 	int $numLetters=size($fullPath);
+// 	int $numLettersLastFolder=size($buffer[$numTok-1]);
+// 	string $scriptLocation=`substring $fullPath 1 ($numLetters-$numLettersLastFolder-1)`;
+// 	return $scriptLocation;
+// }
+
+// string $asScriptLocation=`asGetScriptLocation`;
+// print($asScriptLocation);
+
+// P:\dev\maya\python\lib
+source "P:/dev/maya/python/lib/external_loadAdvancedSkeleton4.mel";

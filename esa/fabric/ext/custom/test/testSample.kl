@@ -1,0 +1,5 @@
+/// Test function to make numper pow to 2
+function Float32 testPow2(Float32 value){
+  Float32 result = value*value*5;
+  return result;
+}

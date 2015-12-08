@@ -1,0 +1,39 @@
+{
+  "objectType" : "Function",
+  "metadata" : {},
+  "title" : "nlm_vertexPositions",
+  "ports" : [
+    {
+      "metadata" : {},
+      "name" : "mesh",
+      "portType" : "In",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "metadata" : {},
+      "name" : "channels",
+      "portType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "metadata" : {},
+      "name" : "multipliers",
+      "portType" : "In",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "metadata" : {},
+      "name" : "curvatures",
+      "portType" : "In",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "metadata" : {},
+      "name" : "vertexPositions",
+      "portType" : "Out",
+      "typeSpec" : "Vec3[]"
+      }
+    ],
+  "extDeps" : {},
+  "code" : "require nonLinearMorpher;\n\ndfgEntry {\n  vertexPositions = nlm_calaculateVertexPositions(mesh, channels, multipliers, curvatures);\n}\n"
+  }
