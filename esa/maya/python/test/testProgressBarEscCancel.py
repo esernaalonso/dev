@@ -5,7 +5,6 @@ gMainProgressBar = mel.eval('$pb = $gMainProgressBar')
 
 limit = 1000000
 
-
 cmds.progressBar(gMainProgressBar, edit=True, beginProgress=True, isInterruptable=True, status="test", maxValue=limit)
 
 for i in range(limit):
