@@ -3,7 +3,6 @@
 #######################################
 # imports
 
-
 import maya.cmds as cmds
 import pymel.core as pm
 
@@ -478,7 +477,6 @@ class SolutionJointChainFK(Solution):
             # prev_segment_node = None
             # prev_joint_node = None
             # prev_joint_aim_node = None
-
 
             # If the main core node is created successfully, continues with all the others
             # if first_core_node and last_core_node:
