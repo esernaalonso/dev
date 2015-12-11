@@ -270,10 +270,11 @@ class SolutionCenter(SolutionRoot):
 
 # --------------------------------------
 # JOINT CHAIN SOLUTION
+# INPROGRESS:0 Solutions Generic. Override of Generic solution to create joint chain solutions for any kind of rig. issue:2
 
 
 class SolutionJointChainFK(Solution):
-    """Override of Generic solution to create center solutions for any kind of rig.
+    """Override of Generic solution to create joint chain solutions for any kind of rig.
 
     Attributes:
         allowed_parents (list of Solution classes): List of the allowed solution classes that can be this one parent
@@ -317,7 +318,7 @@ class SolutionJointChainFK(Solution):
         """
         super(SolutionJointChainFK, self).__init__(solution_manager=solution_manager, instance_number=instance_number)
 
-    # TODO:60 Override the store_node function to get the final node to see the distance.
+    # TODO:70 Override the store_node function to get the final node to see the distance.
 
     def init_ui_layout(self):
         """Inits the specific ui layout for this solution."""
@@ -357,18 +358,18 @@ class SolutionJointChainFK(Solution):
         Args:
             goal (str): Goal of the core to build.
         """
-        # TODO:30 Create the nodes-joints between segments
-        # TODO:40 Create the orient to the next segment
-        # TODO:50 Create visual box nodes to represent the segments.
-        # TODO:20 Create the connexion between next node-joint y position and box length
-        # TODO:0 Connect aim X to the last node zero Y
-        # INPROGRESS:0 Add the zero nodes to the core nodes
+        # TODO:40 Create the nodes-joints between segments issue:2
+        # TODO:50 Create the orient to the next segment issue:2
+        # TODO:60 Create visual box nodes to represent the segments. issue:2
+        # TODO:30 Create the connexion between next node-joint y position and box length issue:2
+        # TODO:10 Connect aim X to the last node zero Y issue:2
+        # TODO:0 Add the zero nodes to the core nodes issue:2
 
         # Creation of fit goal
         if goal == "fit":
 
             # Default attributes.
-            # TODO:70 change them by attributes from the ui signals.
+            # TODO:80 change them by attributes from the ui signals.
             segments = 3
             distance = 10.0
             segment_distance = distance/segments
@@ -483,7 +484,7 @@ class SolutionJointChainFK(Solution):
                 # Loops the number of segments.
                 # for i in range(segments + 1):
                 #     # ------------------------------------
-                #     # TODO:10 Create intermediate parent to be able to set to 0 transforms
+                #     # TODO:20 Create intermediate parent to be able to set to 0 transforms issue:2
                 #     # Create a segment node for each segment and an extra one for the end.
                 #     segment_node = self.create_node_by_type("circle", radius=1.5)
 
