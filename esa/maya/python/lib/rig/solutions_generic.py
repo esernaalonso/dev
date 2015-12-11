@@ -474,6 +474,7 @@ class SolutionJointChainFK(Solution):
                 # Add the nodes to the core solution
                 self.nodes[goal]["core"].append(last_core_node)
 
+
             # To store the previous created nodes for each iteration.
             # prev_segment_node = None
             # prev_joint_node = None
