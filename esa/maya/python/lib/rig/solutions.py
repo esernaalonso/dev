@@ -659,7 +659,7 @@ class Solution(object):
         # If there is a core created, uses the last node in the array as parent, if not uses the master.
         use = "core" if self.get_nodes(goal, "core") else "master"
         align_node = self.get_nodes(goal, use)[-1] if self.get_nodes(goal, use) else None
-        # TO DO: Probably is better to search the last core node with no core node children.
+        # TODO:0 Probably is better to search the last core node with no core node children. issue:4
 
         for branch_node in self.get_nodes(goal, "branch"):
             pm.parent(branch_node, align_node, absolute=True)
@@ -704,7 +704,7 @@ class Solution(object):
             if not core_node.listRelatives(parent=True):
                 pm.parent(core_node, self.get_node(goal, "master"), absolute=True)
 
-    # TO DO: Create a property "jump_back", in the nodes that must be skipped in the deform creation and parented to the previous one.
+    # TODO: Create a property "jump_back", in the nodes that must be skipped in the deform creation and parented to the previous one.
 
     def is_goal_built(self, goal):
         """Returns True if a goal is created for this solution.
