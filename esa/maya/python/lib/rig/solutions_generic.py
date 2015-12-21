@@ -424,7 +424,7 @@ class SolutionJointChainFK(Solution):
                 # Loops the number of segments.
                 for i in range(segments + 1):
                     # ------------------------------------
-                    # Create a segment node for each segment and an extra one for the end.
+                    # Create a segment parent node for each segment and an extra one for the end.
                     segment_parent_node = self.create_node_by_type("spaceLocator")
 
                     # Set the properties.
@@ -466,8 +466,25 @@ class SolutionJointChainFK(Solution):
                     # ------------------------------------
 
                     # ------------------------------------
+                    # Creates the node to align the deform joints to it.
+                    joint_node = self.create_node_by_type("joint")
+
+                    # Creates the align node.
+                    joint_node_tag = ("joint%03d" % i)
+                    self.rename_node(joint_node, goal, "core", joint_node_tag)
+                    self.set_color(joint_node, goal)
+                    self.add_attributes(joint_node, goal, "core", joint_node_tag)
+
+                    # Align the joint align node to the core node. Also inverts x and y.
+                    utils.align(joint_node, segment_node, invert="xy")
+                    pm.parent(joint_node, segment_node, absolute=True)
+                    # ------------------------------------
+
+                    # ------------------------------------
                     # Add the nodes to the core solution
                     self.nodes[goal]["core"].append(segment_parent_node)
+                    self.nodes[goal]["core"].append(segment_node)
+                    self.nodes[goal]["core"].append(joint_node)
                     # ------------------------------------
 
                 # ------------------------------------
