@@ -358,12 +358,6 @@ class SolutionJointChainFK(Solution):
         Args:
             goal (str): Goal of the core to build.
         """
-        # TODO:40 Create the nodes-joints between segments issue:3
-        # TODO:50 Create the orient to the next segment issue:3
-        # TODO:60 Create visual box nodes to represent the segments. issue:3
-        # TODO:30 Create the connexion between next node-joint y position and box length issue:3
-        # TODO:10 Connect aim X to the last node zero Y issue:3
-        # TODO:0 Add the zero nodes to the core nodes issue:3
 
         # Creation of fit goal
         if goal == "fit":
