@@ -402,7 +402,6 @@ class SolutionJointChainFK(Solution):
             # Creates the node to aim the deform joints to it.
             last_core_aim_node = self.create_node_by_type("spaceLocator")
 
-            # Creates the align node.
             last_core_aim_node_tag = "lastAim"
             self.rename_node(last_core_aim_node, goal, "core", last_core_aim_node_tag)
             self.set_color(last_core_aim_node, goal)
@@ -413,8 +412,14 @@ class SolutionJointChainFK(Solution):
             pm.parent(last_core_aim_node, last_core_node, absolute=True)
             # ------------------------------------
 
-            # If the main core node is created successfully, continues with all the others
+            # If the main core node is created successfully, continues with all the others.
             if first_core_node and last_core_node:
+                # ------------------------------------
+                # Variables to store prev iteration nodes.
+                prev_joint_node = None
+                prev_segment_node = None
+                # ------------------------------------
+
                 # Loops the number of segments.
                 for i in range(segments + 1):
                     # ------------------------------------
@@ -472,6 +477,24 @@ class SolutionJointChainFK(Solution):
                     # Align the joint align node to the core node. Also inverts x and y.
                     utils.align(joint_node, segment_node, invert="xy")
                     pm.parent(joint_node, segment_node, absolute=True)
+
+                    if prev_joint_node:
+                        # Creates the aim constraint to point the next segment.
+                        if i <= segments:
+                            pm.aimConstraint(segment_node, prev_joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node)
+
+                        # Creates the aim constraint to point to the previous segment in the case of last part.
+                        if i == segments:
+                            pm.aimConstraint(prev_segment_node, joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node)
+
+                    # TODO: Think in a way to avoid the flip in the segments caused by the main aim node distance.
+                    # Increase the distance or create more intermediate aim nodes.
+                    # ------------------------------------
+
+                    # ------------------------------------
+                    # Stores the current nodes to use in the next interation.
+                    prev_segment_node = segment_node
+                    prev_joint_node = joint_node
                     # ------------------------------------
 
                     # ------------------------------------
@@ -484,88 +507,6 @@ class SolutionJointChainFK(Solution):
                 # ------------------------------------
                 # Add the nodes to the core solution
                 self.nodes[goal]["core"].append(last_core_node)
-
-            # To store the previous created nodes for each iteration.
-            # prev_segment_node = None
-            # prev_joint_node = None
-            # prev_joint_aim_node = None
-
-            # If the main core node is created successfully, continues with all the others
-            # if first_core_node and last_core_node:
-                # Loops the number of segments.
-                # for i in range(segments + 1):
-                #     # ------------------------------------
-                #     # TODO:20 Create intermediate parent to be able to set to 0 transforms issue:3
-                #     # Create a segment node for each segment and an extra one for the end.
-                #     segment_node = self.create_node_by_type("circle", radius=1.5)
-
-                #     # Creates segment node.
-                #     segment_node_tag = ("segment%03d" % i)
-                #     self.rename_node(segment_node, goal, "core", segment_node_tag)
-                #     self.set_color(segment_node, goal)
-                #     self.add_attributes(segment_node, goal, "core", segment_node_tag)
-
-                #     # Position the segment node in the right position.
-                #     utils.align(segment_node, first_core_node, offset_translation=[0.0, distance*i, 0.0])
-                #     pm.parent(segment_node, first_core_node, absolute=True)
-
-                #     # Creates the zero transform node for this one.
-                #     self.create_zero_transform_node(segment_node)
-                #     # ------------------------------------
-
-                #     # ------------------------------------
-                #     # Creates the node to align the deform joints to it.
-                #     joint_node = self.create_node_by_type("joint")
-
-                #     # Creates the align node.
-                #     joint_node_tag = ("joint%03d" % i)
-                #     self.rename_node(joint_node, goal, "core", joint_node_tag)
-                #     self.set_color(joint_node, goal)
-                #     self.add_attributes(joint_node, goal, "core", joint_node_tag)
-
-                #     # Align the joint align node to the core node. Also inverts x and y.
-                #     utils.align(joint_node, segment_node, invert="xy")
-                #     pm.parent(joint_node, segment_node, absolute=True)
-                #     # ------------------------------------
-
-                #     # ------------------------------------
-                #     # Creates the node to aim the deform joints to it.
-                #     joint_node_aim = self.create_node_by_type("empty")
-
-                #     # Creates the align node.
-                #     joint_node_aim_tag = ("jointAim%03d" % i)
-                #     self.rename_node(joint_node_aim, goal, "core", joint_node_aim_tag)
-                #     self.set_color(joint_node_aim, goal)
-                #     self.add_attributes(joint_node_aim, goal, "core", joint_node_aim_tag)
-
-                #     # Align the joint align node to the core node. Also inverts x and y.
-                #     utils.align(joint_node_aim, segment_node, invert="xy", offset_translation=[1, 0, 0])
-                #     pm.parent(joint_node_aim, segment_node, absolute=True)
-                #     # ------------------------------------
-
-                #     # ------------------------------------
-                #     # If there is a previous segment, orients the joint node to the current segment
-                #     if prev_joint_node and prev_joint_aim_node:
-                #         pm.aimConstraint(joint_node_aim, prev_joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=prev_joint_aim_node)
-                #     # ------------------------------------
-
-                #     # ------------------------------------
-                #     # If is the last segment and there is a previous one, orients it to the previous one.
-                #     if i == segments and prev_joint_node:
-                #         pm.aimConstraint(prev_joint_aim_node, joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=joint_node_aim)
-                #     # ------------------------------------
-
-                #     # ------------------------------------
-                #     # Add the nodes to the core solution
-                #     self.nodes[goal]["core"].append(joint_node)
-                #     self.nodes[goal]["core"].append(joint_node_aim)
-                #     self.nodes[goal]["core"].append(segment_node)
-                #     # ------------------------------------
-
-                #     # Stores nodes for next iteration.
-                #     prev_segment_node = segment_node
-                #     prev_joint_node = joint_node
-                #     prev_joint_aim_node = joint_node_aim
 
     def init_channel_box(self, **kwargs):
         """Summary
