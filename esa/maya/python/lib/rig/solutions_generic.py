@@ -318,8 +318,6 @@ class SolutionJointChainFK(Solution):
         """
         super(SolutionJointChainFK, self).__init__(solution_manager=solution_manager, instance_number=instance_number)
 
-    # TODO:70 Override the store_node function to get the final node to see the distance.
-
     def init_ui_layout(self):
         """Inits the specific ui layout for this solution."""
 
@@ -363,7 +361,7 @@ class SolutionJointChainFK(Solution):
         if goal == "fit":
 
             # Default attributes.
-            # TODO:80 change them by attributes from the ui signals.
+            # TODO:80 change them by attributes  from the ui signals.
             segments = 3
             distance = 10.0
             segment_distance = distance/segments
@@ -437,13 +435,13 @@ class SolutionJointChainFK(Solution):
                     pm.parent(segment_parent_node, first_core_node, absolute=True)
 
                     # Creates the point constraint to maintain segment distances.
-                    pm.pointConstraint(first_core_node, last_core_node, segment_parent_node)
+                    segment_parent_node_point_constraint = pm.PyNode(pm.pointConstraint(first_core_node, last_core_node, segment_parent_node))
                     pm.pointConstraint(first_core_node, segment_parent_node, e=True, w=(100.0/segments)*(segments - i))
                     pm.pointConstraint(last_core_node, segment_parent_node, e=True, w=(100.0/segments)*i)
 
                     # Creates the aim constraint to point the last node.
                     target = last_core_node if i < segments else first_core_node
-                    pm.aimConstraint(target, segment_parent_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node)
+                    segment_parent_node_aim_constraint = pm.PyNode(pm.aimConstraint(target, segment_parent_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node))
                     # ------------------------------------
 
                     # ------------------------------------
@@ -478,14 +476,15 @@ class SolutionJointChainFK(Solution):
                     utils.align(joint_node, segment_node, invert="xy")
                     pm.parent(joint_node, segment_node, absolute=True)
 
+                    joint_node_aim_constraint = None
+                    last_joint_node_aim_constraint = None
                     if prev_joint_node:
                         # Creates the aim constraint to point the next segment.
-                        if i <= segments:
-                            pm.aimConstraint(segment_node, prev_joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node)
+                        joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(segment_node, prev_joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node))
 
                         # Creates the aim constraint to point to the previous segment in the case of last part.
                         if i == segments:
-                            pm.aimConstraint(prev_segment_node, joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node)
+                            last_joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(prev_segment_node, joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node))
 
                     # TODO: Think in a way to avoid the flip in the segments caused by the main aim node distance.
                     # Increase the distance or create more intermediate aim nodes.
@@ -500,8 +499,14 @@ class SolutionJointChainFK(Solution):
                     # ------------------------------------
                     # Add the nodes to the core solution
                     self.nodes[goal]["core"].append(segment_parent_node)
+                    self.nodes[goal]["core"].append(segment_parent_node_point_constraint)
+                    self.nodes[goal]["core"].append(segment_parent_node_aim_constraint)
                     self.nodes[goal]["core"].append(segment_node)
                     self.nodes[goal]["core"].append(joint_node)
+                    if joint_node_aim_constraint:
+                        self.nodes[goal]["core"].append(joint_node_aim_constraint)
+                    if last_joint_node_aim_constraint:
+                        self.nodes[goal]["core"].append(last_joint_node_aim_constraint)
                     # ------------------------------------
 
                 # ------------------------------------
