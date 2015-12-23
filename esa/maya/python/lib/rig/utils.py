@@ -52,7 +52,10 @@ def create_node_by_type(node_type, **kwargs):
         new_node.attr("sizeY").set(sizeY)
         new_node.attr("sizeZ").set(sizeZ)
 
-    return pm.PyNode(new_node.listRelatives(parent=True, fullPath=True)[0])
+        return pm.PyNode(new_node.listRelatives(parent=True, fullPath=True)[0])
+
+    elif node_type == "PlusMinusAverage":
+        return pm.PyNode(pm.shadingNode("plusMinusAverage", asUtility=True))
 
 
 def align(source, target, switch=None, invert=None, offset_translation=None):

@@ -359,9 +359,10 @@ class SolutionJointChainFK(Solution):
 
         # Creation of fit goal
         if goal == "fit":
+            # TODO: Change the temp nodes that are visible to empty ones.
 
             # Default attributes.
-            # TODO:80 change them by attributes  from the ui signals.
+            # TODO: change them by attributes  from the ui signals.
             segments = 3
             distance = 10.0
             segment_distance = distance/segments
@@ -393,7 +394,8 @@ class SolutionJointChainFK(Solution):
             pm.parent(last_core_node, first_core_node, absolute=True)
 
             # Creates the zero transform node for this one.
-            self.create_zero_transform_node(last_core_node)
+            last_core_zero_node = self.create_zero_transform_node(last_core_node)
+            # TODO: Store all zero nodes in variables and in the node lists.
             # ------------------------------------
 
             # ------------------------------------
@@ -408,6 +410,20 @@ class SolutionJointChainFK(Solution):
             # Align the joint align node to the core node. Also inverts x and y.
             utils.align(last_core_aim_node, last_core_node, offset_translation=[distance, 0, 0])
             pm.parent(last_core_aim_node, last_core_node, absolute=True)
+            # ------------------------------------
+
+            # ------------------------------------
+            # Creates the connection from the distance to the aim node separation.
+            last_core_aim_distance_node = self.create_node_by_type("PlusMinusAverage")
+
+            last_core_aim_distance_node_tag = "lastAimDistance"
+            self.rename_node(last_core_aim_distance_node, goal, "core", last_core_aim_distance_node_tag)
+            # self.set_color(last_core_aim_distance_node, goal)
+            self.add_attributes(last_core_aim_distance_node, goal, "core", last_core_aim_distance_node_tag)
+
+            pm.connectAttr(last_core_node.attr("translateY"), last_core_aim_distance_node.attr("input1D[0]"))
+            pm.connectAttr(last_core_zero_node.attr("translateY"), last_core_aim_distance_node.attr("input1D[1]"))
+            pm.connectAttr(last_core_aim_distance_node.attr("output1D"), last_core_aim_node.attr("translateX"))
             # ------------------------------------
 
             # If the main core node is created successfully, continues with all the others.
