@@ -360,6 +360,7 @@ class SolutionJointChainFK(Solution):
         # Creation of fit goal
         if goal == "fit":
             # TODO: Change the temp nodes that are visible to empty ones.
+            # TODO: Store all zero nodes in variables and in the node lists.
 
             # Default attributes.
             # TODO: change them by attributes  from the ui signals.
@@ -377,6 +378,7 @@ class SolutionJointChainFK(Solution):
             self.rename_node(first_core_node, goal, "core", first_core_node_tag)
             self.set_color(first_core_node, goal)
             self.add_attributes(first_core_node, goal, "core", first_core_node_tag)
+
             self.nodes[goal]["core"].append(first_core_node)
             # ------------------------------------
 
@@ -393,9 +395,12 @@ class SolutionJointChainFK(Solution):
             utils.align(last_core_node, first_core_node, offset_translation=[0.0, distance, 0.0])
             pm.parent(last_core_node, first_core_node, absolute=True)
 
+            # In this case we dont add the node for now to the solution core nodes because we need to do it at the end,
+            # since the branch node must be the child of this last core node
+
             # Creates the zero transform node for this one.
             last_core_zero_node = self.create_zero_transform_node(last_core_node)
-            # TODO: Store all zero nodes in variables and in the node lists.
+            self.nodes[goal]["core"].append(last_core_zero_node)
             # ------------------------------------
 
             # ------------------------------------
@@ -410,6 +415,8 @@ class SolutionJointChainFK(Solution):
             # Align the joint align node to the core node. Also inverts x and y.
             utils.align(last_core_aim_node, last_core_node, offset_translation=[distance, 0, 0])
             pm.parent(last_core_aim_node, last_core_node, absolute=True)
+
+            self.nodes[goal]["core"].append(last_core_aim_node)
             # ------------------------------------
 
             # ------------------------------------
@@ -424,6 +431,10 @@ class SolutionJointChainFK(Solution):
             pm.connectAttr(last_core_node.attr("translateY"), last_core_aim_distance_node.attr("input1D[0]"))
             pm.connectAttr(last_core_zero_node.attr("translateY"), last_core_aim_distance_node.attr("input1D[1]"))
             pm.connectAttr(last_core_aim_distance_node.attr("output1D"), last_core_aim_node.attr("translateX"))
+
+            # NOTE: Don't add non dag nodes to the solution node lists, beccause since they don't have parent,
+            # can be confused with first core node and used wrong to get the master node. Gives listRelatives errors.
+            # self.nodes[goal]["core"].append(last_core_aim_distance_node)
             # ------------------------------------
 
             # If the main core node is created successfully, continues with all the others.
@@ -475,7 +486,21 @@ class SolutionJointChainFK(Solution):
                     pm.parent(segment_node, segment_parent_node, absolute=True)
 
                     # Creates the zero transform node for this one.
-                    self.create_zero_transform_node(segment_node)
+                    segment_zero_node = self.create_zero_transform_node(segment_node)
+                    # ------------------------------------
+
+                    # ------------------------------------
+                    # Creates the node to aim the deform joints to it.
+                    segment_joint_aim_node = self.create_node_by_type("spaceLocator")
+
+                    segment_joint_aim_node_tag = ("segmentAim%03d" % i)
+                    self.rename_node(segment_joint_aim_node, goal, "core", segment_joint_aim_node_tag)
+                    self.set_color(segment_joint_aim_node, goal)
+                    self.add_attributes(segment_joint_aim_node, goal, "core", segment_joint_aim_node_tag)
+
+                    # Position the segment aim node in the right position.
+                    utils.align(segment_joint_aim_node, segment_node)
+                    pm.parent(segment_joint_aim_node, segment_node, absolute=True)
                     # ------------------------------------
 
                     # ------------------------------------
@@ -518,7 +543,10 @@ class SolutionJointChainFK(Solution):
                     self.nodes[goal]["core"].append(segment_parent_node_point_constraint)
                     self.nodes[goal]["core"].append(segment_parent_node_aim_constraint)
                     self.nodes[goal]["core"].append(segment_node)
+                    self.nodes[goal]["core"].append(segment_zero_node)
+                    self.nodes[goal]["core"].append(segment_joint_aim_node)
                     self.nodes[goal]["core"].append(joint_node)
+
                     if joint_node_aim_constraint:
                         self.nodes[goal]["core"].append(joint_node_aim_constraint)
                     if last_joint_node_aim_constraint:
