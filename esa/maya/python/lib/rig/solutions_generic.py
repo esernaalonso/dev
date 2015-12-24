@@ -357,13 +357,16 @@ class SolutionJointChainFK(Solution):
             goal (str): Goal of the core to build.
         """
 
+        # ------------------------------------
+        # FIT GOAL
         # Creation of fit goal
         if goal == "fit":
-            # TODO: Change the temp nodes that are visible to empty ones.
+            # TODO: Create the body boxes and connect the size with radius.
             # TODO: Make all the solution a bit smaller.
+            # TODO: Change the X aims for Z aims.
 
             # Default attributes.
-            # TODO: change them by attributes  from the ui signals.
+            # TODO: change them by attributes from the ui signals.
             segments = 3
             distance = 10.0
             segment_distance = distance/segments
@@ -546,9 +549,30 @@ class SolutionJointChainFK(Solution):
                         # Creates the aim constraint to point to the previous segment in the case of last part.
                         if i == segments:
                             last_joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(prev_segment_node, joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node))
+                    # ------------------------------------
 
-                    # TODO: Think in a way to avoid the flip in the segments caused by the main aim node distance.
-                    # Increase the distance or create more intermediate aim nodes.
+                    # ------------------------------------
+                    # Creates the node to visualize the joint direction.
+                    segment_body_node = None
+                    segment_body_node_point_constraint = None
+
+                    if prev_joint_node:
+                        segment_body_node = self.create_node_by_type("renderBox")
+
+                        # Creates the body node.
+                        segment_body_node_tag = ("segmentBody%03d" % i)
+                        self.rename_node(segment_body_node, goal, "core", segment_body_node_tag)
+                        self.set_color(segment_body_node, goal)
+                        self.add_attributes(segment_body_node, goal, "core", segment_body_node_tag)
+
+                        # Align the body node to the joint.
+                        utils.align(segment_body_node, prev_joint_node)
+                        pm.parent(segment_body_node, prev_joint_node, absolute=True)
+
+                        # Creates the point constraint to maintain the ditance to the next joint.
+                        segment_body_node_point_constraint = pm.PyNode(pm.pointConstraint(prev_joint_node, joint_node, segment_body_node))
+                        # pm.pointConstraint(first_core_node, segment_parent_node, e=True, w=(100.0/segments)*(segments - i))
+                        # pm.pointConstraint(last_core_node, segment_parent_node, e=True, w=(100.0/segments)*i)
                     # ------------------------------------
 
                     # ------------------------------------
@@ -571,11 +595,19 @@ class SolutionJointChainFK(Solution):
                         self.nodes[goal]["core"].append(joint_node_aim_constraint)
                     if last_joint_node_aim_constraint:
                         self.nodes[goal]["core"].append(last_joint_node_aim_constraint)
+
+                    if segment_body_node:
+                        self.nodes[goal]["core"].append(segment_body_node)
+                    if segment_body_node_point_constraint:
+                        self.nodes[goal]["core"].append(segment_body_node_point_constraint)
                     # ------------------------------------
 
                 # ------------------------------------
                 # NOTE: In this case we add the last node to the core solutiond at the end because the branch node must be the child of this last core node.
                 self.nodes[goal]["core"].append(last_core_node)
+
+        # FIT GOAL END
+        # ------------------------------------
 
     def init_channel_box(self, **kwargs):
         """Summary
