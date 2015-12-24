@@ -360,7 +360,7 @@ class SolutionJointChainFK(Solution):
         # Creation of fit goal
         if goal == "fit":
             # TODO: Change the temp nodes that are visible to empty ones.
-            # TODO: Store all zero nodes in variables and in the node lists.
+            # TODO: Make all the solution a bit smaller.
 
             # Default attributes.
             # TODO: change them by attributes  from the ui signals.
@@ -395,8 +395,8 @@ class SolutionJointChainFK(Solution):
             utils.align(last_core_node, first_core_node, offset_translation=[0.0, distance, 0.0])
             pm.parent(last_core_node, first_core_node, absolute=True)
 
-            # In this case we dont add the node for now to the solution core nodes because we need to do it at the end,
-            # since the branch node must be the child of this last core node
+            # NOTE: In this case we dont add the node for now to the solution core nodes because we need to do it at the end,
+            # since the branch node must be the child of this last core node.
 
             # Creates the zero transform node for this one.
             last_core_zero_node = self.create_zero_transform_node(last_core_node)
@@ -493,7 +493,7 @@ class SolutionJointChainFK(Solution):
                     # Creates the node to aim the deform joints to it.
                     segment_joint_aim_node = self.create_node_by_type("spaceLocator")
 
-                    segment_joint_aim_node_tag = ("segmentAim%03d" % i)
+                    segment_joint_aim_node_tag = ("segmentJointAim%03d" % i)
                     self.rename_node(segment_joint_aim_node, goal, "core", segment_joint_aim_node_tag)
                     self.set_color(segment_joint_aim_node, goal)
                     self.add_attributes(segment_joint_aim_node, goal, "core", segment_joint_aim_node_tag)
@@ -504,11 +504,31 @@ class SolutionJointChainFK(Solution):
                     # ------------------------------------
 
                     # ------------------------------------
+                    # Creates the connection from the distance to the aim node separation.
+                    segment_joint_aim_distance_node = self.create_node_by_type("PlusMinusAverage")
+
+                    segment_joint_aim_distance_node_tag = ("segmentJointAimDistance%03d" % i)
+                    self.rename_node(segment_joint_aim_distance_node, goal, "core", segment_joint_aim_distance_node_tag)
+                    # self.set_color(segment_joint_aim_distance_node, goal)
+                    self.add_attributes(segment_joint_aim_distance_node, goal, "core", segment_joint_aim_distance_node_tag)
+
+                    # pm.connectAttr(segment_parent_node.attr("translateY"), segment_joint_aim_distance_node.attr("input1D[0]"))
+                    pm.connectAttr(last_core_zero_node.attr("translateY"), segment_joint_aim_distance_node.attr("input1D[0]"))
+                    pm.connectAttr(last_core_node.attr("translateY"), segment_joint_aim_distance_node.attr("input1D[1]"))
+                    pm.connectAttr(segment_node.attr("translateY"), segment_joint_aim_distance_node.attr("input1D[2]"))
+                    pm.connectAttr(segment_joint_aim_distance_node.attr("output1D"), segment_joint_aim_node.attr("translateX"))
+
+                    # NOTE: Don't add non dag nodes to the solution node lists, beccause since they don't have parent,
+                    # can be confused with first core node and used wrong to get the master node. Gives listRelatives errors.
+                    # self.nodes[goal]["core"].append(segment_joint_aim_distance_node)
+                    # ------------------------------------
+
+                    # ------------------------------------
                     # Creates the node to align the deform joints to it.
                     joint_node = self.create_node_by_type("joint")
 
                     # Creates the align node.
-                    joint_node_tag = ("joint%03d" % i)
+                    joint_node_tag = ("segmentJoint%03d" % i)
                     self.rename_node(joint_node, goal, "core", joint_node_tag)
                     self.set_color(joint_node, goal)
                     self.add_attributes(joint_node, goal, "core", joint_node_tag)
@@ -554,7 +574,7 @@ class SolutionJointChainFK(Solution):
                     # ------------------------------------
 
                 # ------------------------------------
-                # Add the nodes to the core solution
+                # NOTE: In this case we add the last node to the core solutiond at the end because the branch node must be the child of this last core node.
                 self.nodes[goal]["core"].append(last_core_node)
 
     def init_channel_box(self, **kwargs):
