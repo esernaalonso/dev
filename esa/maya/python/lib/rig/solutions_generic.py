@@ -416,7 +416,7 @@ class SolutionJointChainFK(Solution):
             self.add_attributes(last_core_aim_node, goal, "core", last_core_aim_node_tag)
 
             # Align the joint align node to the core node. Also inverts x and y.
-            utils.align(last_core_aim_node, last_core_node, offset_translation=[distance, 0, 0])
+            utils.align(last_core_aim_node, last_core_node, offset_translation=[0, 0, distance])
             pm.parent(last_core_aim_node, last_core_node, absolute=True)
 
             self.nodes[goal]["core"].append(last_core_aim_node)
@@ -433,7 +433,7 @@ class SolutionJointChainFK(Solution):
 
             pm.connectAttr(last_core_node.attr("translateY"), last_core_aim_distance_node.attr("input1D[0]"))
             pm.connectAttr(last_core_zero_node.attr("translateY"), last_core_aim_distance_node.attr("input1D[1]"))
-            pm.connectAttr(last_core_aim_distance_node.attr("output1D"), last_core_aim_node.attr("translateX"))
+            pm.connectAttr(last_core_aim_distance_node.attr("output1D"), last_core_aim_node.attr("translateZ"))
 
             # NOTE: Don't add non dag nodes to the solution node lists, beccause since they don't have parent,
             # can be confused with first core node and used wrong to get the master node. Gives listRelatives errors.
@@ -471,7 +471,7 @@ class SolutionJointChainFK(Solution):
 
                     # Creates the aim constraint to point the last node.
                     target = last_core_node if i < segments else first_core_node
-                    segment_parent_node_aim_constraint = pm.PyNode(pm.aimConstraint(target, segment_parent_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node))
+                    segment_parent_node_aim_constraint = pm.PyNode(pm.aimConstraint(target, segment_parent_node, aim=[0, 1, 0], u=[0, 0, 1], mo=True, wut="object", wuo=last_core_aim_node))
                     # ------------------------------------
 
                     # ------------------------------------
@@ -519,7 +519,7 @@ class SolutionJointChainFK(Solution):
                     pm.connectAttr(last_core_zero_node.attr("translateY"), segment_joint_aim_distance_node.attr("input1D[0]"))
                     pm.connectAttr(last_core_node.attr("translateY"), segment_joint_aim_distance_node.attr("input1D[1]"))
                     pm.connectAttr(segment_node.attr("translateY"), segment_joint_aim_distance_node.attr("input1D[2]"))
-                    pm.connectAttr(segment_joint_aim_distance_node.attr("output1D"), segment_joint_aim_node.attr("translateX"))
+                    pm.connectAttr(segment_joint_aim_distance_node.attr("output1D"), segment_joint_aim_node.attr("translateZ"))
 
                     # NOTE: Don't add non dag nodes to the solution node lists, beccause since they don't have parent,
                     # can be confused with first core node and used wrong to get the master node. Gives listRelatives errors.
@@ -544,11 +544,11 @@ class SolutionJointChainFK(Solution):
                     last_joint_node_aim_constraint = None
                     if prev_joint_node:
                         # Creates the aim constraint to point the next segment.
-                        joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(segment_node, prev_joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node))
+                        joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(segment_node, prev_joint_node, aim=[0, 1, 0], u=[0, 0, 1], mo=True, wut="object", wuo=last_core_aim_node))
 
                         # Creates the aim constraint to point to the previous segment in the case of last part.
                         if i == segments:
-                            last_joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(prev_segment_node, joint_node, aim=[0, 1, 0], u=[1, 0, 0], mo=True, wut="object", wuo=last_core_aim_node))
+                            last_joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(prev_segment_node, joint_node, aim=[0, 1, 0], u=[0, 0, 1], mo=True, wut="object", wuo=last_core_aim_node))
                     # ------------------------------------
 
                     # ------------------------------------
