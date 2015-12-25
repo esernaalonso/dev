@@ -361,9 +361,8 @@ class SolutionJointChainFK(Solution):
         # FIT GOAL
         # Creation of fit goal
         if goal == "fit":
-            # TODO: Create the body boxes and connect the size with radius.
             # TODO: Make all the solution a bit smaller.
-            # TODO: Change the X aims for Z aims.
+            # TODO: Connect the main radius with the segments radius and the last node control radius.
 
             # Default attributes.
             # TODO: change them by attributes from the ui signals.
@@ -553,13 +552,35 @@ class SolutionJointChainFK(Solution):
 
                     # ------------------------------------
                     # Creates the node to visualize the joint direction.
+                    # Creates the node to calculate the length to next joint.
+
+                    joint_len_node = None
+                    joint_len_node_point_constraint = None
                     segment_body_node = None
                     segment_body_node_point_constraint = None
 
                     if prev_joint_node:
+                        # ------------------------------------
+                        # Creates the length reference node.
+                        joint_len_node = self.create_node_by_type("spaceLocator")
+
+                        joint_len_node_tag = ("segmentJointLen%03d" % i)
+                        self.rename_node(joint_len_node, goal, "core", joint_len_node_tag)
+                        self.set_color(joint_len_node, goal)
+                        self.add_attributes(joint_len_node, goal, "core", joint_len_node_tag)
+
+                        # Align the body node to the joint.
+                        utils.align(joint_len_node, prev_joint_node)
+                        pm.parent(joint_len_node, prev_joint_node, absolute=True)
+
+                        # Creates the point constraint to calculate the ditance to the next joint.
+                        joint_len_node_point_constraint = pm.PyNode(pm.pointConstraint(joint_node, joint_len_node))
+                        # ------------------------------------
+
+                        # ------------------------------------
+                        # Creates the body node.
                         segment_body_node = self.create_node_by_type("renderBox")
 
-                        # Creates the body node.
                         segment_body_node_tag = ("segmentBody%03d" % i)
                         self.rename_node(segment_body_node, goal, "core", segment_body_node_tag)
                         self.set_color(segment_body_node, goal)
@@ -573,6 +594,14 @@ class SolutionJointChainFK(Solution):
                         segment_body_node_point_constraint = pm.PyNode(pm.pointConstraint(prev_joint_node, joint_node, segment_body_node))
                         # pm.pointConstraint(first_core_node, segment_parent_node, e=True, w=(100.0/segments)*(segments - i))
                         # pm.pointConstraint(last_core_node, segment_parent_node, e=True, w=(100.0/segments)*i)
+
+                        # Connects the box length to the joint lenght.
+                        pm.connectAttr(joint_len_node.attr("translateY"), segment_body_node.attr("sizeY"))
+                        prev_segment_node_shape = prev_segment_node.listRelatives(shapes=True)[0]
+                        prev_segment_node_shape_circle = prev_segment_node_shape.listConnections(source=True)[0]
+                        pm.connectAttr(prev_segment_node_shape_circle.attr("radius"), segment_body_node.attr("sizeX"))
+                        pm.connectAttr(prev_segment_node_shape_circle.attr("radius"), segment_body_node.attr("sizeZ"))
+                        # ------------------------------------
                     # ------------------------------------
 
                     # ------------------------------------
@@ -596,6 +625,10 @@ class SolutionJointChainFK(Solution):
                     if last_joint_node_aim_constraint:
                         self.nodes[goal]["core"].append(last_joint_node_aim_constraint)
 
+                    if joint_len_node:
+                        self.nodes[goal]["core"].append(joint_len_node)
+                    if joint_len_node_point_constraint:
+                        self.nodes[goal]["core"].append(joint_len_node_point_constraint)
                     if segment_body_node:
                         self.nodes[goal]["core"].append(segment_body_node)
                     if segment_body_node_point_constraint:
