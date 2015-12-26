@@ -286,7 +286,7 @@ class SolutionJointChainFK(Solution):
     """
     # Solution type and subtype. Class attributes
     type = "generic"
-    subtype = "chain"
+    subtype = "chainFK"
 
     # Description of this solution.
     description = "This is a generic FK joint chain to use as required."
@@ -679,6 +679,82 @@ class SolutionJointChainFK(Solution):
 
         # FIT GOAL END
         # ------------------------------------
+
+    def init_ui_layout(self):
+        """Inits the specific ui layout for this solution."""
+
+        # Calls parent init.
+        super(SolutionJointChainFK, self).init_ui_layout()
+
+        self.master_node = self.get_node("fit", "master")
+        self.master_node_shape = self.master_node.listRelatives(shapes=True)[0]
+        self.master_node_shape_circle = self.master_node_shape.listConnections(source=True)[0]
+
+        # To override in each specific solution. Prepare layout items with right values.
+        self.dsp_len = ui.get_child(self.ui_widget, "dsp_len")
+        self.sp_segments = ui.get_child(self.ui_widget, "sp_segments")
+
+        # Update parameters.
+        if self.is_goal_built("fit"):
+            last_core_node = self.get_node("fit", "core", "^last$")
+            last_core_zt_node = self.get_node("fit", "core", "^lastZT$")
+            if last_core_node and last_core_zt_node:
+                self.dsp_len.setValue(last_core_node.attr("translateY").get() + last_core_zt_node.attr("translateY").get())
+
+            segments = self.get_nodes("fit", "core", "segment[0-9]{3,3}$")
+            if segments:
+                self.sp_segments.setValue(len(segments) - 1)
+
+    # def init_ui_signals(self):
+    #     """Inits the specific ui signals for this solution."""
+
+    #     # Calls parent init.
+    #     super(SolutionRoot, self).init_ui_signals()
+
+    #     # To override in each specific solution. Connect the signals.
+
+    #     self.hsl_radius.valueChanged.connect(lambda: self.dsp_radius.setValue(self.hsl_radius.value()))
+    #     self.dsp_radius.valueChanged.connect(lambda: self.hsl_radius.setValue(self.dsp_radius.value()))
+    #     self.hsl_sweep.valueChanged.connect(lambda: self.sp_sweep.setValue(self.hsl_sweep.value()))
+    #     self.sp_sweep.valueChanged.connect(lambda: self.hsl_sweep.setValue(self.sp_sweep.value()))
+    #     self.hsl_sections.valueChanged.connect(lambda: self.sp_sections.setValue(self.hsl_sections.value()))
+    #     self.sp_sections.valueChanged.connect(lambda: self.hsl_sections.setValue(self.sp_sections.value()))
+
+    #     self.dsp_radius.valueChanged.connect(lambda: self.update_solution("fit"))
+    #     self.hsl_radius.valueChanged.connect(lambda: self.update_solution("fit"))
+    #     self.sp_sweep.valueChanged.connect(lambda: self.update_solution("fit"))
+    #     self.hsl_sweep.valueChanged.connect(lambda: self.update_solution("fit"))
+    #     self.sp_sections.valueChanged.connect(lambda: self.update_solution("fit"))
+    #     self.hsl_sections.valueChanged.connect(lambda: self.update_solution("fit"))
+    #     self.cbx_degree.currentIndexChanged.connect(lambda: self.update_solution("fit"))
+
+    # def update_solution(self, goal, recursive=True):
+    #     """Updates the solution with the parameters from the ui if changed.
+
+    #     Args:
+    #         goal (str): Type of goal to update.
+    #     """
+    #     # If goal is not fit, the way to update it is removing the goal and rebuilding it again.
+    #     if goal in self.goals and goal != "fit":
+    #         super(SolutionRoot, self).update_solution(goal, recursive=recursive)
+
+    #     # If goal is fit.
+    #     if goal == "fit" and self.is_goal_built(goal):
+    #         if not self.ui_widget.editing:
+    #             self.ui_widget.editing = True
+
+    #             # master_node = self.get_node(goal, "master")
+    #             # master_node_shape = master_node.listRelatives(shapes=True)[0]
+    #             # master_node_shape_circle = master_node_shape.listConnections(source=True)[0]
+
+    #             # Update parameters.
+    #             if self.master_node_shape_circle:
+    #                 self.master_node_shape_circle.attr("radius").set(self.dsp_radius.value())
+    #                 self.master_node_shape_circle.attr("sweep").set(self.sp_sweep.value())
+    #                 self.master_node_shape_circle.attr("sections").set(self.sp_sections.value())
+    #                 self.master_node_shape_circle.attr("degree").set(1 if self.cbx_degree.currentIndex() == 0 else 3)
+
+    #             self.ui_widget.editing = False
 
     def init_channel_box(self, **kwargs):
         """Summary

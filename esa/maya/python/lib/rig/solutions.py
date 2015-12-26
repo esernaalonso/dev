@@ -11,6 +11,7 @@ import pymel.core as pm
 import collections
 import os
 import inspect
+import re
 
 import esa.maya.python.lib.ui as ui
 import esa.maya.python.lib.rig.utils as utils
@@ -366,47 +367,55 @@ class Solution(object):
         else:
             return 0
 
-    def get_nodes(self, goal=None, use=None):
+    def get_nodes(self, goal=None, use=None, tag=None):
         """Returns the nodes of the requested goal and use.
 
         Args:
             goal (str, optional): The type of goal we want to retrieve the nodes from.
             use (str, optional): The type of use we want to retrieve the nodes from.
+            tag (str, optional): returns only the nodes that match the tag.
 
         Returns:
             list of PyNodes: Returns the nodes of the requested goal and use.
         """
+        nodes = []
+
         # If only goal is given, return all nodes of this goal.
         if not use and goal in self.goals:
             nodes = []
             for use in self.uses:
                 nodes += self.nodes[goal][use]
-            return nodes
 
         # If only use is given, return all nodes of this use.
         if not goal and use in self.uses:
             nodes = []
             for goal in self.goals:
                 nodes += self.nodes[goal][use]
-            return nodes
 
         # If a goal and use are given, return that nodes.
         if goal in self.goals and use in self.uses:
-            return self.nodes[goal][use]
+            nodes = self.nodes[goal][use]
 
-        return []
+        if tag:
+            nodes = [node for node in nodes if re.match(tag, node.attr("tag").get())]
 
-    def get_node(self, goal, use):
+        return nodes
+
+    def get_node(self, goal, use, tag=None):
         """Returns the firs node of the requested goal and use.
 
         Args:
             goal (str): The type of goal we want to retrieve the node from.
             use (str): The type of use we want to retrieve the node from.
+            tag (str, optional): returns only the node that matches the tag.
 
         Returns:
             PyNode: Returns the node of the requested goal and use.
         """
-        requested_nodes = self.get_nodes(goal, use)
+        requested_nodes = self.get_nodes(goal, use, tag)
+
+        # if requested_nodes and tag:
+        #     requested_nodes = [node for node in requested_nodes if node.attr("tag").get() == tag]
 
         if requested_nodes:
             return requested_nodes[0]
