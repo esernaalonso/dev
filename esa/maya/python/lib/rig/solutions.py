@@ -92,6 +92,7 @@ class SolutionWidget(QtGui.QWidget):
 # GENERIC SOLUTION
 
 
+# TODO: Change the nodes names for something shorterbased in the attributes of the solution.
 class Solution(object):
     """Generic solution class to be used as template for other solutions inheritance.
 

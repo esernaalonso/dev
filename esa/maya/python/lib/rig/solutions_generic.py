@@ -361,16 +361,15 @@ class SolutionJointChainFK(Solution):
         # FIT GOAL
         # Creation of fit goal
         if goal == "fit":
-            # TODO: Make all the solution a bit smaller.
-            # TODO: Connect the main radius with the segments radius and the last node control radius.
-
             # Default attributes.
-            # TODO: change them by attributes from the ui signals.
+            # TODO: Connect the ui with this attributes.
             segments = 3
             distance = 10.0
             segment_distance = distance/segments
 
             master_node = self.get_node(goal, "master")
+            master_node_shape = master_node.listRelatives(shapes=True)[0]
+            master_node_shape_circle = master_node_shape.listConnections(source=True)[0]
 
             # ------------------------------------
             # Creates a node to be the parent of all core part
@@ -406,8 +405,18 @@ class SolutionJointChainFK(Solution):
             # ------------------------------------
 
             # ------------------------------------
+            # Creates the radius and sections, etc. connection from the main control to the last core node.
+            last_core_node_shape = last_core_node.listRelatives(shapes=True)[0]
+            last_core_node_shape_circle = last_core_node_shape.listConnections(source=True)[0]
+            pm.connectAttr(master_node_shape_circle.attr("radius"), last_core_node_shape_circle.attr("radius"))
+            pm.connectAttr(master_node_shape_circle.attr("sections"), last_core_node_shape_circle.attr("sections"))
+            pm.connectAttr(master_node_shape_circle.attr("degree"), last_core_node_shape_circle.attr("degree"))
+            pm.connectAttr(master_node_shape_circle.attr("sweep"), last_core_node_shape_circle.attr("sweep"))
+            # ------------------------------------
+
+            # ------------------------------------
             # Creates the node to aim the deform joints to it.
-            last_core_aim_node = self.create_node_by_type("spaceLocator")
+            last_core_aim_node = self.create_node_by_type("empty")
 
             last_core_aim_node_tag = "lastAim"
             self.rename_node(last_core_aim_node, goal, "core", last_core_aim_node_tag)
@@ -423,11 +432,10 @@ class SolutionJointChainFK(Solution):
 
             # ------------------------------------
             # Creates the connection from the distance to the aim node separation.
-            last_core_aim_distance_node = self.create_node_by_type("PlusMinusAverage")
+            last_core_aim_distance_node = self.create_node_by_type("plusMinusAverage")
 
             last_core_aim_distance_node_tag = "lastAimDistance"
             self.rename_node(last_core_aim_distance_node, goal, "core", last_core_aim_distance_node_tag)
-            # self.set_color(last_core_aim_distance_node, goal)
             self.add_attributes(last_core_aim_distance_node, goal, "core", last_core_aim_distance_node_tag)
 
             pm.connectAttr(last_core_node.attr("translateY"), last_core_aim_distance_node.attr("input1D[0]"))
@@ -451,7 +459,7 @@ class SolutionJointChainFK(Solution):
                 for i in range(segments + 1):
                     # ------------------------------------
                     # Create a segment parent node for each segment and an extra one for the end.
-                    segment_parent_node = self.create_node_by_type("spaceLocator")
+                    segment_parent_node = self.create_node_by_type("empty")
 
                     # Set the properties.
                     segment_parent_node_tag = ("segmentParent%03d" % i)
@@ -492,8 +500,28 @@ class SolutionJointChainFK(Solution):
                     # ------------------------------------
 
                     # ------------------------------------
+                    # Creates the radius connection from the main control to the segments nodes.
+                    segment_radius_node = self.create_node_by_type("multiplyDivide")
+                    segment_radius_node.attr("input2.input2X").set(0.5)
+
+                    segment_radius_node_tag = ("segmentRadius%03d" % i)
+                    self.rename_node(segment_radius_node, goal, "core", segment_radius_node_tag)
+                    self.add_attributes(segment_radius_node, goal, "core", segment_radius_node_tag)
+
+                    # Connects the radius.
+                    segment_node_shape = segment_node.listRelatives(shapes=True)[0]
+                    segment_node_shape_circle = segment_node_shape.listConnections(source=True)[0]
+                    pm.connectAttr(master_node_shape_circle.attr("radius"), segment_radius_node.attr("input1.input1X"))
+                    pm.connectAttr(segment_radius_node.attr("output.outputX"), segment_node_shape_circle.attr("radius"))
+
+                    pm.connectAttr(master_node_shape_circle.attr("sections"), segment_node_shape_circle.attr("sections"))
+                    pm.connectAttr(master_node_shape_circle.attr("degree"), segment_node_shape_circle.attr("degree"))
+                    pm.connectAttr(master_node_shape_circle.attr("sweep"), segment_node_shape_circle.attr("sweep"))
+                    # ------------------------------------
+
+                    # ------------------------------------
                     # Creates the node to aim the deform joints to it.
-                    segment_joint_aim_node = self.create_node_by_type("spaceLocator")
+                    segment_joint_aim_node = self.create_node_by_type("empty")
 
                     segment_joint_aim_node_tag = ("segmentJointAim%03d" % i)
                     self.rename_node(segment_joint_aim_node, goal, "core", segment_joint_aim_node_tag)
@@ -507,11 +535,10 @@ class SolutionJointChainFK(Solution):
 
                     # ------------------------------------
                     # Creates the connection from the distance to the aim node separation.
-                    segment_joint_aim_distance_node = self.create_node_by_type("PlusMinusAverage")
+                    segment_joint_aim_distance_node = self.create_node_by_type("plusMinusAverage")
 
                     segment_joint_aim_distance_node_tag = ("segmentJointAimDistance%03d" % i)
                     self.rename_node(segment_joint_aim_distance_node, goal, "core", segment_joint_aim_distance_node_tag)
-                    # self.set_color(segment_joint_aim_distance_node, goal)
                     self.add_attributes(segment_joint_aim_distance_node, goal, "core", segment_joint_aim_distance_node_tag)
 
                     # pm.connectAttr(segment_parent_node.attr("translateY"), segment_joint_aim_distance_node.attr("input1D[0]"))
@@ -527,7 +554,7 @@ class SolutionJointChainFK(Solution):
 
                     # ------------------------------------
                     # Creates the node to align the deform joints to it.
-                    joint_node = self.create_node_by_type("joint")
+                    joint_node = self.create_node_by_type("empty")
 
                     # Creates the align node.
                     joint_node_tag = ("segmentJoint%03d" % i)
@@ -562,7 +589,7 @@ class SolutionJointChainFK(Solution):
                     if prev_joint_node:
                         # ------------------------------------
                         # Creates the length reference node.
-                        joint_len_node = self.create_node_by_type("spaceLocator")
+                        joint_len_node = self.create_node_by_type("empty")
 
                         joint_len_node_tag = ("segmentJointLen%03d" % i)
                         self.rename_node(joint_len_node, goal, "core", joint_len_node_tag)
@@ -595,12 +622,23 @@ class SolutionJointChainFK(Solution):
                         # pm.pointConstraint(first_core_node, segment_parent_node, e=True, w=(100.0/segments)*(segments - i))
                         # pm.pointConstraint(last_core_node, segment_parent_node, e=True, w=(100.0/segments)*i)
 
-                        # Connects the box length to the joint lenght.
+                        # Connects the joint length to the box lenght.
                         pm.connectAttr(joint_len_node.attr("translateY"), segment_body_node.attr("sizeY"))
+
+                        # Connects the segment radius to the box width.
+                        box_radius_node = self.create_node_by_type("multiplyDivide")
+                        box_radius_node.attr("input2.input2X").set(0.5)
+
+                        box_radius_node_tag = ("segmentBoxRadius%03d" % i)
+                        self.rename_node(box_radius_node, goal, "core", box_radius_node_tag)
+                        self.add_attributes(box_radius_node, goal, "core", box_radius_node_tag)
+
                         prev_segment_node_shape = prev_segment_node.listRelatives(shapes=True)[0]
                         prev_segment_node_shape_circle = prev_segment_node_shape.listConnections(source=True)[0]
-                        pm.connectAttr(prev_segment_node_shape_circle.attr("radius"), segment_body_node.attr("sizeX"))
-                        pm.connectAttr(prev_segment_node_shape_circle.attr("radius"), segment_body_node.attr("sizeZ"))
+
+                        pm.connectAttr(prev_segment_node_shape_circle.attr("radius"), box_radius_node.attr("input1.input1X"))
+                        pm.connectAttr(box_radius_node.attr("output.outputX"), segment_body_node.attr("sizeX"))
+                        pm.connectAttr(box_radius_node.attr("output.outputX"), segment_body_node.attr("sizeZ"))
                         # ------------------------------------
                     # ------------------------------------
 

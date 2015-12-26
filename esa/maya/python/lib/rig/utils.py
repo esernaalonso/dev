@@ -54,8 +54,11 @@ def create_node_by_type(node_type, **kwargs):
 
         return pm.PyNode(new_node.listRelatives(parent=True, fullPath=True)[0])
 
-    elif node_type == "PlusMinusAverage":
+    elif node_type == "plusMinusAverage":
         return pm.PyNode(pm.shadingNode("plusMinusAverage", asUtility=True))
+
+    elif node_type == "multiplyDivide":
+        return pm.PyNode(pm.shadingNode("multiplyDivide", asUtility=True))
 
 
 def align(source, target, switch=None, invert=None, offset_translation=None):
