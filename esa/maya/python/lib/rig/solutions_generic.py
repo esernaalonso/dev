@@ -483,9 +483,19 @@ class SolutionJointChainFK(Solution):
                     pm.pointConstraint(first_core_node, segment_parent_node, e=True, w=(100.0/segments)*(segments - i))
                     pm.pointConstraint(last_core_node, segment_parent_node, e=True, w=(100.0/segments)*i)
 
+                    segment_parent_node_point_constraint_tag = ("segmentParentPointConstraint%03d" % i)
+                    self.rename_node(segment_parent_node_point_constraint, goal, "core", segment_parent_node_point_constraint_tag)
+                    self.set_color(segment_parent_node_point_constraint, goal)
+                    self.add_attributes(segment_parent_node_point_constraint, goal, "core", segment_parent_node_point_constraint_tag)
+
                     # Creates the aim constraint to point the last node.
                     target = last_core_node if i < segments else first_core_node
                     segment_parent_node_aim_constraint = pm.PyNode(pm.aimConstraint(target, segment_parent_node, aim=[0, 1, 0], u=[0, 0, 1], mo=True, wut="object", wuo=last_core_aim_node))
+
+                    segment_parent_node_aim_constraint_tag = ("segmentParentAimConstraint%03d" % i)
+                    self.rename_node(segment_parent_node_aim_constraint, goal, "core", segment_parent_node_aim_constraint_tag)
+                    self.set_color(segment_parent_node_aim_constraint, goal)
+                    self.add_attributes(segment_parent_node_aim_constraint, goal, "core", segment_parent_node_aim_constraint_tag)
                     # ------------------------------------
 
                     # ------------------------------------
@@ -579,9 +589,19 @@ class SolutionJointChainFK(Solution):
                         # Creates the aim constraint to point the next segment.
                         joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(segment_node, prev_joint_node, aim=[0, 1, 0], u=[0, 0, 1], mo=True, wut="object", wuo=last_core_aim_node))
 
+                        joint_node_aim_constraint_tag = ("jointNodeAimConstraint%03d" % i)
+                        self.rename_node(joint_node_aim_constraint, goal, "core", joint_node_aim_constraint_tag)
+                        self.set_color(joint_node_aim_constraint, goal)
+                        self.add_attributes(joint_node_aim_constraint, goal, "core", joint_node_aim_constraint_tag)
+
                         # Creates the aim constraint to point to the previous segment in the case of last part.
                         if i == segments:
                             last_joint_node_aim_constraint = pm.PyNode(pm.aimConstraint(prev_segment_node, joint_node, aim=[0, 1, 0], u=[0, 0, 1], mo=True, wut="object", wuo=last_core_aim_node))
+
+                            last_joint_node_aim_constraint_tag = ("jointNodeAimConstraint%03d" % i)
+                            self.rename_node(last_joint_node_aim_constraint, goal, "core", last_joint_node_aim_constraint_tag)
+                            self.set_color(last_joint_node_aim_constraint, goal)
+                            self.add_attributes(last_joint_node_aim_constraint, goal, "core", last_joint_node_aim_constraint_tag)
                     # ------------------------------------
 
                     # ------------------------------------
@@ -609,6 +629,11 @@ class SolutionJointChainFK(Solution):
 
                         # Creates the point constraint to calculate the ditance to the next joint.
                         joint_len_node_point_constraint = pm.PyNode(pm.pointConstraint(joint_node, joint_len_node))
+
+                        joint_len_node_point_constraint_tag = ("segmentJointLenPointConstraint%03d" % i)
+                        self.rename_node(joint_len_node_point_constraint, goal, "core", joint_len_node_point_constraint_tag)
+                        self.set_color(joint_len_node_point_constraint, goal)
+                        self.add_attributes(joint_len_node_point_constraint, goal, "core", joint_len_node_point_constraint_tag)
                         # ------------------------------------
 
                         # ------------------------------------
@@ -628,6 +653,11 @@ class SolutionJointChainFK(Solution):
                         segment_body_node_point_constraint = pm.PyNode(pm.pointConstraint(prev_joint_node, joint_node, segment_body_node))
                         # pm.pointConstraint(first_core_node, segment_parent_node, e=True, w=(100.0/segments)*(segments - i))
                         # pm.pointConstraint(last_core_node, segment_parent_node, e=True, w=(100.0/segments)*i)
+
+                        segment_body_node_point_constraint_tag = ("segmentBodyPointConstraint%03d" % i)
+                        self.rename_node(segment_body_node_point_constraint, goal, "core", segment_body_node_point_constraint_tag)
+                        self.set_color(segment_body_node_point_constraint, goal)
+                        self.add_attributes(segment_body_node_point_constraint, goal, "core", segment_body_node_point_constraint_tag)
 
                         # Connects the joint length to the box lenght.
                         pm.connectAttr(joint_len_node.attr("translateY"), segment_body_node.attr("sizeY"))
@@ -733,11 +763,9 @@ class SolutionJointChainFK(Solution):
         if goal in self.goals and goal != "fit":
             super(SolutionRoot, self).update_solution(goal, recursive=recursive)
 
-        # TODO: Here is not working
         # If goal is fit.
         if goal == "fit" and self.is_goal_built(goal):
-            if self.validate_remove(goal):
-                self.remove(goal, recursive=recursive)
+            self.remove(goal, recursive=recursive)
             if self.validate_build(goal):
                 self.build(goal, recursive=recursive)
 
