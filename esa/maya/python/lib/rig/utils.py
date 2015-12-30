@@ -201,6 +201,38 @@ def joints_local_axis_display(joints=None, display=False, toggle=False):
         for joint in joints:
             joint.setAttr("displayLocalAxis", new_state)
 
+
+def setup_channelBox_attributes(node, attributes):
+    """
+    Args:
+        node (PyNode): Node to setup channle box attributes
+        attributes (list of string): List of strings to know which attributes setup.
+    """
+
+    if not attributes:
+        attributes = ["no_attributes"]
+
+    if node:
+        node = pm.PyNode(node)
+
+        if node:
+            all_attrs = node.listAttr()
+            vis_attrs = node.listAttr(visible=True)
+            key_attrs = node.listAttr(keyable=True)
+            chb_attrs = node.listAttr(channelBox=True)
+
+            vis_ch_attrs = list(set(vis_attrs) & (set(key_attrs) | set(chb_attrs)))
+            vis_ch_attrs = [attr.split(".")[-1:][0] for attr in vis_ch_attrs]
+
+            attrs_to_lock = [attr for attr in vis_ch_attrs if attr not in attributes]
+            attrs_to_unlock = [attr for attr in all_attrs if attr in attributes]
+
+            for attr in attrs_to_lock:
+                pm.setAttr(node.attr(attr), lock=True, keyable=False, channelBox=False)
+
+            for attr in attrs_to_unlock:
+                pm.setAttr(node.attr(attr), lock=False, keyable=True, channelBox=True)
+
 #######################################
 # execution
 

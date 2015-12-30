@@ -374,9 +374,14 @@ class SolutionJointChainFK(Solution):
             segment_distance = distance/segments
             # ------------------------------------
 
+            # ------------------------------------
             master_node = self.get_node(goal, "master")
             master_node_shape = master_node.listRelatives(shapes=True)[0]
             master_node_shape_circle = master_node_shape.listConnections(source=True)[0]
+
+            # Locks and hides non necessary attributes.
+            self.setup_channelBox_attributes(master_node_shape_circle, ["radius", "sections", "degree", "sweep"])
+            # ------------------------------------
 
             # ------------------------------------
             # Creates a node to be the parent of all core part
@@ -399,6 +404,9 @@ class SolutionJointChainFK(Solution):
             self.set_color(last_core_node, goal)
             self.add_attributes(last_core_node, goal, "core", last_core_node_tag)
 
+            # Locks and hides non necessary attributes.
+            self.setup_channelBox_attributes(last_core_node, ["translateX", "translateY", "translateZ", "rotateX", "rotateY", "rotateZ"])
+
             # Position it in the distance required and parent to first core node
             utils.align(last_core_node, first_core_node, offset_translation=[0.0, distance, 0.0])
             pm.parent(last_core_node, first_core_node, absolute=True)
@@ -419,6 +427,9 @@ class SolutionJointChainFK(Solution):
             pm.connectAttr(master_node_shape_circle.attr("sections"), last_core_node_shape_circle.attr("sections"))
             pm.connectAttr(master_node_shape_circle.attr("degree"), last_core_node_shape_circle.attr("degree"))
             pm.connectAttr(master_node_shape_circle.attr("sweep"), last_core_node_shape_circle.attr("sweep"))
+
+            # Locks and hides non necessary attributes.
+            self.setup_channelBox_attributes(last_core_node_shape_circle, ["radius", "sections", "degree", "sweep"])
             # ------------------------------------
 
             # ------------------------------------
@@ -507,6 +518,7 @@ class SolutionJointChainFK(Solution):
                     self.rename_node(segment_node, goal, "core", segment_node_tag)
                     self.set_color(segment_node, goal)
                     self.add_attributes(segment_node, goal, "core", segment_node_tag)
+                    self.setup_channelBox_attributes(segment_node, ["translateY", "translateZ"])
 
                     # Position the segment node in the right position.
                     utils.align(segment_node, segment_parent_node)
@@ -676,6 +688,9 @@ class SolutionJointChainFK(Solution):
                         pm.connectAttr(prev_segment_node_shape_circle.attr("radius"), box_radius_node.attr("input1.input1X"))
                         pm.connectAttr(box_radius_node.attr("output.outputX"), segment_body_node.attr("sizeX"))
                         pm.connectAttr(box_radius_node.attr("output.outputX"), segment_body_node.attr("sizeZ"))
+
+                        # Locks and hides non necessary attributes.
+                        self.setup_channelBox_attributes(segment_body_node, ["no_attributes"])
                         # ------------------------------------
                     # ------------------------------------
 

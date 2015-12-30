@@ -489,6 +489,14 @@ class Solution(object):
         node.setAttr("use",         lock=True, keyable=False)
         node.setAttr("tag",         lock=True, keyable=False)
 
+    def setup_channelBox_attributes(self, node, attributes):
+        """
+        Args:
+            node (PyNode): Node to setup channle box attributes
+            attributes (list of string): List of strings to know which attributes setup.
+        """
+        utils.setup_channelBox_attributes(node, attributes)
+
     def get_free_branch(self, goal):
         """Method to get the solution branch node to link or align next solutions
 
@@ -576,6 +584,7 @@ class Solution(object):
 
         self.set_color(new_master_node, goal)
         self.add_attributes(new_master_node, goal, "master", self.tags["main"])
+        self.setup_channelBox_attributes(new_master_node, ["translateX", "translateY", "translateZ", "rotateX", "rotateY", "rotateZ"])
 
     def align_master(self, goal):
         """Align master node of the specific goal to the correspondent parent branch
@@ -640,6 +649,7 @@ class Solution(object):
 
         self.set_color(new_branch_node, goal)
         self.add_attributes(new_branch_node, goal, "branch", self.tags["main"])
+        self.setup_channelBox_attributes(new_branch_node, ["translateX", "translateY", "translateZ", "rotateX", "rotateY", "rotateZ"])
 
     def align_branches(self, goal):
         """Align branch nodes of the specific goal to the correspondent nodes in same solution.
@@ -995,10 +1005,10 @@ class Solution(object):
         """
         current_node = pm.PyNode(root_node)
 
-        stype    = current_node.getAttr("stype")
+        stype = current_node.getAttr("stype")
         ssubtype = current_node.getAttr("ssubtype")
-        goal     = current_node.getAttr("goal")
-        use      = current_node.getAttr("use")
+        goal = current_node.getAttr("goal")
+        use = current_node.getAttr("use")
 
         # Only stores the node if it has the same type and subtype than the solution.
         if stype == self.type and ssubtype == self.subtype:
