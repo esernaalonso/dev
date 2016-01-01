@@ -546,6 +546,9 @@ class SolutionJointChainFK(Solution):
                     pm.connectAttr(master_node_shape_circle.attr("sections"), segment_node_shape_circle.attr("sections"))
                     pm.connectAttr(master_node_shape_circle.attr("degree"), segment_node_shape_circle.attr("degree"))
                     pm.connectAttr(master_node_shape_circle.attr("sweep"), segment_node_shape_circle.attr("sweep"))
+
+                    # Locks and hides non necessary attributes.
+                    self.setup_channelBox_attributes(segment_node_shape_circle, ["radius", "sections", "degree", "sweep"])
                     # ------------------------------------
 
                     # ------------------------------------

@@ -202,7 +202,26 @@ def joints_local_axis_display(joints=None, display=False, toggle=False):
             joint.setAttr("displayLocalAxis", new_state)
 
 
-def setup_channelBox_attributes(node, attributes):
+def is_forbidden_attribute(attribute):
+    """Checks if the attribute is forbidden or not.
+
+    Args:
+        attribute (pymel attribute or string): Attribute to check if is forbidden or not.
+
+    Returns:
+        bool: Returns True if the attribute is forbidden, False if not.
+    """
+
+    forbidden_attrs = ["colorSet", "uvSet", "controlPoints", "publishedNodeInfo", "instObjGroups", "renderLayerInfo", "compInstObjGroups", "worldNormal", "editPoints"]
+
+    for fbda in forbidden_attrs:
+        if fbda in str(attribute):
+            return True
+
+    return False
+
+
+def setup_channelBox_attributes(node, attributes, shapes=True, constraints=True):
     """
     Args:
         node (PyNode): Node to setup channle box attributes
@@ -222,16 +241,48 @@ def setup_channelBox_attributes(node, attributes):
             chb_attrs = node.listAttr(channelBox=True)
 
             vis_ch_attrs = list(set(vis_attrs) & (set(key_attrs) | set(chb_attrs)))
-            vis_ch_attrs = [attr.split(".")[-1:][0] for attr in vis_ch_attrs]
 
-            attrs_to_lock = [attr for attr in vis_ch_attrs if attr not in attributes]
-            attrs_to_unlock = [attr for attr in all_attrs if attr in attributes]
+            attrs_to_lock = [attr for attr in vis_ch_attrs if attr.split(".")[-1:][0] not in attributes]
+            attrs_to_unlock = [attr for attr in all_attrs if attr.split(".")[-1:][0] in attributes]
+
+            attrs_to_lock = [attr for attr in attrs_to_lock if not is_forbidden_attribute(attr)]
+            attrs_to_unlock = [attr for attr in attrs_to_unlock if not is_forbidden_attribute(attr)]
 
             for attr in attrs_to_lock:
-                pm.setAttr(node.attr(attr), lock=True, keyable=False, channelBox=False)
+                pm.setAttr(attr, lock=True, keyable=False, channelBox=False)
 
             for attr in attrs_to_unlock:
-                pm.setAttr(node.attr(attr), lock=False, keyable=True, channelBox=True)
+                pm.setAttr(attr, lock=False, keyable=True)
+
+            if hasattr(node, "listRelatives"):
+                if shapes:
+                    node_shapes = node.listRelatives(shapes=True)
+                    for shape in node_shapes:
+                        setup_channelBox_attributes(shape, attributes, shapes=False, constraints=False)
+
+                if constraints:
+                    node_constraints = node.listRelatives(type="constraint")
+                    for constraint in node_constraints:
+                        setup_channelBox_attributes(constraint, attributes, shapes=False, constraints=False)
+
+                    # all_shape_attrs = shape.listAttr()
+                    # vis_shape_attrs = shape.listAttr(visible=True)
+                    # key_shape_attrs = shape.listAttr(keyable=True)
+                    # chb_shape_attrs = shape.listAttr(channelBox=True)
+
+                    # vis_ch_shape_attrs = list(set(vis_shape_attrs) & (set(key_shape_attrs) | set(chb_shape_attrs)))
+
+                    # shape_attrs_to_lock = [attr for attr in vis_ch_shape_attrs if attr.split(".")[-1:][0] not in attributes]
+                    # shape_attrs_to_unlock = [attr for attr in all_shape_attrs if attr.split(".")[-1:][0] in attributes]
+
+                    # shape_attrs_to_lock = [attr for attr in shape_attrs_to_lock if not is_forbidden_attribute(attr)]
+                    # shape_attrs_to_unlock = [attr for attr in shape_attrs_to_unlock if not is_forbidden_attribute(attr)]
+
+                    # for attr in shape_attrs_to_lock:
+                    #     pm.setAttr(attr, lock=True, keyable=False, channelBox=False)
+
+                    # for attr in shape_attrs_to_unlock:
+                    #     pm.setAttr(attr, lock=False, keyable=True, channelBox=True)
 
 #######################################
 # execution
