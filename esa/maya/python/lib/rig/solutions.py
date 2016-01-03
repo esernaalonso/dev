@@ -713,6 +713,10 @@ class Solution(object):
         for core_node in self.get_nodes(goal, "core"):
             if not core_node.listRelatives(parent=True) or core_node.listRelatives(parent=True)[0] == self.get_node(goal, "master"):
                 utils.align(core_node, self.get_node(goal, "master"))
+            else:
+                pass
+                if goal == "deform" and self.is_goal_built("fit"):
+                    # TODO: Do the code to align the core nodes to the equivalent in the fit solution.
 
     def link_core(self, goal):
         """Link core nodes of the specific goal to the correspondent nodes from the same solution.

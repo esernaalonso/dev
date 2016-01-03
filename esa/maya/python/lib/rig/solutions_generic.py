@@ -735,6 +735,37 @@ class SolutionJointChainFK(Solution):
         # FIT GOAL END
         # ------------------------------------
 
+        # ------------------------------------
+        # DEFORM GOAL
+        # Creation of deform goal
+        if goal == "deform":
+            if self.is_goal_built("fit"):
+                fit_joints = self.get_nodes("fit", "core", "segmentJoint[0-9]+$")
+
+                prev_joint_node = None
+                for i in range(len(fit_joints)):
+                    # ------------------------------------
+                    # Creates the deform joints.
+                    joint_node = self.create_node_by_type("joint")
+
+                    joint_node_tag = ("segmentJoint%03d" % i)
+                    self.rename_node(joint_node, goal, "core", joint_node_tag)
+                    self.set_color(joint_node, goal)
+                    self.add_attributes(joint_node, goal, "core", joint_node_tag)
+
+                    # Parents it to the previous joint.
+                    if prev_joint_node:
+                        pm.parent(joint_node, prev_joint_node, absolute=True)
+
+                    # Stores the current node as previous for next iteration.
+                    prev_joint_node = joint_node
+
+                    # Stores the node in tbe correspondent list.
+                    self.nodes[goal]["core"].append(joint_node)
+                    # ------------------------------------
+        # DEFORM GOAL END
+        # ------------------------------------
+
     def init_ui_layout(self):
         """Inits the specific ui layout for this solution."""
 

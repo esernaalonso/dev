@@ -265,25 +265,6 @@ def setup_channelBox_attributes(node, attributes, shapes=True, constraints=True)
                     for constraint in node_constraints:
                         setup_channelBox_attributes(constraint, attributes, shapes=False, constraints=False)
 
-                    # all_shape_attrs = shape.listAttr()
-                    # vis_shape_attrs = shape.listAttr(visible=True)
-                    # key_shape_attrs = shape.listAttr(keyable=True)
-                    # chb_shape_attrs = shape.listAttr(channelBox=True)
-
-                    # vis_ch_shape_attrs = list(set(vis_shape_attrs) & (set(key_shape_attrs) | set(chb_shape_attrs)))
-
-                    # shape_attrs_to_lock = [attr for attr in vis_ch_shape_attrs if attr.split(".")[-1:][0] not in attributes]
-                    # shape_attrs_to_unlock = [attr for attr in all_shape_attrs if attr.split(".")[-1:][0] in attributes]
-
-                    # shape_attrs_to_lock = [attr for attr in shape_attrs_to_lock if not is_forbidden_attribute(attr)]
-                    # shape_attrs_to_unlock = [attr for attr in shape_attrs_to_unlock if not is_forbidden_attribute(attr)]
-
-                    # for attr in shape_attrs_to_lock:
-                    #     pm.setAttr(attr, lock=True, keyable=False, channelBox=False)
-
-                    # for attr in shape_attrs_to_unlock:
-                    #     pm.setAttr(attr, lock=False, keyable=True, channelBox=True)
-
 #######################################
 # execution
 
