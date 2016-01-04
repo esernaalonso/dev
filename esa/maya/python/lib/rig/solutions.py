@@ -93,7 +93,8 @@ class SolutionWidget(QtGui.QWidget):
 # GENERIC SOLUTION
 
 
-# TODO: Change the nodes names for something shorterbased in the attributes of the solution.
+# TODO: Change the nodes names for something shorter based in the attributes of the solution.
+# TODO: Create a process to convert deform joints rotation in orientation.
 class Solution(object):
     """Generic solution class to be used as template for other solutions inheritance.
 
@@ -729,21 +730,25 @@ class Solution(object):
         Args:
             goal (str): Goal of the core to align.
         """
+        master_node = self.get_node(goal, "master")
+
         for core_node in self.get_nodes(goal, "core"):
-            # In case is the first core node, has to align to its master.
-            if not core_node.listRelatives(parent=True) or core_node.listRelatives(parent=True)[0] == self.get_node(goal, "master"):
-                utils.align(core_node, self.get_node(goal, "master"))
-            else:
-                # In case is a normal core node, hast to align to the correspondent one.
-                if goal == "fit":
-                    # NOTE: fit core nodes don't need to be aligned because they are created in the right position
-                    # during the build_core function execution, that must be overridden for each solution.
-                    pass
-                elif self.is_goal_built("fit"):
-                    # In the other goals, must align to fit solution
-                    target_node = self.get_conform_target(core_node, goal, "fit")
-                    if target_node:
-                        utils.align(core_node, target_node)
+            if goal == "fit":
+                # NOTE: fit core nodes don't need to be aligned because they are created in the right position
+                # during the build_core function execution, that must be overridden for each solution.
+
+                # In case is the first core node, has to align to its master.
+                if not core_node.listRelatives(parent=True) or core_node.listRelatives(parent=True)[0] == master_node:
+                    utils.align(core_node, self.get_node(goal, "master"))
+
+            elif self.is_goal_built("fit"):
+                # In the other goals, must align to fit solution
+                target_node = self.get_conform_target(core_node, goal, "fit")
+                if target_node:
+                    utils.align(core_node, target_node)
+                elif not core_node.listRelatives(parent=True) or core_node.listRelatives(parent=True)[0] == master_node:
+                    # In case is the first core node and has no master, has to align to its master.
+                    utils.align(core_node, self.get_node(goal, "master"))
 
     def link_core(self, goal):
         """Link core nodes of the specific goal to the correspondent nodes from the same solution.

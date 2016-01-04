@@ -538,6 +538,22 @@ class SolutionJointChainFK(Solution):
                     # ------------------------------------
 
                     # ------------------------------------
+                    # Creates the node to align the animation controls for the anim goal.
+                    joint_anim_node = self.create_node_by_type("empty")
+
+                    # Creates the anim node.
+                    joint_anim_node_tag = ("segmentControl%03d" % i)
+                    self.rename_node(joint_anim_node, goal, "core", joint_anim_node_tag)
+                    self.set_color(joint_anim_node, goal)
+                    self.add_attributes(joint_anim_node, goal, "core", joint_anim_node_tag)
+
+                    # Align the joint anim node to the joint node.
+                    utils.align(joint_anim_node, joint_node)
+                    pm.parent(joint_anim_node, joint_node, absolute=True)
+
+                    # ------------------------------------
+
+                    # ------------------------------------
                     # Creates the node to visualize the joint direction.
                     # Creates the node to calculate the length to next joint.
 
@@ -630,6 +646,7 @@ class SolutionJointChainFK(Solution):
                     self.nodes[goal]["core"].append(segment_zero_node)
                     self.nodes[goal]["core"].append(segment_joint_aim_node)
                     self.nodes[goal]["core"].append(joint_node)
+                    self.nodes[goal]["core"].append(joint_anim_node)
 
                     if joint_node_aim_constraint:
                         self.nodes[goal]["core"].append(joint_node_aim_constraint)
@@ -672,6 +689,9 @@ class SolutionJointChainFK(Solution):
                     self.set_color(joint_node, goal)
                     self.add_attributes(joint_node, goal, "core", joint_node_tag)
 
+                    # Align to the fit node.
+                    utils.align(joint_node, fit_joints[i])
+
                     # Parents it to the previous joint.
                     if prev_joint_node:
                         pm.parent(joint_node, prev_joint_node, absolute=True)
@@ -686,7 +706,62 @@ class SolutionJointChainFK(Solution):
         # DEFORM GOAL END
         # ------------------------------------
 
-        # TODO: create anim solution.
+        # ------------------------------------
+        # ANIM GOAL
+
+        # Creation of anim goal
+        if goal == "anim":
+            if self.is_goal_built("fit"):
+                fit_joint_anim_controls = self.get_nodes("fit", "core", "segmentControl[0-9]{3,3}$")
+                fit_joints = self.get_nodes("fit", "core", "segmentJoint[0-9]{3,3}$")
+
+                prev_joint_anim_node = None
+
+                for i in range(len(fit_joint_anim_controls)):
+                    # ------------------------------------
+                    # Creates the deform joints.
+                    joint_anim_node = self.create_node_by_type("circle")
+
+                    joint_anim_node_tag = ("segmentControl%03d" % i)
+                    self.rename_node(joint_anim_node, goal, "core", joint_anim_node_tag)
+                    self.set_color(joint_anim_node, goal)
+                    self.add_attributes(joint_anim_node, goal, "core", joint_anim_node_tag)
+
+                    # Align to the fit node.
+                    utils.align(joint_anim_node, fit_joint_anim_controls[i])
+
+                    # Parents it to the previous joint.
+                    if prev_joint_anim_node:
+                        pm.parent(joint_anim_node, prev_joint_anim_node, absolute=True)
+
+                    # Stores the current node as previous for next iteration.
+                    prev_joint_anim_node = joint_anim_node
+                    # ------------------------------------
+
+                    # ------------------------------------
+                    # Creates the deform joints.
+                    joint_node = self.create_node_by_type("joint")
+
+                    joint_node_tag = ("segmentJoint%03d" % i)
+                    self.rename_node(joint_node, goal, "core", joint_node_tag)
+                    self.set_color(joint_node, goal)
+                    self.add_attributes(joint_node, goal, "core", joint_node_tag)
+
+                    # Align to the fit node.
+                    utils.align(joint_node, fit_joints[i])
+
+                    # Parents it to the anim control.
+                    pm.parent(joint_node, joint_anim_node, absolute=True)
+                    # ------------------------------------
+
+                    # ------------------------------------
+                    # Stores the node in tbe correspondent list.
+                    self.nodes[goal]["core"].append(joint_anim_node)
+                    self.nodes[goal]["core"].append(joint_node)
+                    # ------------------------------------
+
+        # ANIM GOAL END
+        # ------------------------------------
 
     def init_ui_layout(self):
         """Inits the specific ui layout for this solution."""
