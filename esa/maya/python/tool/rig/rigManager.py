@@ -362,6 +362,7 @@ class RigManagerMainWidget(QtGui.QWidget):
             # Cretes the solution and adds it to the ui tree.
             solution_instance = self.solution_manager.create_solution(stype, ssubtype, parent=parent)
             self.add_solution_to_tree(solution_instance, parent_tree_node=ui_object)
+            self.load_selected_solution_ui()
 
         # Creates solutions goals
         if kwargs["action"] == "build_solution_goal":
@@ -369,6 +370,7 @@ class RigManagerMainWidget(QtGui.QWidget):
             goal = kwargs["goal"]
             solution_instance.build(goal)
             self.update_solution_icons(solution_instance, recursive=True)
+            self.load_selected_solution_ui()
 
         # Removes solutions goals
         if kwargs["action"] == "remove_solution_goal":
@@ -376,6 +378,7 @@ class RigManagerMainWidget(QtGui.QWidget):
             goal = kwargs["goal"]
             solution_instance.remove(goal)
             self.update_solution_icons(solution_instance, recursive=True)
+            self.load_selected_solution_ui()
 
         # Conforms solutions goals
         if kwargs["action"] == "conform_solution_goal":
@@ -389,6 +392,7 @@ class RigManagerMainWidget(QtGui.QWidget):
             for solution_instance in remove_solutions:
                 self.remove_solution_from_tree(solution_instance)
                 self.solution_manager.remove_solution(solution_instance)
+            self.load_selected_solution_ui()
 
     def select_solutions_nodes(self):
         """Selects the selected solution selectable nodes. Usually only the fit master"""

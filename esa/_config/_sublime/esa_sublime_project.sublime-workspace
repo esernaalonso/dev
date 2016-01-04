@@ -523,7 +523,7 @@
 			"file": "/P/dev/esa/maya/python/lib/rig/solutions_generic.py",
 			"settings":
 			{
-				"buffer_size": 28169,
+				"buffer_size": 43764,
 				"line_ending": "Unix"
 			}
 		}
@@ -964,7 +964,7 @@
 					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 28169,
+						"buffer_size": 43764,
 						"regions":
 						{
 						},

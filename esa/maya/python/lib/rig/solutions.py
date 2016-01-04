@@ -207,6 +207,23 @@ class Solution(object):
         self.channel_box = None
         self.init_ui()
 
+    def validate_ui_widget(self):
+        """Returns True if the ui widget can be enabled.
+
+        Returns:
+            bool: Returns True if the ui widget can be enabled, False if not.
+            By default can only be enabled if the fit goal is built and there are no other goals built.
+        """
+        if not self.is_goal_built("fit"):
+            return False
+        else:
+            for other_goal in self.goals:
+                if other_goal != "fit":
+                    if self.is_goal_built(other_goal):
+                        return False
+
+        return True
+
     def init_ui_widget(self):
         """Inits the specific ui widget for this solution."""
         self.ui_widget = self.solution_manager.get_solution_widget(self.__class__)
@@ -218,7 +235,10 @@ class Solution(object):
         if not self.ui_widget:
             self.init_ui_widget()
 
-        # To override in each specific solution. Prepare layout items with right values.
+        # Sets the enabled state for the ui widget, considering the goals that are built.
+        self.ui_widget.setEnabled(self.validate_ui_widget())
+
+        # NOTE: To override in each specific solution. Prepare layout items with right values.
         # Code for the layout init.
 
     def init_ui_signals(self):
@@ -383,14 +403,14 @@ class Solution(object):
         # If only goal is given, return all nodes of this goal.
         if not use and goal in self.goals:
             nodes = []
-            for use in self.uses:
-                nodes += self.nodes[goal][use]
+            for current_use in self.uses:
+                nodes += self.nodes[goal][current_use]
 
         # If only use is given, return all nodes of this use.
         if not goal and use in self.uses:
             nodes = []
-            for goal in self.goals:
-                nodes += self.nodes[goal][use]
+            for current_goal in self.goals:
+                nodes += self.nodes[current_goal][use]
 
         # If a goal and use are given, return that nodes.
         if goal in self.goals and use in self.uses:
@@ -679,7 +699,6 @@ class Solution(object):
         # If there is a core created, uses the last node in the array as parent, if not uses the master.
         use = "core" if self.get_nodes(goal, "core") else "master"
         align_node = self.get_nodes(goal, use)[-1] if self.get_nodes(goal, use) else None
-        # TODO:0 Probably is better to search the last core node with no core node children. issue:4
 
         for branch_node in self.get_nodes(goal, "branch"):
             pm.parent(branch_node, align_node, absolute=True)
@@ -711,12 +730,20 @@ class Solution(object):
             goal (str): Goal of the core to align.
         """
         for core_node in self.get_nodes(goal, "core"):
+            # In case is the first core node, has to align to its master.
             if not core_node.listRelatives(parent=True) or core_node.listRelatives(parent=True)[0] == self.get_node(goal, "master"):
                 utils.align(core_node, self.get_node(goal, "master"))
             else:
-                pass
-                if goal == "deform" and self.is_goal_built("fit"):
-                    # TODO: Do the code to align the core nodes to the equivalent in the fit solution.
+                # In case is a normal core node, hast to align to the correspondent one.
+                if goal == "fit":
+                    # NOTE: fit core nodes don't need to be aligned because they are created in the right position
+                    # during the build_core function execution, that must be overridden for each solution.
+                    pass
+                elif self.is_goal_built("fit"):
+                    # In the other goals, must align to fit solution
+                    target_node = self.get_conform_target(core_node, goal, "fit")
+                    if target_node:
+                        utils.align(core_node, target_node)
 
     def link_core(self, goal):
         """Link core nodes of the specific goal to the correspondent nodes from the same solution.
@@ -727,8 +754,6 @@ class Solution(object):
         for core_node in self.get_nodes(goal, "core"):
             if not core_node.listRelatives(parent=True):
                 pm.parent(core_node, self.get_node(goal, "master"), absolute=True)
-
-    # TODO: Create a property "jump_back", in the nodes that must be skipped in the deform creation and parented to the previous one.
 
     def is_goal_built(self, goal):
         """Returns True if a goal is created for this solution.
@@ -796,11 +821,14 @@ class Solution(object):
         if goal != "fit":
             return (self.is_goal_built("fit") and self.is_goal_built(goal))
         else:
+            # NOTE: Initially removing the fit goal was possible. But this could cause problems and maintenance,
+            # if the fit solution is rebuilt using a deform or anim goal. So is better not allow it.
+
             # If goal is fit, can only be removed if there are other goals created.
-            for other_goal in self.goals:
-                if other_goal != "fit":
-                    if self.is_goal_built(other_goal):
-                        return self.is_goal_built("fit")
+            # for other_goal in self.goals:
+            #     if other_goal != "fit":
+            #         if self.is_goal_built(other_goal):
+            #             return self.is_goal_built("fit")
 
             return False
 
@@ -894,7 +922,6 @@ class Solution(object):
         if node:
             # all target goal nodes, where the target node must be.
             target_candidates = self.get_nodes(goal=target_goal)
-
             # Only if there are candidates.
             if target_candidates:
 

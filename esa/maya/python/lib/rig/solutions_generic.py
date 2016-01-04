@@ -318,16 +318,6 @@ class SolutionJointChainFK(Solution):
         """
         super(SolutionJointChainFK, self).__init__(solution_manager=solution_manager, instance_number=instance_number)
 
-    def init_ui_layout(self):
-        """Inits the specific ui layout for this solution."""
-
-        # Calls parent init.
-        super(SolutionJointChainFK, self).init_ui_layout()
-
-        self.master_node = self.get_node("fit", "master")
-        self.master_node_shape = self.master_node.listRelatives(shapes=True)[0]
-        self.master_node_shape_circle = self.master_node_shape.listConnections(source=True)[0]
-
     def create_node_by_type(self, node_type, **kwargs):
         """Create node by type.
 
@@ -359,6 +349,8 @@ class SolutionJointChainFK(Solution):
 
         # ------------------------------------
         # FIT GOAL
+        # TODO: Create auxiliar nodes to use in the anim align and conform.
+
         # Creation of fit goal
         if goal == "fit":
             # ------------------------------------
@@ -737,10 +729,11 @@ class SolutionJointChainFK(Solution):
 
         # ------------------------------------
         # DEFORM GOAL
+
         # Creation of deform goal
         if goal == "deform":
             if self.is_goal_built("fit"):
-                fit_joints = self.get_nodes("fit", "core", "segmentJoint[0-9]+$")
+                fit_joints = self.get_nodes("fit", "core", "segmentJoint[0-9]{3,3}$")
 
                 prev_joint_node = None
                 for i in range(len(fit_joints)):
@@ -763,6 +756,7 @@ class SolutionJointChainFK(Solution):
                     # Stores the node in tbe correspondent list.
                     self.nodes[goal]["core"].append(joint_node)
                     # ------------------------------------
+
         # DEFORM GOAL END
         # ------------------------------------
 
