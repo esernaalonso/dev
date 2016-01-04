@@ -149,7 +149,10 @@ class RigManagerMainWidget(QtGui.QWidget):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(2, 2, 2, 2)
 
-        # Solutions UI init
+        # ------------------------------------------
+        # SOLUTIONS TAB
+
+        # Solutions UI init.
 
         self.tab_solutions_spliter = ui.get_child(self.ui, "sp_splitter")
         self.tab_solutions_spliter.setSizes([400, 250])
@@ -177,10 +180,10 @@ class RigManagerMainWidget(QtGui.QWidget):
         self.solution_widget_layout = ui.get_child(self.ui, "wi_solution_widget").layout()
         self.solution_channel_box_layout = ui.get_child(self.ui, "wi_channel_box").layout()
 
-        # Fills the solution trees in the UI
+        # Fills the solution trees in the UI.
         self.fill_solution_trees()
 
-        # Solutions UI signals
+        # Solutions UI signals.
 
         # self.solution_trees.itemSelectionChanged.connect(self.fix_solution_trees_selection)
         self.solution_trees.itemSelectionChanged.connect(self.select_solutions_nodes)
@@ -188,6 +191,21 @@ class RigManagerMainWidget(QtGui.QWidget):
 
         self.solution_trees.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.solution_trees.customContextMenuRequested.connect(self.solution_trees_menu)
+        # ------------------------------------------
+
+        # ------------------------------------------
+        # UTILS TAB
+
+        # Utils UI init.
+
+        self.dsp_joints_display_size = ui.get_child(self.ui, "dsp_joints_display_size")
+        self.dsp_joints_display_size.setValue(pm.jointDisplayScale(q=True))
+
+        # Utils UI signals.
+
+        self.dsp_joints_display_size.valueChanged.connect(self.update_joints_display_size)
+
+        # ------------------------------------------
 
     def get_tree_item_level(self, item):
         """Returns the level of depth of an item in the tree.
@@ -552,6 +570,9 @@ class RigManagerMainWidget(QtGui.QWidget):
                 if recursive and solution_instance.children_solutions:
                     for child_solution in solution_instance.children_solutions:
                         self.update_solution_icons(child_solution, recursive=recursive)
+
+    def update_joints_display_size(self):
+        pm.jointDisplayScale(self.dsp_joints_display_size.value())
 
 
 def rigManagerRun():
