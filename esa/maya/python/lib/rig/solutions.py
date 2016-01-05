@@ -880,6 +880,7 @@ class Solution(object):
             self.align_branches(goal)
             self.link_branches(goal)
 
+            # TODO: this is not completely working because recursive is false. See the conform def.
             self.conform(goal, recursive=False)
 
             pm.select(clear=True)
@@ -960,7 +961,8 @@ class Solution(object):
             node (PyNode): Note to conform to the correspondent one in the target goal.
             goal (str): Current goal.
             target_goal (str): Target goal to search the correspondent node in.
-            recursive (bool, optional): If True indicates that all descendants must be conformed too.
+            recursive (bool, optional): If True indicates that all descendants of same use and must be conformed too.
+                Not affects children solutions.
         """
         # Converts the node in PyNode in case it is not.
         if node:
@@ -976,6 +978,19 @@ class Solution(object):
                 # pm.xform(node, m=align_transform, ws=True)
                 utils.align(node, target_node)
 
+                # ---------------------------------
+                # Special processes
+
+                # If both node and target_node are circles, copies the radius, degree, sections and sweep.
+                all_circles = utils.get_NurbCircles()
+                if node in all_circles:
+                    # TODO: do the code to conform the attributes.
+                    pass
+
+                # ---------------------------------
+
+            # TODO: limit the recursivity to the master, core or branch.
+            # Also not affect children solutions.
             # If this node has children, must conform them recursive if required
             if recursive and node.listRelatives(children=True):
                 for child_node in node.listRelatives(children=True):
@@ -1006,6 +1021,10 @@ class Solution(object):
 
             # If there is a goal to conform the given one to, does it.
             if target_goal:
+                # TODO: Now it depends on the recursive property to conform the core and branches.
+                # Would be bettter if not recursive, to conform manually the core nodes and branch nodes.
+                # Or maybe better
+
                 master_node = self.get_node(goal, "master")
                 if master_node:
                     # It starts with the master goal and continues recursive with all descendants till the solution ends.

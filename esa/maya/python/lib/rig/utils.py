@@ -10,6 +10,33 @@ import pymel.core as pm
 # functionality
 
 
+def get_NurbCircles():
+    """Searchs all node transforms that have an input for the shape that is a MakeNurbCircle.
+
+    Returns:
+        list of PyNodes: Returns all the circles in the scene.
+    """
+
+    circle_nodes = []
+
+    all_nodes = pm.ls(type="transform")
+
+    for node in all_nodes:
+        node = pm.PyNode(node)
+        shapes = node.listRelatives(shapes=True)
+
+        if shapes:
+            for shape in shapes:
+                connections = shape.listConnections(source=True)
+
+                if connections:
+                    for connection in connections:
+                        if str(type(connection)) == "<class 'pymel.core.nodetypes.MakeNurbCircle'>":
+                            circle_nodes.append(node)
+
+    return circle_nodes
+
+
 def create_node_by_type(node_type, **kwargs):
     """Create node by type.
 
