@@ -63,7 +63,7 @@ class SolutionRoot(Solution):
     node_types = {
         "fit":    {"master": "circle", "core": "renderBox", "branch": "empty"},
         "deform": {"master": "empty",  "core": "empty",     "branch": "empty"},
-        "anim":   {"master": "empty", "core": "renderBox", "branch": "empty"}
+        "anim":   {"master": "empty", "core": "circle", "branch": "empty"}
     }
 
     def __init__(self, solution_manager=None, instance_number=None):
@@ -159,7 +159,7 @@ class SolutionCenter(SolutionRoot):
     node_types = {
         "fit":    {"master": "circle", "core": "renderBox", "branch": "empty"},
         "deform": {"master": "empty",  "core": "empty",     "branch": "joint"},
-        "anim":   {"master": "empty", "core": "renderBox", "branch": "empty"}
+        "anim":   {"master": "empty", "core": "circle", "branch": "empty"}
     }
 
     def __init__(self, solution_manager=None, instance_number=None):
@@ -196,7 +196,7 @@ class SolutionCenter(SolutionRoot):
 
 # --------------------------------------
 # JOINT CHAIN SOLUTION
-# INPROGRESS:0 Solutions Generic. Override of Generic solution to create joint chain solutions for any kind of rig. issue:3
+# TODO: Lock the anim controls translation.
 
 
 class SolutionJointChainFK(Solution):
@@ -231,7 +231,7 @@ class SolutionJointChainFK(Solution):
     node_types = {
         "fit":    {"master": "circle", "core": "renderBox", "branch": "empty"},
         "deform": {"master": "joint",  "core": "joint",     "branch": "joint"},
-        "anim":   {"master": "empty", "core": "renderBox", "branch": "empty"}
+        "anim":   {"master": "circle", "core": "circle", "branch": "empty"}
     }
 
     def __init__(self, solution_manager=None, instance_number=None):
@@ -275,7 +275,6 @@ class SolutionJointChainFK(Solution):
 
         # ------------------------------------
         # FIT GOAL
-        # TODO: Create auxiliar nodes to use in the anim align and conform.
 
         # Creation of fit goal
         if goal == "fit":

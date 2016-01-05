@@ -93,6 +93,7 @@ class SolutionWidget(QtGui.QWidget):
 # GENERIC SOLUTION
 
 
+# TODO: IMPORTANT: In the align and conform process, if source and target node are circles, copy radius, segments etc.
 # TODO: Change the nodes names for something shorter based in the attributes of the solution.
 # TODO: Create a process to convert deform joints rotation in orientation.
 class Solution(object):
@@ -878,6 +879,8 @@ class Solution(object):
             self.build_branches(goal)
             self.align_branches(goal)
             self.link_branches(goal)
+
+            self.conform(goal, recursive=False)
 
             pm.select(clear=True)
 
