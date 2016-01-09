@@ -733,6 +733,8 @@ class SolutionJointChainFK(Solution):
                     if prev_joint_anim_node:
                         pm.parent(joint_anim_node, prev_joint_anim_node, absolute=True)
 
+                    joint_anim_zero_node = self.create_zero_transform_node(joint_anim_node)
+
                     # Stores the current node as previous for next iteration.
                     prev_joint_anim_node = joint_anim_node
                     # ------------------------------------
@@ -755,6 +757,7 @@ class SolutionJointChainFK(Solution):
 
                     # ------------------------------------
                     # Stores the node in tbe correspondent list.
+                    self.nodes[goal]["core"].append(joint_anim_zero_node)
                     self.nodes[goal]["core"].append(joint_anim_node)
                     self.nodes[goal]["core"].append(joint_node)
                     # ------------------------------------

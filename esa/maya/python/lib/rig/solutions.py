@@ -402,6 +402,13 @@ class Solution(object):
         """
         nodes = []
 
+        # If not goal and not use are given, must collect all nodes.
+        if not goal and not use:
+            nodes = []
+            for current_goal in self.goals:
+                for current_use in self.uses:
+                    nodes += self.nodes[current_goal][current_use]
+
         # If only goal is given, return all nodes of this goal.
         if not use and goal in self.goals:
             nodes = []
@@ -880,8 +887,7 @@ class Solution(object):
             self.align_branches(goal)
             self.link_branches(goal)
 
-            # TODO: this is not completely working because recursive is false. See the conform def.
-            self.conform(goal, recursive=False)
+            self.conform(goal, recursive_solutions=recursive, recursive_same_solution=True)
 
             pm.select(clear=True)
 
@@ -954,15 +960,17 @@ class Solution(object):
         # If no node or no matches, returns None.
         return None
 
-    def conform_node(self, node, goal, target_goal, recursive=True):
+    # TODO: In the conform, is the node has a zero transform node, has to reset the transform to the new zero pose.
+    def conform_node(self, node, goal, target_goal, recursive=True, recursive_same_use=True, recursive_same_solution=True):
         """Conforms the given node from one goal to the correspondent in the target goal.
 
         Args:
             node (PyNode): Note to conform to the correspondent one in the target goal.
             goal (str): Current goal.
             target_goal (str): Target goal to search the correspondent node in.
-            recursive (bool, optional): If True indicates that all descendants of same use and must be conformed too.
-                Not affects children solutions.
+            recursive (bool, optional): If True indicates that all descendants must be conformed too.
+            recursive_same_use (bool, optional): If True recursivity only affects same use nodes.
+            recursive_same_solution (bool, optional): If True recursivity only affects same solution nodes.
         """
         # Converts the node in PyNode in case it is not.
         if node:
@@ -989,19 +997,25 @@ class Solution(object):
 
                 # ---------------------------------
 
-            # TODO: limit the recursivity to the master, core or branch.
-            # Also not affect children solutions.
             # If this node has children, must conform them recursive if required
-            if recursive and node.listRelatives(children=True):
-                for child_node in node.listRelatives(children=True):
-                    self.conform_node(child_node, goal, target_goal, recursive=recursive)
+            # Also not affect children solutions if recursive_same_solution is True.
+            # Limit the recursivity to the master, core or branch use if recursive_same_use is True.
+            if recursive:
+                children = list(set(node.listRelatives(children=True)) - set(node.listRelatives(shapes=True)))
+                for child_node in children:
+                    # In case only same use nodes must be conformed, don't do it recursive for this node.
+                    if (child_node.attr("use").get() == node.attr("use").get()) or not recursive_same_use:
+                        # In case only same solution nodes must be conformed, don't do it recursive for this node.
+                        if child_node in self.get_nodes(goal=goal) or not recursive_same_solution:
+                            self.conform_node(child_node, goal, target_goal, recursive=recursive)
 
-    def conform(self, goal, recursive=True):
+    def conform(self, goal, recursive_solutions=True, recursive_same_solution=True):
         """Conforms the solution part of the specified goal to other goal to match changes.
 
         Args:
             goal (str): Goal of the solution to conform.
-            recursive (bool, optional): Indicates if conform must be recursive in the children solutions.
+            recursive_solutions (bool, optional): Indicates if conform must be recursive in the children solutions.
+            recursive_same_solution (bool, optional): Indicates if conform must be recursive in the same solution nodes.
         """
         # Only can conform the given goal if it exists.
         if self.is_goal_built(goal):
@@ -1021,19 +1035,18 @@ class Solution(object):
 
             # If there is a goal to conform the given one to, does it.
             if target_goal:
-                # TODO: Now it depends on the recursive property to conform the core and branches.
-                # Would be bettter if not recursive, to conform manually the core nodes and branch nodes.
-                # Or maybe better
+                # It has two types of recursivity, the local one, refering to the same solution nodes hierarchy
+                # and the general, refering to children solutions.
 
                 master_node = self.get_node(goal, "master")
                 if master_node:
                     # It starts with the master goal and continues recursive with all descendants till the solution ends.
-                    self.conform_node(master_node, goal, target_goal, recursive=recursive)
+                    self.conform_node(master_node, goal, target_goal, recursive=recursive_same_solution, recursive_same_use=False, recursive_same_solution=recursive_same_solution)
 
-                    # If recursive, and this solution has children solutions, must conform children too.
-                    if recursive and self.children_solutions:
-                        for child_solution in self.children_solutions:
-                            child_solution.conform(goal, recursive=recursive)
+                # If recursive, and this solution has children solutions, must conform children too.
+                if recursive_solutions and self.children_solutions:
+                    for child_solution in self.children_solutions:
+                        child_solution.conform(goal, recursive_solutions=recursive_solutions, recursive_same_solution=recursive_same_solution)
 
     def store_node(self, node, goal, use):
         """Stores the node in the goal and use nodes list
