@@ -7,6 +7,7 @@ import maya.cmds as cmds
 import pymel.core as pm
 
 import esa.maya.python.lib.rig.utils as utils
+import esa.maya.python.lib.rig.zero_transform as zero_transform
 # import esa.maya.python.lib.rig.solutions as solutions
 import esa.maya.python.lib.icons as icons
 import esa.maya.python.lib.ui as ui
@@ -14,6 +15,7 @@ import esa.maya.python.lib.ui as ui
 from esa.maya.python.lib.rig.solutions import Solution
 
 reload(utils)
+reload(zero_transform)
 # reload(solutions)
 # reload(solutions_ui)
 reload(icons)

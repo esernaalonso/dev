@@ -15,10 +15,12 @@ import re
 
 import esa.maya.python.lib.ui as ui
 import esa.maya.python.lib.rig.utils as utils
+import esa.maya.python.lib.rig.zero_transform as zero_transform
 import esa.maya.python.lib.icons as icons
 
 reload(ui)
 reload(utils)
+reload(zero_transform)
 reload(icons)
 
 #######################################
@@ -587,7 +589,7 @@ class Solution(object):
             PyNode: Returns the created zero node.
         """
         if source_node:
-            zero_node = utils.create_zero_transform_node(source_node, node_type=node_type)
+            zero_node = zero_transform.create_node(source_node, node_type=node_type)
 
             if zero_node:
                 goal = source_node.attr("goal").get()
@@ -960,7 +962,6 @@ class Solution(object):
         # If no node or no matches, returns None.
         return None
 
-    # TODO: In the conform, is the node has a zero transform node, has to reset the transform to the new zero pose.
     def conform_node(self, node, goal, target_goal, recursive=True, recursive_same_use=True, recursive_same_solution=True):
         """Conforms the given node from one goal to the correspondent in the target goal.
 
@@ -982,9 +983,13 @@ class Solution(object):
 
             # If a target node is found, conforms the node to it.
             if target_node:
-                # align_transform = pm.xform(target_node, q=True, ws=True, m=True)
-                # pm.xform(node, m=align_transform, ws=True)
+                # Aligns it with the target node
                 utils.align(node, target_node)
+
+                # If the node has a zero transform node, sets the current transform as zero pose.
+                zero_node = zero_transform.get_node(node)
+                if zero_node:
+                    zero_transform.set_current(node)
 
                 # ---------------------------------
                 # Special processes

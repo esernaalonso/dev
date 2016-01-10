@@ -175,36 +175,6 @@ def align(source, target, switch=None, invert=None, offset_translation=None):
             pm.move(ot[0], ot[1], ot[2], source, relative=True, objectSpace=True)
 
 
-def create_zero_transform_node(source_node, node_type="empty"):
-    """Creates a zero transform node to be the parent of the given one and returns it.
-
-    Args:
-        source_node (PyNode): Node to create a zero transform one to be its parent.
-        node_type (str, optional): Type of the zero transform node. By default "empty".
-
-    Returns:
-        PyNode: Returns the created zero node.
-    """
-    if source_node:
-        zero_node = create_node_by_type(node_type)
-
-        if zero_node:
-            zero_node.rename(source_node.longName() + "ZT")
-
-            align(zero_node, source_node)
-
-            source_node_parent = source_node.listRelatives(parent=True)
-            source_node_parent = source_node_parent[0] if source_node_parent else None
-            if source_node_parent:
-                pm.parent(zero_node, source_node_parent, absolute=True)
-
-            pm.parent(source_node, zero_node, absolute=True)
-
-            return zero_node
-
-    return None
-
-
 def joints_local_axis_display(joints=None, display=False, toggle=False):
     """Changes the local axis display state for joints.
 
@@ -296,11 +266,14 @@ def setup_channelBox_attributes(node, attributes, shapes=True, constraints=True)
 # execution
 
 if __name__ == "__main__":
-    joints_local_axis_display(None, True, True)
+    # joints_local_axis_display(None, True, True)
     # align("joint_orient_002", "joint_orient_001")
     # align("joint_orient_002", "joint_orient_001", switch="yz")
     # align("joint_orient_002", "joint_orient_001", invert="x")
     # align("joint_orient_002", "joint_orient_001", invert="y")
     # align("joint_orient_002", "joint_orient_001", invert="z")
     # align("joint_orient_002", "joint_orient_001", invert="xyz")
+    # sel = pm.ls(selection=True)
+    # for sel_obj in sel:
+    #     zero_transform_pose(sel_obj, action="apply")
     pass

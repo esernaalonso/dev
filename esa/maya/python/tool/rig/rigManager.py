@@ -368,6 +368,10 @@ class RigManagerMainWidget(QtGui.QWidget):
             **kwargs: Arguments for the actions.
         """
 
+        # TODO: fit menu.
+        # TODO: for all goals, zero transform apply recursive.
+        # TODO: for fit goal, set current pose as default.
+
         # Creates new solutions
         if kwargs["action"] == "create_solution":
 
