@@ -860,11 +860,14 @@ class Solution(object):
         if goal != "fit":
             return (self.is_goal_built("fit") and self.is_goal_built(goal))
         else:
+            # NOTE: Initially conform the fit goal was possible. But this could cause problems and maintenance,
+            # if the fit solution is conformed using a deform or anim goal. So is better not allow it.
+
             # If goal is fit, can only be conformed if there are other goals created.
-            for other_goal in self.goals:
-                if other_goal != "fit":
-                    if self.is_goal_built(other_goal):
-                        return self.is_goal_built("fit")
+            # for other_goal in self.goals:
+            #     if other_goal != "fit":
+            #         if self.is_goal_built(other_goal):
+            #             return self.is_goal_built("fit")
 
             return False
 

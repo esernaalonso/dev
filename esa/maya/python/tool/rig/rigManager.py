@@ -303,7 +303,7 @@ class RigManagerMainWidget(QtGui.QWidget):
 
             # Loops different goals and add the build and remove operations.
             for goal in selected_solution.goals:
-                if selected_solution.validate_build(goal) or selected_solution.validate_remove(goal):
+                if selected_solution.validate_build(goal) or selected_solution.is_goal_built(goal):
                     # Creates the goal menu.
                     goal_menu = QtGui.QMenu(goal)
 
@@ -332,6 +332,24 @@ class RigManagerMainWidget(QtGui.QWidget):
                         new_action.triggered.connect(
                             lambda solution=selected_solution, goal=goal:
                             self.menu_action_execution(action="conform_solution_goal", solution=solution, goal=goal))
+                        goal_menu.addAction(new_action)
+
+                    # If goal is built, add some operations.
+                    if selected_solution.is_goal_built(goal):
+                        # Reset pose to default.
+                        new_action = QtGui.QAction(self)
+                        new_action.setText("Reset Pose")
+                        new_action.triggered.connect(
+                            lambda solution=selected_solution, goal=goal:
+                            self.menu_action_execution(action="reset_solution_goal_default_pose", solution=solution, goal=goal))
+                        goal_menu.addAction(new_action)
+
+                        # Set current as new default pose
+                        new_action = QtGui.QAction(self)
+                        new_action.setText("Set Default Pose")
+                        new_action.triggered.connect(
+                            lambda solution=selected_solution, goal=goal:
+                            self.menu_action_execution(action="set_solution_goal_default_pose", solution=solution, goal=goal))
                         goal_menu.addAction(new_action)
 
                     # Adds the goal menu to the new solutions menu.
