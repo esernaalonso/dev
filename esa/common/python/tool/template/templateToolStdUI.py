@@ -1,16 +1,17 @@
 #######################################
 # imports
 
-import maya.cmds as cmds
-import maya.OpenMayaUI as apiUI
+# import maya.cmds as cmds
+# import maya.OpenMayaUI as apiUI
 import sys
+import os
 
-from PySide import QtCore, QtGui
+from PySide import QtCore, QtGui, QtXml
 
-import esa.maya.python.lib.utils as utils
-import esa.maya.python.lib.ui as ui
-
-reload(utils)
+import esa.common.python.lib.utils as utils
+import esa.common.python.lib.ui as ui
+#
+# reload(utils)
 reload(ui)
 
 #######################################
@@ -22,8 +23,19 @@ permission = "developer"
 # functionality
 
 
+# def get_current_file():
+#     if getattr(sys, 'frozen', False):
+#         # frozen
+#         print os.path.dirname(sys.executable)
+#         return os.path.dirname(sys.executable)
+#     else:
+#         # unfrozen
+#         print os.path.realpath(__file__)
+#         return os.path.realpath(__file__)
+
+
 class TemplateToolStdUI(QtGui.QDialog):
-    def __init__(self,  parent=utils.getMayaWindow()):
+    def __init__(self,  parent=None):
         super(TemplateToolStdUI, self).__init__(parent)
 
         self.setObjectName('templateToolStdUI')
@@ -33,7 +45,7 @@ class TemplateToolStdUI(QtGui.QDialog):
 
     def initUI(self):
         # Title
-        self.setWindowTitle("Osom Hater Tool")
+        self.setWindowTitle("Osom Template Tool")
 
         # layout
         self.setLayout(QtGui.QVBoxLayout())
@@ -50,8 +62,8 @@ class TemplateToolStdUI(QtGui.QDialog):
 
 
 class TemplateToolStdUIMainWidget(QtGui.QWidget):
-    def __init__(self, parent=None):
-        super(TemplateToolStdUIMainWidget, self).__init__(parent)
+    def __init__(self):
+        super(TemplateToolStdUIMainWidget, self).__init__()
         self.initUI()
 
     def initUI(self):
@@ -60,6 +72,7 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
         self.ui = ui.loadUiWidgetFromPyFile(__file__, parent=self)
 
         # Layout
+        # self.setMinimumSize(200, 100)
 
         self.setLayout(QtGui.QVBoxLayout())
         self.layout().addWidget(self.ui)
@@ -89,9 +102,9 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
         print "======================================================================================"
 
 def templateToolStdUIRun():
-    utils.closeTool('templateToolStdUI')
-    TemplateToolStdUI()
-
+    app = QtGui.QApplication(sys.argv)
+    test = TemplateToolStdUI()
+    sys.exit(app.exec_())
 
 def templateToolStdUIClose():
     utils.closeTool('templateToolStdUI')

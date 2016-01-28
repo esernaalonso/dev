@@ -46,6 +46,7 @@ def loadUiWidgetFromPyFile(uifilename, parent=None):
     """
     sUIfile = uifilename.replace(".pyc", ".ui")
     sUIfile = sUIfile.replace(".py", ".ui")
+    sUIfile = sUIfile.replace(".exe", ".ui")
 
     return loadUiWidget(sUIfile, parent=parent)
 
