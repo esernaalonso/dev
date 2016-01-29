@@ -9,7 +9,7 @@ import os
 from PySide import QtCore, QtGui, QtXml
 
 import esa.common.python.lib.utils as utils
-import esa.common.python.lib.ui as ui
+import esa.common.python.lib.ui.ui as ui
 #
 # reload(utils)
 reload(ui)
@@ -101,10 +101,12 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
         print "More or less, is a %s film." % ("drama" if self.rb_drama.isChecked() else ("comedy" if self.rb_comedy.isChecked() else "mistery"))
         print "======================================================================================"
 
+
 def templateToolStdUIRun():
     app = QtGui.QApplication(sys.argv)
     test = TemplateToolStdUI()
     sys.exit(app.exec_())
+
 
 def templateToolStdUIClose():
     utils.closeTool('templateToolStdUI')
