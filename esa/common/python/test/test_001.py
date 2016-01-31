@@ -26,4 +26,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    test_dict = {}
+    test_value = test_dict["test"]
+    print test_value
+    # main()
