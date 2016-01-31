@@ -3,10 +3,13 @@
 
 # import maya.cmds as cmds
 # import maya.OpenMayaUI as apiUI
-import sys
-import os
+import sys, os
 
-from PySide import QtCore, QtGui, QtXml
+from PySide import QtCore, QtGui
+# import PySide.QtCore as QtCore
+# import PySide.QtGui as QtGui
+# import PySide.QtXml as QtXml
+from PySide import QtXml as QtXmlTest
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
