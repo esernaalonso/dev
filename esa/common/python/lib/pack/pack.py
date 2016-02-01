@@ -69,9 +69,9 @@ def setup_pack_folder(pack_folder, remove_previous=False, **kwargs):
     if pack_folder:
         # if a clean pack is needed, the old one is deleted.
         if remove_previous:
-            if os.path.exists(packFolder) and removePrevious:
+            if os.path.exists(pack_folder) and remove_previous:
                 logger.info(("Removing Current Package Folder -> %s" % pack_folder), level=level)
-                shutil.rmtree(packFolder)
+                shutil.rmtree(pack_folder)
 
         # if the pack_folder doesn't exist, is created.
         if not os.path.exists(pack_folder):
@@ -135,7 +135,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     level = 0
     if "level" in kwargs: level = kwargs["level"]
 
-    packaging_type = "main_file"
+    packaging_type = "main"
     if "packaging_type" in kwargs: packaging_type = kwargs["packaging_type"]
 
     # If source file does not exist, cannot start the packaging.
@@ -148,11 +148,37 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
         logger.error(("Pack Folder does not exist -> %s" % source_file), level=level)
         return None
 
-    # Prints the type of packaging
+    # Shows info about the file to package.
+    logger.info(("Packaging File -> %s" % source_file), level=level)
+
+    # This should be the destination path
+    # TODO: Add here the intermediate folder in case that packaging_type is not main. For example lib
+    package_sub_folder = packaging_type if packaging_type != "main" else ""
+    dest_file = os.path.join(pack_folder, package_sub_folder, os.path.basename(source_file))
+    logger.info(("Destination File -> %s" % dest_file), level=level)
+
+    file_type = os.path.splitext(source_file)[1]
+    logger.info(("File Type -> %s" % file_type), level=level)
+
+    # Prints the type of packaging.
     logger.info(("Packaging Type -> %s" % packaging_type), level=level)
 
+    explorable_packaging_types = ["main", "lib"]
+    explorable_file_types = [".py"]
+    if packaging_type in explorable_packaging_types and file_type in explorable_file_types:
+        logger.info(("File can be recursive explored -> %s" % source_file), level=level)
+        shutil.copyfile(source_file, dest_file)
 
-def pack_module(source_file, pack_folder=None, remove_previous=False, **kwargs):
+        # TODO: In this case is explorable. Must open the destination file and:
+        # Search imports and package them recursive in the lib folder.
+        # Search dependencies like ui files and package them.
+        # Replace in the dest file the imports and dependencies
+    else:
+        logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)
+        shutil.copyfile(source_file, dest_file)
+
+
+def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
     """Packs a python file and all depedencies in and independent module folder.
 
     Args:
