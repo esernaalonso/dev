@@ -16,11 +16,11 @@ def log_print(message, option="info", level=0):
     message_to_print = message
 
     if option == "error":
-        head_message = "# ERROR:\t"
+        head_message = "# ERROR:   "
     elif option == "warning":
-        head_message = "# WARNING:\t"
+        head_message = "# WARNING: "
     elif option == "info":
-        head_message = "# INFO:\t"
+        head_message = "# INFO:    "
 
     level_string = ""
     if level > 0:

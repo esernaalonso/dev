@@ -14,24 +14,39 @@ reload(logger)
 
 
 def create_init_file(source_folder, **kwargs):
+    """Creates a __init__.py file in the given folder.
+
+    Args:
+        source_folder (string): The folder where to create a __init__.py file in.
+        **kwargs: Extra arguments to have some more options.
+            level (int): Indicates the level of depth in the logs.
+
+    Returns:
+        string: Returns the path to the created __init__.py file. None if not created
+    """
+    # Gets the logs level values from the kwargs
+    level = 0
+    if "level" in kwargs: level = kwargs["level"]
+
     if source_folder:
-        # Gets the logs and level values from the kwargs
-        logs = False
-        level = 0
-
-        if "logs" in kwargs:
-            logs = kwargs["logs"]
-        if "level" in kwargs:
-            level = kwargs["level"]
-
         if os.path.exists(source_folder):
             init_file_path = os.path.join(source_folder, "__init__.py")
             if not os.path.exists(init_file_path):
                 with open(init_file_path, 'w') as fout:
                     fout.write("")
 
-        if os.path.exists(init_file_path):
-            return init_file_path
+            if os.path.exists(init_file_path):
+                logger.info(("__init__.py file created -> %s" % init_file_path), level=level)
+                return init_file_path
+            else:
+                logger.error(("__init__.py file NOT CREATED -> %s" % init_file_path), level=level)
+                return None
+        else:
+            logger.error(("Source Folder does not exist -> %s" % source_folder), level=level)
+            return None
+    else:
+        logger.error(("Source Folder must be provided -> %s" % source_folder), level=level)
+        return None
 
 
 def setup_pack_folder(pack_folder, remove_previous=False, **kwargs):
@@ -40,73 +55,101 @@ def setup_pack_folder(pack_folder, remove_previous=False, **kwargs):
     Args:
         pack_folder (string): The path to the folder to use as pack folder.
         remove_previous (bool, optional): Indicates if it has to remove the previous pack folder.
+        **kwargs: Extra arguments to have some more options.
+            level (int): Indicates the level of depth in the logs.
 
     Returns:
-        string: The file path if created, None if not.
+        string: The pack folder path if created, None if not.
     """
 
+    # Gets the logs level values from the kwargs
+    level = 0
+    if "level" in kwargs: level = kwargs["level"]
+
     if pack_folder:
-        # Gets the logs and level values from the kwargs
-        logs = False
-        level = 0
-
-        if "logs" in kwargs:
-            logs = kwargs["logs"]
-        if "level" in kwargs:
-            level = kwargs["level"]
-
         # if a clean pack is needed, the old one is deleted.
         if remove_previous:
             if os.path.exists(packFolder) and removePrevious:
-                if logs:
-                    logger.info(("Removing Current Package Folder -> %s" % pack_folder), level=level)
+                logger.info(("Removing Current Package Folder -> %s" % pack_folder), level=level)
                 shutil.rmtree(packFolder)
 
         # if the pack_folder doesn't exist, is created.
         if not os.path.exists(pack_folder):
-            if logs:
-                logger.info(("Creating Package Folder-> %s" % pack_folder), level=level)
+            logger.info(("Creating Package Folder-> %s" % pack_folder), level=level)
             os.makedirs(pack_folder)
 
         # If the pack_folder is created OK, creates the lib folder.
         if os.path.exists(pack_folder):
-            if logs:
-                logger.info(("Package Folder Created -> %s" % pack_folder), level=level)
+            logger.info(("Package Folder Created -> %s" % pack_folder), level=level)
 
             # Also creates an __init__ file
-            pack_folder_init = create_init_file(pack_folder, **kwargs)
+            pack_folder_init = create_init_file(pack_folder, level=level+1)
             if not pack_folder_init:
-                if logs:
-                    logger.error(("__init__.py file in Pack Folder NOT CREATED in -> %s" % pack_folder), level=level)
+                logger.error(("__init__.py file in Pack Folder NOT CREATED in -> %s" % pack_folder), level=level)
                 return None
 
             # Now creates the lib folder for all dependencies
             pack_folder_lib = os.path.join(pack_folder, "lib")
-            if logs:
-                logger.info(("Creating Package Lib Folder-> %s" % pack_folder_lib), level=level)
+            logger.info(("Creating Package Lib Folder-> %s" % pack_folder_lib), level=level)
             if not os.path.exists(pack_folder_lib):
                 os.makedirs(pack_folder_lib)
 
             if os.path.exists(pack_folder_lib):
-                if logs:
-                    logger.info(("Package Lib Folder Created -> %s" % pack_folder_lib), level=level)
+                logger.info(("Package Lib Folder Created -> %s" % pack_folder_lib), level=level)
 
                 # Also creates a __init__ file in the lib folder.
-                pack_folder_lib_init = create_init_file(pack_folder_lib)
+                pack_folder_lib_init = create_init_file(pack_folder_lib, level=level+1)
                 if not pack_folder_init:
-                    if logs:
-                        logger.error(("__init__.py file in Pack Lib Folder NOT CREATED in -> %s" % pack_folder_lib), level=level)
+                    logger.error(("__init__.py file in Pack Lib Folder NOT CREATED in -> %s" % pack_folder_lib), level=level)
                     return None
             else:
-                if logs:
-                    logger.error(("Pack Lib Folder NOT CREATED -> %s" % pack_folder_lib), level=level)
+                logger.error(("Pack Lib Folder NOT CREATED -> %s" % pack_folder_lib), level=level)
                 return None
 
+            # Finally returns the pack folder.
             return pack_folder
         else:
-            if logs:
-                logger.error(("Pack Folder NOT CREATED -> %s" % pack_folder), level=level)
+            logger.error(("Pack Folder NOT CREATED -> %s" % pack_folder), level=level)
             return None
+    else:
+        logger.error(("Pack Folder must be provided -> %s" % pack_folder), level=level)
+        return None
+
+
+def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
+    """Summary
+
+    Args:
+        source_file (string): Path of the file to pack.
+        pack_folder (string, optional): Destination Pack Folder.
+        recursive (bool, optional): Indicates if pack all dependencies. Default True.
+        **kwargs: Extra arguments to have some more options.
+            level (int): Indicates the level of depth in the logs.
+            packaging_type (string): Indicates the type of packaging for the file.
+
+    Returns:
+        string: The path to the created file. None if not created.
+    """
+
+    # Gets the logs level values from the kwargs
+    level = 0
+    if "level" in kwargs: level = kwargs["level"]
+
+    packaging_type = "main_file"
+    if "packaging_type" in kwargs: packaging_type = kwargs["packaging_type"]
+
+    # If source file does not exist, cannot start the packaging.
+    if not os.path.exists(source_file):
+        logger.error(("File to Pack does not exist -> %s" % source_file), level=level)
+        return None
+
+    # If pack folder does not exist, cannot start the packaging.
+    if not os.path.exists(pack_folder):
+        logger.error(("Pack Folder does not exist -> %s" % source_file), level=level)
+        return None
+
+    # Prints the type of packaging
+    logger.info(("Packaging Type -> %s" % packaging_type), level=level)
 
 
 def pack_module(source_file, pack_folder=None, remove_previous=False, **kwargs):
@@ -121,11 +164,11 @@ def pack_module(source_file, pack_folder=None, remove_previous=False, **kwargs):
 
     # Initial info.
     logger.info("Searching -> %s" % source_file)
-    logger.info("Pack Folder -> %s" % pack_folder)
+    logger.info("Pack Folder Given -> %s" % pack_folder)
 
     # If source file exists, can start the packaging.
     if os.path.exists(source_file):
-        logger.info(("File Exists -> %s" % source_file), level=1)
+        logger.info(("File Exists -> %s" % source_file))
 
         # Creates the pack folder if not exists
         # logger.info(("Creating Pack Folder in -> %s" % pack_folder), level=1)
@@ -135,16 +178,18 @@ def pack_module(source_file, pack_folder=None, remove_previous=False, **kwargs):
         if not pack_folder_path_created:
             return None
 
-        # TODO: Continue working in the packaging
-
-        # If everything was OK, returns the path.
+        # If everything was OK, continues the packaging and finally returns the path.
         if os.path.exists(pack_folder_path_created):
+            # Calls the packaging process for the main file. This process is recursive, for all import dependencies.
+            pack_file(source_file, pack_folder=pack_folder_path_created, level=1)
+
+            # Finally returns the pack folder.
             return pack_folder_path_created
         else:
-            logger.error(("Pack Folder could not be created -> %s" % pack_folder_path), level=1)
+            logger.error(("Pack Folder could not be created -> %s" % pack_folder_path))
             return None
     else:
-        logger.error(("Source File must be provided -> %s" % source_file), level=1)
+        logger.error(("Source File must be provided -> %s" % source_file))
         return None
 
 #######################################
