@@ -258,6 +258,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
                     for import_info in imports_info:
                         if import_info["type"] == "custom_module":
                             pack_file(import_info["path"], pack_folder=dest_folder, level=level+1, packaging_type="lib")
+
+                            # TODO: After packaging the lib, must replace in dest_file the import for the new one.
         else:
             logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)
 

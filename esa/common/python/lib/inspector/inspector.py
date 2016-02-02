@@ -9,7 +9,7 @@ import inspect
 import importlib
 
 #######################################
-# functionality\
+# functionality
 
 
 def is_function_in_mod(mod, func):
