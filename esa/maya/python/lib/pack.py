@@ -133,7 +133,7 @@ def createPackPluginFile(pluginPyFile):
         with open(pluginPyFile, 'w') as fout:
             fout.write(fileData)
 
-def packPyFileToModule(pyFile, packFolder=None, searchScripts=[], removePrevious=False):
+def packPyFileToModule(pyFile, packFolder=None, searchScripts=[], remove_previous=False):
     print("\nSearching -> " + pyFile)
 
     if len(searchScripts) == 0:
@@ -152,7 +152,7 @@ def packPyFileToModule(pyFile, packFolder=None, searchScripts=[], removePrevious
         packFolderScripts = packFolder + "/" + packName + "/scripts/" + packName
 
         # if a clean pack is needed, the old one is deleted
-        if os.path.exists(packFolder) and removePrevious:
+        if os.path.exists(packFolder) and remove_previous:
             shutil.rmtree(packFolder)
 
         # if the packFolder doesn't exist, is created
@@ -306,7 +306,7 @@ def getPyFileCompiledString(pyFile, searchScripts=[]):
 
     return compiledString
 
-def packPyFile(pyFile, packFolder=None, searchScripts=[], removePrevious=False):
+def packPyFile(pyFile, packFolder=None, searchScripts=[], remove_previous=False):
     print("\nSearching -> " + pyFile)
 
     if len(searchScripts) == 0:
@@ -323,7 +323,7 @@ def packPyFile(pyFile, packFolder=None, searchScripts=[], removePrevious=False):
             print ("Pack folder not provided. Using default -> " + packFolder)
 
         # if a clean pack is needed, the old one is deleted
-        if os.path.exists(packFolder) and removePrevious:
+        if os.path.exists(packFolder) and remove_previous:
             shutil.rmtree(packFolder)
 
         # if the packFolder doesn't exist, is created
@@ -371,8 +371,8 @@ def test():
     # testFile = "P:\\dev\\esa\\maya\\python\\tool\\template\\templateToolDock.py"
     testFile = "P:\\dev\\esa\\maya\\python\\tool\\template\\templateToolStdUI.py"
 
-    # packPyFileToModule(testFile, removePrevious=True)
-    packPyFile(testFile, removePrevious=True)
+    # packPyFileToModule(testFile, remove_previous=True)
+    packPyFile(testFile, remove_previous=True)
 
 #######################################
 # execution

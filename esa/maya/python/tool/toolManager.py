@@ -35,21 +35,21 @@ permission = "artist"
 class ToolManager(QtGui.QDialog):
 	def __init__(self,  parent=utils.getMayaWindow()):
 		super(ToolManager, self).__init__(parent)
-		
+
 		self.setObjectName("toolManager")
 
 		self.initUI()
-		
+
 		allowedAreas = ['right', 'left']
 		self.dockCtrl = cmds.dockControl(label='Tool Manager', area='right', content=self.objectName(), allowedArea=allowedAreas )
 
 		self.opened = True
 
 	# init de UI
-	def initUI(self):		
+	def initUI(self):
 		# layout
 		self.setLayout(QtGui.QVBoxLayout())
-		
+
 		# add main widget
 		self.mainWiget = ToolList()
 		self.layout().addWidget(self.mainWiget)
@@ -66,7 +66,7 @@ class ToolManager(QtGui.QDialog):
 class ToolList(QtGui.QWidget):
 	def __init__(self, parent=None):
 		super(ToolList, self).__init__(parent)
-				
+
 		self.initUI()
 
 	# init de UI
@@ -85,7 +85,7 @@ class ToolList(QtGui.QWidget):
 
 		# load UI file
 		self.ui = ui.loadUiWidgetFromPyFile(__file__, parent=self)
-		
+
 		# layout
 		self.setLayout(QtGui.QVBoxLayout())
 		self.layout().addWidget(self.ui)
@@ -124,7 +124,7 @@ class ToolList(QtGui.QWidget):
 
 	def treeMenu(self, position):
 		selItems = self.ui.tr_toolsTree.selectedIndexes()
-		
+
 		if len(selItems) > 0:
 			level = 0
 
@@ -159,7 +159,7 @@ class ToolList(QtGui.QWidget):
 
 		# gets the filters to be used
 		filters = self.ui.le_filter.text().split(" ")
-		
+
 		# applies the filters using AND or OR operation depending on the UI choose
 		if self.ui.rb_filterAnd.isChecked():
 			for fltr in filters:
@@ -190,9 +190,9 @@ class ToolList(QtGui.QWidget):
 
 		# filters all elements by UI choose
 		self.filterListElements(lAllElements)
-		
+
 		return lAllElements
-	
+
 	# fill the list with tools and scripts
 	def fillTree(self):
 		# clear the tree
@@ -200,7 +200,7 @@ class ToolList(QtGui.QWidget):
 
 		# get the elements for the list
 		lElements = self.getListElements()
-		
+
 		# iterate the elements adding them to the list
 		currentCategoriesItems = []
 		currentCategories = []
@@ -270,7 +270,7 @@ class ToolList(QtGui.QWidget):
 					currentParentName = cat
 					currentCategories.append(cat)
 					currentCategoriesItems.append(item)
-			
+
 			item = QtGui.QTreeWidgetItem(currentParent, [sElementName, sState, lElements[i], sType])
 			# item.setBackground(1, QtGui.QBrush(cStateColor))
 			item.setForeground(0, QtGui.QBrush(self.foregroundColor))
@@ -279,7 +279,7 @@ class ToolList(QtGui.QWidget):
 			item.setTextAlignment(1, QtCore.Qt.AlignCenter)
 			if sType == "tool":
 				item.setIcon(1, self.toolIcon)
-			else:				
+			else:
 				item.setIcon(1, self.scriptIcon)
 
 	# refresh the list interface
@@ -311,13 +311,13 @@ class ToolList(QtGui.QWidget):
 	# close all opened tools
 	def closeAll(self):
 		leafItems = self.getTreeLeafItems()
-		
+
 		for i in range(len(leafItems)):
 			sToolFileName = leafItems[i].text(2)
 
 			sToolName = leafItems[i].text(0)
 			sType = main.getPyFileType(sToolFileName)
-			
+
 			if sType == "tool":
 				bOpened = utils.isToolOpened(sToolName)
 				if bOpened:
@@ -330,7 +330,7 @@ class ToolList(QtGui.QWidget):
 				leafItems[i].setIcon(1, self.toolIcon)
 				leafItems[i].setForeground(1, QtGui.QBrush(self.foregroundColor))
 				leafItems[i].setText(1, "Open")
-					
+
 	def doubleClickTreeItemExecution(self, item, column):
 		if column == 0:
 			self.treeItemExecution(item, column)
@@ -344,13 +344,13 @@ class ToolList(QtGui.QWidget):
 		if item.childCount() == 0:
 			sToolName = item.text(0)
 			sToolFileName = item.text(2)
-		
+
 			sType = main.getPyFileType(sToolFileName)
 			# oModule = utils.importModule(sToolName)
 			importStatement = main.getPyFileFullImportName(sToolFileName)
 			print sToolFileName
 			oModule = importlib.import_module(importStatement)
-				
+
 			# If the module can be run or closed
 			if sType == "tool":
 				bOpened = utils.isToolOpened(sToolName)
@@ -363,7 +363,7 @@ class ToolList(QtGui.QWidget):
 
 				# if the module is a tool the Open/Close label must be updated
 				bOpened = utils.isToolOpened(sToolName)
-				
+
 				if bOpened:
 					# item.setBackground(1, QtGui.QBrush(self.closeStateColor))
 					item.setForeground(1, QtGui.QBrush(self.closeStateColor))
@@ -389,9 +389,9 @@ class ToolList(QtGui.QWidget):
 
 		confirmMessage = 'You are about to pack "' + sToolName + '" and all its dependencies to "' + packFolder + '.\n\nThe packed tool/script will be standalone and you can locate it where you want. I usually move it to the local "maya/version/prefs/scripts" folder for the user. Then inside maya (no need to restart) I use this commands to open the tool/script:\n\nimport ' + sToolName + '.' + sToolName + ' as ' + sToolName + '\n' + sToolName + '.' + sToolName + 'Run()'
 		answer = cmds.confirmDialog(t="Alert", message=confirmMessage, button=["Cancel", "Yes"], icon="warning")
-		
+
 		if answer == "Yes":
-			pack.packPyFile(item.text(2), removePrevious=True)
+			pack.packPyFile(item.text(2), remove_previous=True)
 
 			confirmMessage = '"' + sToolName + '" packed to "' + packFolder + '"'
 			cmds.confirmDialog(t="Success Packing", message=confirmMessage, button=["OK"])
