@@ -13,7 +13,9 @@ from PySide import QtXml as QtXmlTest
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
-#
+from esa.common.python.lib.io import io
+from esa.common.python.lib.logger import logger as the_logger
+
 # reload(utils)
 reload(ui)
 

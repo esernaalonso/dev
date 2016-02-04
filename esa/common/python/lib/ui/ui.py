@@ -8,6 +8,10 @@
 
 from PySide import QtCore, QtGui, QtUiTools
 
+import esa.common.python.lib.logger.logger as logger
+
+reload(logger)
+
 #######################################
 # functionality
 

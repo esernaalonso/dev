@@ -7,9 +7,11 @@ import shutil
 
 import esa.common.python.lib.logger.logger as logger
 import esa.common.python.lib.inspector.inspector as inspector
+import esa.common.python.lib.io.io as io
 
 reload(logger)
 reload(inspector)
+reload(io)
 
 #######################################
 # functionality
@@ -257,9 +259,23 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
                 if imports_info:
                     for import_info in imports_info:
                         if import_info["type"] == "custom_module":
+                            logger.info(("Import name -> %s" % import_info["name"]), level=level)
+                            logger.info(("Import alias -> %s" % import_info["alias"]), level=level)
+                            logger.info(("Import type -> %s" % import_info["type"]), level=level)
+                            logger.info(("Import path -> %s" % import_info["path"]), level=level)
+                            logger.info(("Import source -> %s" % import_info["source"]), level=level)
+
                             pack_file(import_info["path"], pack_folder=dest_folder, level=level+1, packaging_type="lib")
 
-                            # TODO: After packaging the lib, must replace in dest_file the import for the new one.
+                            # After packaging the lib, must replace in dest_file the import for the new one.
+                            import_statement = inspector.build_import_statement(import_info)
+                            # print dest_file
+                            # print import_statement
+                            # replace_line_in_file(dest_file, import_info["source"], import_statement, keep_old_commented=True)
+                            # TODO: Create the correct relative replacement. Different if is main py or lib one.
+                            # TODO: Maybe is better to put all files in the same place. NO. Reason, icons, ui files, etc.
+                            io.replace_line_in_file(dest_file, import_info["source"], "## TEMP", keep_old_commented=True)
+
         else:
             logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)
 

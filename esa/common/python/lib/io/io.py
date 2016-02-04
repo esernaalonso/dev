@@ -24,7 +24,7 @@ def replace_line_in_file(source_file, replace_pattern, replace_string, keep_old_
                             new_file.write(line)
 
                     # Creates the new line with the replacement
-                    new_line = line.replace(replace_pattern, replace_string).replace("#", "")
+                    new_line = line.replace("#", "").replace(replace_pattern, replace_string)
                     new_file.write(new_line)
                 else:
                     # If is a regular line, keeps it as it is.
@@ -45,7 +45,7 @@ def replace_line_in_file(source_file, replace_pattern, replace_string, keep_old_
 # execution
 
 if __name__ == "__main__":
-    test_file = "P:\\tmp\\pack\\templateToolStdUI.py"
-    replace_line_in_file(test_file, "import esa.common.python.lib.utils as utils", "import lib.utils as utils", keep_old_commented=True)
+    # test_file = "P:\\tmp\\pack\\templateToolStdUI.py"
+    # replace_line_in_file(test_file, "import esa.common.python.lib.utils as utils", "import lib.utils as utils", keep_old_commented=True)
 
     pass

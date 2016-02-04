@@ -84,6 +84,7 @@ def get_file_imports_info(source_file):
     for import_statement in import_statements:
         # Each line can have more than one import module, so we need a list.
         mod_names = []
+        mod_alias = []
 
         # Different parts of the string import statement
         from_mods = []
@@ -101,6 +102,7 @@ def get_file_imports_info(source_file):
                 import_as = matches.group(3).split(", ")
 
             mod_names = [("%s.%s" % (from_mod, import_mod)) for from_mod in from_mods for import_mod in import_mods]
+            mod_alias = [import_as[0] for from_mod in from_mods for import_mod in import_mods]
 
         if not matches:
             matches = re.match("from (.*) import (.*)", import_statement)
@@ -109,27 +111,28 @@ def get_file_imports_info(source_file):
                 import_mods = matches.group(2).split(", ")
 
                 mod_names = [("%s.%s" % (from_mod, import_mod)) for from_mod in from_mods for import_mod in import_mods]
+                mod_alias = [import_mod for from_mod in from_mods for import_mod in import_mods]
 
         if not matches:
             matches = re.match("import (.*) as (.*)", import_statement)
 
             if matches:
                 mod_names = matches.group(1).split(", ")
-                import_as = matches.group(2).split(", ")
+                mod_alias = matches.group(2).split(", ")
 
         if not matches:
             matches = re.match("import (.*)", import_statement)
 
             if matches:
                 mod_names = matches.group(1).split(", ")
+                mod_alias = matches.group(1).split(", ")
 
         # Loops the independent modules to extract the info from each one.
-        for mod_name in mod_names:
+        for mod_name, mod_alias in zip(mod_names, mod_alias):
             # Loads the module in the memory yo have access to the info.
             mod = importlib.import_module(mod_name)
             if mod:
                 # Creates the dictionary to store the module info.
-                mod_alias = import_as[0] if import_as else mod_name
                 mod_info = {"name": mod_name, "alias": mod_alias, "type": None, "path": None, "source": import_statement}
 
                 # If the module is a builtin_module, it has no path
@@ -160,6 +163,26 @@ def get_file_imports_info(source_file):
     return import_infos
 
 
+def build_import_statement(import_info, import_style="import"):
+    # Regular import.
+    if import_style == "import":
+        return ("import %s as %s" % (import_info["name"], import_info["alias"]))
+    elif import_style == "from":
+        # Splits the name part to see if a from import can be done.
+        import_split = import_info["name"].rsplit('.', 1)
+
+        if len(import_split) == 2:
+            # If splitted last part is different than the alias, uses the alias
+            if import_split[1] != import_info["alias"]:
+                return ("from %s import %s as %s" % (import_split[0], import_split[1], import_info["alias"]))
+            else:
+                # If not, uses the last part and no alias.
+                return ("from %s import %s" % (import_split[0], import_info["alias"]))
+        else:
+            # In this case a from import cannot be done, so a regular one has to be done.
+            return ("import %s as %s" % (import_info["name"], import_info["alias"]))
+
+
 #######################################
 # execution
 
@@ -168,6 +191,7 @@ if __name__ == "__main__":
 
     imports = get_file_imports_info(testFile)
     for imp in imports:
-        print imp
+        print build_import_statement(imp)
+        print build_import_statement(imp, import_style="from")
 
     pass
