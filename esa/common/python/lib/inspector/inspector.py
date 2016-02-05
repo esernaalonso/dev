@@ -13,26 +13,26 @@ import importlib
 
 
 def is_function_in_mod(mod, func):
-    """Summary
+    """Checks if a function name is inside a module
 
     Args:
-        mod (TYPE): Description
-        func (TYPE): Description
+        mod (imported module): The imported module to search the functions inside.
+        func (str): Name of the function to search.
 
     Returns:
-        TYPE: Description
+        bool: Returns True if the function is inside the module, False if not.
     """
     return inspect.isfunction(func) and inspect.getmodule(func) == mod
 
 
 def get_mod_functions(mod):
-    """Summary
+    """Gets all functions that are inside a module.
 
     Args:
-        mod (TYPE): Description
+        mod (imported module): The imported module to search the functions inside.
 
     Returns:
-        TYPE: Description
+        List of str: Returns a list of all functions names from a module.
     """
     return [func.__name__ for func in mod.__dict__.itervalues() if is_function_in_mod(mod, func)]
 
@@ -72,7 +72,7 @@ def get_file_imports_info(source_file):
 
     Returns:
         List of dictionaries: List of info dictionaries from the import statements.
-            Example: {"name": os, "alias": os, "type": python_module, "path": "C:\\Python27\\lib\\os.py", "source": "import sys, os"}
+            Example: {"name": os, "alias": os, "type": python_module, "path": "C:\Python27\lib\os.py", "source": "import sys, os"}
     """
     # List to store the info dictionaries.
     import_infos = []
@@ -163,10 +163,35 @@ def get_file_imports_info(source_file):
     return import_infos
 
 
-def build_import_statement(import_info, import_style="import"):
+def build_import_statement(import_info, import_style="import", force_relative=False, relative_path=""):
+    """Summary
+
+    Args:
+        import_info (dictionary): Dictionary with import information.
+            Example: {"name": os, "alias": os, "type": python_module, "path": "C:\Python27\lib\os.py", "source": "import sys, os"}
+        import_style (str, optional): Indicates if hast to create an "import" statement or a "from * import" one.
+            Allowed values: "import", "from"
+        force_relative (bool, optional): Indicates if has to assume the import is relative to the current file,
+            so no need of full path is needed. Instead of buildind "import lib.subib.subsublib" will do just "import subsublib"
+
+    Returns:
+        str: Returns a string with a valid built import statement.
+    """
     # Regular import.
     if import_style == "import":
-        return ("import %s as %s" % (import_info["name"], import_info["alias"]))
+        import_split = import_info["name"].split(".")
+        import_name_last_part = import_split[-1:][0]
+
+        # If force relative is indicated, asumes that the import is relative to the current file.
+        if force_relative:
+            import_info["name"] = ("%s.%s" %(relative_path, import_name_last_part)) if relative_path else import_name_last_part
+            import_split = import_info["name"].rsplit('.', 1)
+            import_name_last_part = import_split[-1:][0]
+
+        if len(import_split) > 1 or import_name_last_part != import_info["alias"]:
+            return ("import %s as %s" % (import_info["name"], import_info["alias"]))
+        else:
+            return ("import %s" % import_info["name"])
     elif import_style == "from":
         # Splits the name part to see if a from import can be done.
         import_split = import_info["name"].rsplit('.', 1)
@@ -180,7 +205,8 @@ def build_import_statement(import_info, import_style="import"):
                 return ("from %s import %s" % (import_split[0], import_info["alias"]))
         else:
             # In this case a from import cannot be done, so a regular one has to be done.
-            return ("import %s as %s" % (import_info["name"], import_info["alias"]))
+            return build_import_statement(import_info, force_relative=force_relative)
+            # return ("import %s as %s" % (import_info["name"], import_info["alias"]))
 
 
 #######################################

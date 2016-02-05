@@ -519,6 +519,30 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "/P/tmp/pack/templateToolStdUI/templateToolStdUI.py",
+			"settings":
+			{
+				"buffer_size": 3687,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/P/tmp/pack/templateToolStdUI/lib/ui.py",
+			"settings":
+			{
+				"buffer_size": 2179,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/P/tmp/pack/templateToolStdUI/lib/io.py",
+			"settings":
+			{
+				"buffer_size": 1817,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/Python/Python.sublime-build",
 	"build_system_choices":
@@ -607,6 +631,11 @@
 	[
 		"/P/dev",
 		"/P/dev/esa",
+		"/P/dev/esa/common",
+		"/P/dev/esa/common/python",
+		"/P/dev/esa/common/python/lib",
+		"/P/dev/esa/common/python/lib/inspector",
+		"/P/dev/esa/common/python/lib/pack",
 		"/P/dev/esa/maya",
 		"/P/dev/esa/maya/modules",
 		"/P/dev/esa/maya/modules/pack",
@@ -623,6 +652,19 @@
 	],
 	"file_history":
 	[
+		"/P/tmp/pack/templateToolStdUI/templateToolStdUI.py",
+		"/P/tmp/pack/templateToolStdUI/lib/ui.py",
+		"/P/tmp/pack/templateToolStdUI/lib/utils.py",
+		"/P/tmp/pack/templateToolStdUI/lib/logger.py",
+		"/P/tmp/pack/templateToolStdUI/lib/io.py",
+		"/P/tmp/pack/templateToolStdUI/lib/lib/logger.py",
+		"/P/tmp/pack/templateToolStdUI/lib/__init__.py",
+		"/P/dev/esa/common/python/lib/inspector/inspector.py",
+		"/P/dev/esa/common/python/lib/pack/pack.py",
+		"/P/tmp/pack/templateToolStdUI.py",
+		"/C/Python27/Lib/os.py",
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/P/dev/esa/maya/python/lib/main.py",
 		"/P/dev/esa/common/python/tool/__init__.py",
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Git/Git.sublime-settings",
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Git.sublime-settings",
@@ -662,7 +704,6 @@
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/Anaconda/Default (Windows).sublime-keymap",
 		"/P/dev/esa/maya/python/lib/icons.py",
 		"/P/dev/esa/maya/python/tool/light/passManager.ui",
-		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/auto_save.sublime-settings",
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/AutoDocstring.sublime-settings",
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Installed Packages/AutoDocstring.sublime-package",
@@ -738,19 +779,7 @@
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Installed Packages/Blender Development.sublime-package",
 		"/C/Users/Eduardo/Desktop/SublimeBlenderAddon-master/README.md",
 		"/C/Users/Eduardo/Desktop/zdsfghdfgsdfhdf.ma",
-		"/P/dev/esa/maya/mel/script/qickSelectionSetsExport.mel",
-		"/P/scenes/maya/test/testQuickSelectionSetsExport.mel",
-		"/C/Users/Eduardo/AppData/Local/Popcorn Time/src/app/settings.js",
-		"/C/Users/Eduardo/AppData/Local/Popcorn Time/src/app/lib/views/settings.js",
-		"/P/dev/esa/maya/modules/pack/renamer/renamer.py",
-		"/P/dev/esa/maya/python/tool/anim/bakeACPdynamics.py",
-		"/P/dev/esa/maya/modules/pack/bakeACPdynamics/bakeACPdynamics.py",
-		"/P/dev/esa/maya/modules/pack/projectionManager/projectionManager.py",
-		"/P/scenes/maya/test/testQSStree.qss",
-		"/P/scenes/maya/test/testQuickSelectionSetsExport.qss",
-		"/P/scenes/maya/test/testQuickSelectionSetsExport2.qss",
-		"/P/dev/esa/fabric/ext/custom/nonLinearMorpher/nlm_vertex.kl",
-		"/P/dev/esa/maya/python/env/Maya.env"
+		"/P/dev/esa/maya/mel/script/qickSelectionSetsExport.mel"
 	],
 	"find":
 	{
@@ -774,6 +803,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"	",
 			"aim_node",
 			"joint_node_aim",
 			"segment_node",
@@ -900,8 +930,7 @@
 			"align_nodes",
 			"align",
 			"empty",
-			"align",
-			"state"
+			"align"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -947,8 +976,213 @@
 	"groups":
 	[
 		{
+			"selected": 2,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "/P/tmp/pack/templateToolStdUI/templateToolStdUI.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3687,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content"
+							],
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/P/tmp/pack/templateToolStdUI/lib/ui.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2179,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content"
+							],
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/P/tmp/pack/templateToolStdUI/lib/io.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1817,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		},
 		{
@@ -976,21 +1210,21 @@
 				1
 			],
 			[
-				1,
 				0,
-				2,
-				1
+				1,
+				1,
+				2
 			]
 		],
 		"cols":
 		[
 			0.0,
-			0.450955414012,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
+			0.635523613963,
 			1.0
 		]
 	},
