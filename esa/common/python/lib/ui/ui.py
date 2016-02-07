@@ -6,14 +6,30 @@
 #######################################
 # imports
 
+import os
+
 from PySide import QtCore, QtGui, QtUiTools
 
 import esa.common.python.lib.logger.logger as logger
+import esa.common.python.lib.io.io as io
 
 reload(logger)
+reload(io)
 
 #######################################
 # functionality
+
+
+def get_ui_files(folder, recursive=True):
+    return io.get_files(folder, extensions=[".ui"], recursive=recursive)
+
+
+def get_ui_file(name, folder, recursive=True):
+    ui_files = get_ui_files(folder, recursive=recursive)
+
+    for ui_file in ui_files:
+        if name == os.path.basename(ui_file).replace(".ui", ""):
+            return ui_file
 
 
 def loadUiWidget(uifilename, parent=None):

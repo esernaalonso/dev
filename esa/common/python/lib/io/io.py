@@ -6,6 +6,42 @@ import tempfile
 import shutil
 import os
 
+
+def get_folder_files(folder_path, extensions=None):
+    files = [os.path.join(folder_path, name) for name in os.listdir(folder_path) if (os.path.isfile(os.path.join(folder_path, name)))]
+
+    if extensions:
+        filter_files = []
+        for extension in extensions:
+            filter_files += [file_path for file_path in files if (os.path.splitext(file_path)[1] == extension)]
+        files = filter_files
+
+    return files
+
+
+def get_subfolders(folder_path, recursive=True):
+    subfolders = [folder_path]
+    inmediate_folders = [os.path.join(folder_path, name) for name in os.listdir(folder_path) if (os.path.isdir(os.path.join(folder_path, name)) and (name != ".git") and (name != ".svn"))]
+
+    if recursive:
+        for folder in inmediate_folders:
+            subfolders += get_subfolders(folder, recursive=recursive)
+    else:
+        subfolders = inmediate_folders
+
+    return subfolders
+
+
+def get_files(folder_path, extensions=None, recursive=True):
+    subfolders = get_subfolders(folder_path, recursive=recursive)
+    files = []
+
+    for folder in subfolders:
+        files += get_folder_files(folder, extensions=extensions)
+
+    return files
+
+
 def replace_line_in_file(source_file, replace_pattern, replace_string, keep_old_commented=False):
     # Creates a temporal file to do the operations
     temp_file_handler, temp_file_path = tempfile.mkstemp(dir=os.path.dirname(source_file))

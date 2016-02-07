@@ -8,10 +8,12 @@ import shutil
 import esa.common.python.lib.logger.logger as logger
 import esa.common.python.lib.inspector.inspector as inspector
 import esa.common.python.lib.io.io as io
+import esa.common.python.lib.ui.ui as ui
 
 reload(logger)
 reload(inspector)
 reload(io)
+reload(ui)
 
 #######################################
 # functionality
@@ -123,6 +125,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     remove_previous_packaging_types = ["main"]
     explorable_packaging_types = ["main", "lib"]
     explorable_file_types = [".py"]
+    packable_import_types = ["custom_module"]
 
     # Gets the logs level values from the kwargs
     level = 0
@@ -174,31 +177,42 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     if os.path.exists(dest_file):
         logger.info(("File Packaged -> %s" % dest_file), level=level)
 
+        # In this case is explorable. Can contain imports, ui dependencies, etc.
         if packaging_type in explorable_packaging_types and file_type in explorable_file_types:
             logger.info(("File can be recursive explored -> %s" % source_file), level=level)
 
-            if os.path.exists(dest_file):
-                logger.info(("Searching source file imports -> %s" % source_file), level=level)
-                imports_info = inspector.get_file_imports_info(source_file)
+            logger.info(("Searching source file imports -> %s" % source_file), level=level)
+            imports_info = inspector.get_file_imports_info(source_file)
 
-                # If it has imports info, packages the imports as libraries
-                if imports_info:
-                    import_relative_path = "lib" if packaging_type=="main" else ""
+            # If it has imports info, packages the imports as libraries
+            if imports_info:
+                import_relative_path = "lib" if packaging_type=="main" else ""
 
-                    for import_info in imports_info:
-                        if import_info["type"] == "custom_module":
+                for import_info in imports_info:
+                    if import_info["type"] in packable_import_types:
+                        # Packages the import source as a library
+                        logger.info(("Packaging lib file -> %s" % import_info["path"]), level=level)
+                        pack_file(import_info["path"], pack_folder=dest_folder, level=level+1, packaging_type="lib")
 
-                            # Packages the import source as a library
-                            logger.info(("Packaging lib file -> %s" % import_info["path"]), level=level)
-                            pack_file(import_info["path"], pack_folder=dest_folder, level=level+1, packaging_type="lib")
+                        # After packaging the lib, must replace in dest_file the import for the new one.
+                        import_statement = inspector.build_import_statement(import_info, force_relative=True, relative_path=import_relative_path)
+                        logger.info(("Replacing import -> %s <- with -> %s" % (import_info["source"], import_statement)), level=level)
+                        io.replace_line_in_file(dest_file, import_info["source"], import_statement, keep_old_commented=True)
 
-                            # After packaging the lib, must replace in dest_file the import for the new one.
-                            import_statement = inspector.build_import_statement(import_info, force_relative=True, relative_path=import_relative_path)
-                            logger.info(("Replacing import -> %s <- with -> %s" % (import_info["source"], import_statement)), level=level)
-                            io.replace_line_in_file(dest_file, import_info["source"], import_statement, keep_old_commented=True)
+            # Search dependencies like ui files and package them.
+            logger.info(("Searching source UI dependencies -> %s" % source_file), level=level)
+            ui_search_folder = os.path.dirname(source_file)
+            ui_files = ui.get_ui_files(ui_search_folder, recursive=True)
 
-                # TODO: In this case is explorable. Must open the destination file and:
-                # Search dependencies like ui files and package them.
+            # If it has imports info, packages the imports as libraries
+            if ui_files:
+                for ui_file in ui_files:
+                    # Prints the type of packaging.
+                    logger.info(("Packaging UI dependency -> %s" % ui_file), level=level)
+                    pack_file(ui_file, pack_folder=dest_folder, level=level+1, packaging_type="ui")
+                    # dest_ui_file =
+                    # shutil.copyfile(ui_file, dest_file)
+                    # print ui_file
 
         else:
             logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)
@@ -208,6 +222,12 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     else:
         logger.error(("File could not be packaged -> %s" % dest_file), level=level)
         return None
+
+
+# TODO: fill all this past days docstrings and comments
+# TODO: pack_module must do another sublevel, one for install and one for the module.
+# TODO: create the way to see what pip installed packages must be included in the install part.
+# TODO: create the installer.
 
 
 def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):

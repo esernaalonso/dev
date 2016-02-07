@@ -104,6 +104,13 @@ def get_file_imports_info(source_file):
             mod_names = [("%s.%s" % (from_mod, import_mod)) for from_mod in from_mods for import_mod in import_mods]
             mod_alias = [import_as[0] for from_mod in from_mods for import_mod in import_mods]
 
+        # if not matches:
+        #     matches = re.match("from (.*) import *", import_statement)
+        #
+        #     if matches:
+        #         mod_names = matches.group(1).split(", ")
+        #         mod_alias = matches.group(1).split(", ")
+
         if not matches:
             matches = re.match("from (.*) import (.*)", import_statement)
             if matches:

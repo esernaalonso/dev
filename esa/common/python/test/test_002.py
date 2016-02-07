@@ -1,2 +1,1 @@
-if not "":
-    print "enter"
+import posix

@@ -3,7 +3,7 @@
 
 # import maya.cmds as cmds
 # import maya.OpenMayaUI as apiUI
-import sys, os
+import sys, os, inspect
 
 from PySide import QtCore, QtGui
 # import PySide.QtCore as QtCore
@@ -13,11 +13,13 @@ from PySide import QtXml as QtXmlTest
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
+import esa.common.python.lib.inspector.inspector as inspector
 from esa.common.python.lib.io import io
 from esa.common.python.lib.logger import logger as the_logger
 
 # reload(utils)
 reload(ui)
+reload(inspector)
 
 #######################################
 # attributes
@@ -26,17 +28,6 @@ permission = "developer"
 
 #######################################
 # functionality
-
-
-# def get_current_file():
-#     if getattr(sys, 'frozen', False):
-#         # frozen
-#         print os.path.dirname(sys.executable)
-#         return os.path.dirname(sys.executable)
-#     else:
-#         # unfrozen
-#         print os.path.realpath(__file__)
-#         return os.path.realpath(__file__)
 
 
 class TemplateToolStdUI(QtGui.QDialog):
@@ -71,10 +62,15 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
         super(TemplateToolStdUIMainWidget, self).__init__()
         self.initUI()
 
+    def get_current_file(self):
+        return os.path.abspath(inspect.getsourcefile(lambda:0))
+
     def initUI(self):
         # Load UI file
-
-        self.ui = ui.loadUiWidgetFromPyFile(__file__, parent=self)
+        current_file = self.get_current_file()
+        current_folder = os.path.dirname(current_file)
+        main_ui_file = ui.get_ui_file("templateToolStdUI", current_folder)
+        self.ui = ui.loadUiWidgetFromPyFile(main_ui_file, parent=self)
 
         # Layout
         # self.setMinimumSize(200, 100)
