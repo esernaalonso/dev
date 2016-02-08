@@ -13,6 +13,7 @@ from PySide import QtXml as QtXmlTest
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
+import esa.common.python.lib.theme.theme as theme
 import esa.common.python.lib.inspector.inspector as inspector
 from esa.common.python.lib.io import io
 from esa.common.python.lib.logger import logger as the_logger
@@ -105,6 +106,10 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
 
 def templateToolStdUIRun():
     app = QtGui.QApplication(sys.argv)
+    style_file = theme.get_style_file("insideAnim", "P:\\dev\\esa\\common\\python\\lib\\theme\\styles\\")
+    style_string = theme.get_style_file_string(style_file)
+    app.setStyleSheet(style_string)
+    # print app.styleSheet()
     test = TemplateToolStdUI()
     sys.exit(app.exec_())
 
