@@ -457,6 +457,15 @@ p, li { white-space: pre-wrap; }
              <height>75</height>
             </size>
            </property>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="0" column="0">
+             <widget class="QCommandLinkButton" name="clb_command_link_button">
+              <property name="text">
+               <string>WTF</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
@@ -480,6 +489,12 @@ p, li { white-space: pre-wrap; }
                  <width>16777215</width>
                  <height>25</height>
                 </size>
+               </property>
+               <property name="numDigits">
+                <number>10</number>
+               </property>
+               <property name="intValue" stdset="0">
+                <number>1234567890</number>
                </property>
               </widget>
              </item>
