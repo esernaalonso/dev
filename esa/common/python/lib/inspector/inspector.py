@@ -8,6 +8,8 @@ import os
 import inspect
 import importlib
 
+import esa.common.python.lib.theme.theme as theme
+
 #######################################
 # functionality
 
@@ -35,6 +37,32 @@ def get_mod_functions(mod):
         List of str: Returns a list of all functions names from a module.
     """
     return [func.__name__ for func in mod.__dict__.itervalues() if is_function_in_mod(mod, func)]
+
+
+def get_file_ui_dependencies(source_file):
+    """Gets the lines that contain a call to a .ui file from a given file. Skips the commented lines.
+
+    Args:
+        source_file (string): Path of the file where search the .ui dependencies in.
+
+    Returns:
+        List of strings: List of paths pointing to the .ui files found.
+    """
+    ui_dependencies = []
+
+    with open(source_file, "r") as f:
+        data = f.read()
+        f.close()
+
+        regx = re.compile('.*(".*\.ui").*', re.MULTILINE)
+        matches = regx.findall(data)
+        if len(matches) > 0:
+            for match in matches:
+                match = match.lstrip()
+                if not match.startswith("#"):
+                    print match
+
+    return ui_dependencies
 
 
 def get_file_import_statements(source_file):
@@ -222,9 +250,11 @@ def build_import_statement(import_info, import_style="import", force_relative=Fa
 if __name__ == "__main__":
     testFile = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
 
-    imports = get_file_imports_info(testFile)
-    for imp in imports:
-        print build_import_statement(imp)
-        print build_import_statement(imp, import_style="from")
+    # imports = get_file_imports_info(testFile)
+    # for imp in imports:
+    #     print build_import_statement(imp)
+    #     print build_import_statement(imp, import_style="from")
+
+    get_file_ui_dependencies(testFile)
 
     pass

@@ -225,10 +225,19 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
 
 
 # TODO: fill all this past days docstrings and comments
-# TODO: pack_module must do another sublevel, one for install and one for the module.
-# TODO: create the way to see what pip installed packages must be included in the install part.
-# TODO: create the installer.
 
+# TODO: fill this function to pack the installer.
+# TODO: create the way to see what pip installed packages must be included in the install part.
+def pack_installer(source_file, pack_folder=None, remove_previous=True, **kwargs):
+    """Packs a installer folder for the source file and dependencies inside the pack folder, creating a installer folder.
+
+    Args:
+        source_file (string): Path to the file to use as root.
+        pack_folder (string): The path to the folder to create the intall folder inside.
+        remove_previous (bool, optional): Indicates if it has to remove the previous pack intaller folder.
+        **kwargs: Extra arguments like log level, etc.
+    """
+    pass
 
 def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
     """Packs a python file and all depedencies in and independent module folder.
@@ -247,7 +256,15 @@ def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
     # If source file exists, can start the packaging.
     if os.path.exists(source_file):
         logger.info(("File Exists -> %s" % source_file))
+
+        # The real pack folder is a new folder with the name of the module in the provided pack folder.
+        pack_folder = os.path.join(pack_folder, os.path.basename(os.path.splitext(source_file)[0]))
+
+        # packs the file
         pack_file(source_file, pack_folder=pack_folder, level=1, remove_previous=remove_previous)
+
+        # Creates the installer
+        pack_installer(source_file, pack_folder=pack_folder, remove_previous=remove_previous)
     else:
         logger.error(("Source File must be provided -> %s" % source_file))
         return None

@@ -70,7 +70,7 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
         # Load UI file
         current_file = self.get_current_file()
         current_folder = os.path.dirname(current_file)
-        main_ui_file = ui.get_ui_file("templateToolStdUI", current_folder)
+        main_ui_file = ui.get_ui_file("templateToolStdUI.ui", current_folder)
         self.ui = ui.loadUiWidgetFromPyFile(main_ui_file, parent=self)
 
         # Layout
@@ -106,10 +106,8 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
 
 def templateToolStdUIRun():
     app = QtGui.QApplication(sys.argv)
-    style_file = theme.get_style_file("insideAnim", "P:\\dev\\esa\\common\\python\\lib\\theme\\styles\\")
-    style_string = theme.get_style_file_string(style_file)
-    app.setStyleSheet(style_string)
-    # print app.styleSheet()
+    theme.apply_style(app, "inside_anim_dark")
+    # theme.apply_style(app, "esa_dark")
     test = TemplateToolStdUI()
     sys.exit(app.exec_())
 
