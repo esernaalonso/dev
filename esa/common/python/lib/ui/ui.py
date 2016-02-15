@@ -28,7 +28,9 @@ def get_ui_file(name, folder, recursive=True):
     ui_files = get_ui_files(folder, recursive=recursive)
 
     for ui_file in ui_files:
-        if name.replace(".ui", "") == os.path.basename(os.path.splitext(ui_file)[0]):
+        short_name = os.path.basename(os.path.splitext(name)[0])
+        file_base_name = os.path.basename(os.path.splitext(ui_file)[0])
+        if short_name == file_base_name:
             return ui_file
 
 

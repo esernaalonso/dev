@@ -204,6 +204,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             ui_search_folder = os.path.dirname(source_file)
             ui_files = ui.get_ui_files(ui_search_folder, recursive=True)
 
+            # TODO: Change the above code for this new better way: inspector.get_file_ui_dependencies(source_file)
+
             # If it has imports info, packages the imports as libraries
             if ui_files:
                 for ui_file in ui_files:

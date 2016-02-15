@@ -9,6 +9,9 @@ import inspect
 import importlib
 
 import esa.common.python.lib.theme.theme as theme
+import esa.common.python.lib.ui.ui as ui
+
+reload(theme)
 
 #######################################
 # functionality
@@ -54,13 +57,16 @@ def get_file_ui_dependencies(source_file):
         data = f.read()
         f.close()
 
-        regx = re.compile('.*(".*\.ui").*', re.MULTILINE)
+        folder = os.path.dirname(source_file)
+
+        regx = re.compile('.*"(.*\.ui)".*', re.MULTILINE)
         matches = regx.findall(data)
         if len(matches) > 0:
             for match in matches:
                 match = match.lstrip()
                 if not match.startswith("#"):
-                    print match
+                    ui_dependency = ui.get_ui_file(str(match), folder, recursive=True)
+                    ui_dependencies.append(ui_dependency)
 
     return ui_dependencies
 
@@ -255,6 +261,8 @@ if __name__ == "__main__":
     #     print build_import_statement(imp)
     #     print build_import_statement(imp, import_style="from")
 
-    get_file_ui_dependencies(testFile)
+    ui_dependencies = get_file_ui_dependencies(testFile)
+    for ui_dep in ui_dependencies:
+        print ui_dep
 
     pass
