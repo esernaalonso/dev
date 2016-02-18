@@ -64,11 +64,15 @@ def get_file_ui_dependencies(source_file):
         if len(matches) > 0:
             for match in matches:
                 match = match.lstrip()
-                if not match.startswith("#"):
+                if not match.startswith("#") and match != "":
                     ui_dependency = ui.get_ui_file(str(match), folder, recursive=True)
-                    ui_dependencies.append(ui_dependency)
+                    if ui_dependency:
+                        ui_dependencies.append(ui_dependency)
 
     return ui_dependencies
+
+
+# TODO: Create the same thatn the UI but for .qss files
 
 
 def get_file_import_statements(source_file):

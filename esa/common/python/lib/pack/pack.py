@@ -151,7 +151,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     package_sub_folder = ""
     if packaging_type == "main":
         package_sub_folder = os.path.basename(os.path.splitext(source_file)[0])
-    elif not pack_folder.endswith(packaging_type):
+    elif os.path.basename(os.path.normpath(pack_folder)) != packaging_type:
         package_sub_folder = packaging_type
     dest_folder = os.path.join(pack_folder, package_sub_folder)
     logger.info(("Destination Folder -> %s" % dest_folder), level=level)
@@ -202,19 +202,15 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             # Search dependencies like ui files and package them.
             logger.info(("Searching source UI dependencies -> %s" % source_file), level=level)
             ui_search_folder = os.path.dirname(source_file)
-            ui_files = ui.get_ui_files(ui_search_folder, recursive=True)
+            ui_files = inspector.get_file_ui_dependencies(source_file)
 
-            # TODO: Change the above code for this new better way: inspector.get_file_ui_dependencies(source_file)
-
-            # If it has imports info, packages the imports as libraries
+            # If it has ui files, packages the imports as libraries
             if ui_files:
                 for ui_file in ui_files:
                     # Prints the type of packaging.
                     logger.info(("Packaging UI dependency -> %s" % ui_file), level=level)
-                    pack_file(ui_file, pack_folder=dest_folder, level=level+1, packaging_type="ui")
-                    # dest_ui_file =
-                    # shutil.copyfile(ui_file, dest_file)
                     # print ui_file
+                    pack_file(ui_file, pack_folder=dest_folder, level=level+1, packaging_type="ui")
 
         else:
             logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)
@@ -230,6 +226,10 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
 
 # TODO: fill this function to pack the installer.
 # TODO: create the way to see what pip installed packages must be included in the install part.
+
+# TODO: Add the functionality to pack the theme .qss dependencies
+
+
 def pack_installer(source_file, pack_folder=None, remove_previous=True, **kwargs):
     """Packs a installer folder for the source file and dependencies inside the pack folder, creating a installer folder.
 
