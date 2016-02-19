@@ -6,21 +6,13 @@
 import sys, os, inspect
 
 from PySide import QtCore, QtGui
-# import PySide.QtCore as QtCore
-# import PySide.QtGui as QtGui
-# import PySide.QtXml as QtXml
-from PySide import QtXml as QtXmlTest
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
 import esa.common.python.lib.theme.theme as theme
-import esa.common.python.lib.inspector.inspector as inspector
-from esa.common.python.lib.io import io
-from esa.common.python.lib.logger import logger as the_logger
 
-# reload(utils)
 reload(ui)
-reload(inspector)
+reload(theme)
 
 #######################################
 # attributes
@@ -106,8 +98,7 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
 
 def templateToolStdUIRun():
     app = QtGui.QApplication(sys.argv)
-    theme.apply_style(app, "inside_anim_dark")
-    # theme.apply_style(app, "esa_dark")
+    theme.apply_style(app, "inside_anim_dark.qss")
     test = TemplateToolStdUI()
     sys.exit(app.exec_())
 

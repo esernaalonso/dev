@@ -177,6 +177,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     if os.path.exists(dest_file):
         logger.info(("File Packaged -> %s" % dest_file), level=level)
 
+        # TODO: if the packaging_type is main, need to create the initialization.bat
+
         # In this case is explorable. Can contain imports, ui dependencies, etc.
         if packaging_type in explorable_packaging_types and file_type in explorable_file_types:
             logger.info(("File can be recursive explored -> %s" % source_file), level=level)
@@ -209,8 +211,20 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
                 for ui_file in ui_files:
                     # Prints the type of packaging.
                     logger.info(("Packaging UI dependency -> %s" % ui_file), level=level)
-                    # print ui_file
                     pack_file(ui_file, pack_folder=dest_folder, level=level+1, packaging_type="ui")
+
+            # Search dependencies like qss files and package them.
+            logger.info(("Searching source QSS dependencies -> %s" % source_file), level=level)
+            qss_search_folder = os.path.dirname(source_file)
+            qss_files = inspector.get_file_qss_dependencies(source_file)
+
+            # If it has qss files, packages the imports as libraries
+            if qss_files:
+                for qss_file in qss_files:
+                    print qss_file
+                    # Prints the type of packaging.
+                    logger.info(("Packaging QSS dependency -> %s" % qss_file), level=level)
+                    pack_file(qss_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "styles"))
 
         else:
             logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)
@@ -226,20 +240,47 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
 
 # TODO: fill this function to pack the installer.
 # TODO: create the way to see what pip installed packages must be included in the install part.
-
-# TODO: Add the functionality to pack the theme .qss dependencies
-
-
-def pack_installer(source_file, pack_folder=None, remove_previous=True, **kwargs):
+def pack_installer(source_file, pack_folder=None, **kwargs):
     """Packs a installer folder for the source file and dependencies inside the pack folder, creating a installer folder.
 
     Args:
         source_file (string): Path to the file to use as root.
         pack_folder (string): The path to the folder to create the intall folder inside.
-        remove_previous (bool, optional): Indicates if it has to remove the previous pack intaller folder.
         **kwargs: Extra arguments like log level, etc.
+            remove_previous (bool, optional): Indicates if it has to remove the previous pack intaller folder.
+            level (int): Indicates the level of depth in the logs.
     """
-    pass
+    # Gets the logs level values from the kwargs
+    level = 0
+    if "level" in kwargs: level = kwargs["level"]
+
+    remove_previous = False
+    if "remove_previous" in kwargs: remove_previous = kwargs["remove_previous"]
+
+    if os.path.exists(source_file):
+        install_folder = os.path.join(pack_folder, "install")
+
+        # if a clean pack is needed, the old one is deleted.
+        if os.path.exists(install_folder) and remove_previous:
+            logger.info(("Removing Current Install Folder -> %s" % install_folder), level=level)
+            shutil.rmtree(install_folder)
+
+        # if the install_folder doesn't exist, is created.
+        if not os.path.exists(install_folder):
+            logger.info(("Creating Install Folder-> %s" % install_folder), level=level)
+            os.makedirs(install_folder)
+
+        # If the install_folder is created OK, creates the install content.
+        if os.path.exists(install_folder):
+            logger.info(("Install Folder Created -> %s" % install_folder), level=level)
+
+            # TODO: pack the sources folder
+
+            # TODO: pack the install.bat. BETTER IF CREATED ON FLY
+
+            # Searches pip dependent modules to prepare the install.bat for a good resources install.
+            pip_dependencies = inspector.get_file_pip_dependencies(source_file, recursive=True)
+            print pip_dependencies
 
 def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
     """Packs a python file and all depedencies in and independent module folder.
@@ -266,7 +307,7 @@ def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
         pack_file(source_file, pack_folder=pack_folder, level=1, remove_previous=remove_previous)
 
         # Creates the installer
-        pack_installer(source_file, pack_folder=pack_folder, remove_previous=remove_previous)
+        pack_installer(source_file, pack_folder=pack_folder, level=1, remove_previous=remove_previous)
     else:
         logger.error(("Source File must be provided -> %s" % source_file))
         return None

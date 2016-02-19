@@ -7,11 +7,13 @@ import sys
 import os
 import inspect
 import importlib
+import pip
 
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.lib.ui.ui as ui
 
 reload(theme)
+reload (ui)
 
 #######################################
 # functionality
@@ -72,7 +74,34 @@ def get_file_ui_dependencies(source_file):
     return ui_dependencies
 
 
-# TODO: Create the same thatn the UI but for .qss files
+def get_file_qss_dependencies(source_file):
+    """Gets the lines that contain a call to a .qss file from a given file. Skips the commented lines.
+
+    Args:
+        source_file (string): Path of the file where search the .qss dependencies in.
+
+    Returns:
+        List of strings: List of paths pointing to the .qss files found.
+    """
+    qss_dependencies = []
+
+    with open(source_file, "r") as f:
+        data = f.read()
+        f.close()
+
+        folder = os.path.dirname(source_file)
+
+        regx = re.compile('.*"(.*\.qss)".*', re.MULTILINE)
+        matches = regx.findall(data)
+        if len(matches) > 0:
+            for match in matches:
+                match = match.lstrip()
+                if not match.startswith("#") and match != "":
+                    qss_dependency = theme.get_style_file(str(match))
+                    if qss_dependency:
+                        qss_dependencies.append(qss_dependency)
+
+    return qss_dependencies
 
 
 def get_file_import_statements(source_file):
@@ -254,6 +283,57 @@ def build_import_statement(import_info, import_style="import", force_relative=Fa
             # return ("import %s as %s" % (import_info["name"], import_info["alias"]))
 
 
+def get_pip_installed_modules():
+    """Searchs all installed pip modules.
+
+    Returns:
+        dict: Returns a dictionary with the name of python modules installed with pip and the versions.
+    """
+    pip_modules = {}
+
+    for pip_module in pip.get_installed_distributions():
+        pip_modules[pip_module.key] = pip_module.version
+
+    return pip_modules
+
+def get_file_pip_dependencies(source_file, recursive=True):
+    """Searchs in the file imports to find the ones that are local installed pip modules.
+
+    Args:
+        source_file (string): The file to search the pip dependencies info from.
+
+    Returns:
+        dict: Returns a dictionary with the name of python modules installed with pip and the versions, required in the given file.
+    """
+    # Dict to store the dependencies.
+    pip_dependencies = {}
+
+    # Only if the file exists
+    if os.path.exists(source_file):
+        # Gets all pip installed modules.
+        pip_modules = get_pip_installed_modules()
+
+        # Get all this file imports.
+        imports_info = get_file_imports_info(source_file)
+
+        if imports_info:
+            for import_info in imports_info:
+                # If the import is not a custom module, check if it is a pip installed module.
+                if import_info["type"] != "custom_module":
+                    module_name = import_info["name"].split(".")[0].lower()
+
+                    # Searches the module name in the installed ones and stores it.
+                    # Ignores pip as should be intalled.
+                    if module_name != "pip" and module_name in pip_modules:
+                        pip_dependencies[module_name] = pip_modules[module_name]
+
+                elif recursive:
+                    # If it is a custom module and recursive is required, searches recursive pip dependencies
+                    # and adds them to the current dict.
+                    pip_dependencies.update(get_file_pip_dependencies(import_info["path"], recursive=recursive))
+
+    return pip_dependencies
+
 #######################################
 # execution
 
@@ -265,8 +345,14 @@ if __name__ == "__main__":
     #     print build_import_statement(imp)
     #     print build_import_statement(imp, import_style="from")
 
-    ui_dependencies = get_file_ui_dependencies(testFile)
-    for ui_dep in ui_dependencies:
-        print ui_dep
+    # ui_dependencies = get_file_ui_dependencies(testFile)
+    # for ui_dep in ui_dependencies:
+    #     print ui_dep
+
+    # pip_packages = get_pip_installed_modules()
+    # print pip_packages
+
+    pip_dependencies = get_file_pip_dependencies(testFile)
+    print pip_dependencies
 
     pass

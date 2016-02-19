@@ -23,7 +23,7 @@ def get_style_file(name):
     style_files = get_style_files()
 
     for style_file in style_files:
-        if name == os.path.basename(style_file).replace(".qss", ""):
+        if name.replace(".qss", "") == os.path.basename(style_file).replace(".qss", ""):
             return style_file
 
 def get_style_file_string(style_file):
