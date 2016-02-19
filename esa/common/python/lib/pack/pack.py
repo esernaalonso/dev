@@ -4,6 +4,7 @@
 
 import os
 import shutil
+import inspect
 
 import esa.common.python.lib.logger.logger as logger
 import esa.common.python.lib.inspector.inspector as inspector
@@ -17,6 +18,13 @@ reload(ui)
 
 #######################################
 # functionality
+
+def get_current_file():
+    return os.path.abspath(inspect.getsourcefile(lambda:0))
+
+
+def get_current_folder():
+    return os.path.dirname(get_current_file())
 
 
 def create_init_file(source_folder, **kwargs):
@@ -274,10 +282,15 @@ def pack_installer(source_file, pack_folder=None, **kwargs):
         if os.path.exists(install_folder):
             logger.info(("Install Folder Created -> %s" % install_folder), level=level)
 
-            # TODO: pack the sources folder
+            # Pack the sources folder.
+            source_folder = os.path.join(get_current_folder(), "install", "source")
+            source_dest_folder = os.path.join(install_folder, "source")
+            logger.info(("Packaging Instsall Sources Folder -> %s" % source_dest_folder), level=level)
+            shutil.copytree(source_folder, source_dest_folder)
 
-            # TODO: pack the install.bat. BETTER IF CREATED ON FLY
+            # TODO: pack the install.bat. BETTER IF CREATED ON FLY. Create function for it.
 
+            # TODO: Use the following code to fill the install.bat
             # Searches pip dependent modules to prepare the install.bat for a good resources install.
             pip_dependencies = inspector.get_file_pip_dependencies(source_file, recursive=True)
             print pip_dependencies
