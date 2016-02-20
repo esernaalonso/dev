@@ -175,7 +175,8 @@ QPushButton:checked
 
 QPushButton:pressed
 {
-    background-color: #202020;
+    background-color: #252525;
+    color: #c1c1c1;
     border: none;
 }
 

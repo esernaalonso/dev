@@ -11,7 +11,7 @@ goto :HASPYTHON
 :HASPYTHON
 
 ECHO "INSTALLING REQUIRED PYTHON MODULES"
-START /WAIT python -m pip install <module_name>
+REM START /WAIT python -m pip install <module_name>
 
 ECHO "INSTALLING VISUAL STUDIO REDISTRIBUTABLE"
 START /WAIT source/vcredist_x64.exe

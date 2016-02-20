@@ -27,6 +27,59 @@ def get_current_folder():
     return os.path.dirname(get_current_file())
 
 
+def create_install_bat(install_bat_file, remove_previous=False, **kwargs):
+    # Gets the logs level values from the kwargs
+    level = 0
+    if "level" in kwargs: level = kwargs["level"]
+
+    # if a clean is needed, the old one is deleted.
+    if os.path.exists(install_bat_file) and remove_previous:
+        logger.info(("Removing Current install.bat -> %s" % install_bat_file), level=level)
+        os.remove(install_bat_file)
+
+    # if the install_bat_file doesn't exist, is created.
+    if not os.path.exists(install_bat_file):
+        logger.info(("Creating install.bat -> %s" % install_bat_file), level=level)
+        install_bat_source_file = os.path.join(get_current_folder(), "install", "install.bat")
+        shutil.copyfile(install_bat_source_file, install_bat_file)
+
+        # Searches pip dependent modules to prepare the install.bat for a good resources install.
+        if os.path.exists(install_bat_file):
+            pip_dependencies = inspector.get_file_pip_dependencies(source_file, recursive=True)
+            if pip_dependencies:
+                for pip_dependency in pip_dependencies:
+                    logger.info(("Setting up pip module install -> %s" % pip_dependency), level=level)
+                    pip_pattern = "REM START /WAIT python -m pip install <module_name>"
+                    pip_string = "START /WAIT python -m pip install <module_name>"
+                    pip_string = pip_pattern + "\n" + pip_string.replace("<module_name>", pip_dependency)
+                    io.replace_line_in_file(install_bat_file, pip_pattern, pip_string)
+
+
+def create_execute_bat(execute_bat_file, execution_file_name, remove_previous=False, **kwargs):
+    # Gets the logs level values from the kwargs
+    level = 0
+    if "level" in kwargs: level = kwargs["level"]
+
+    # if a clean is needed, the old one is deleted.
+    if os.path.exists(execute_bat_file) and remove_previous:
+        logger.info(("Removing Current execute.bat -> %s" % execute_bat_file), level=level)
+        os.remove(execute_bat_file)
+
+    # if the execute_bat_file doesn't exist, is created.
+    if not os.path.exists(execute_bat_file):
+        logger.info(("Creating execute.bat -> %s" % execute_bat_file), level=level)
+        execute_bat_source_file = os.path.join(get_current_folder(), "source", "execute.bat")
+        shutil.copyfile(execute_bat_source_file, execute_bat_file)
+
+        # Searches pip dependent modules to prepare the install.bat for a good resources install.
+        if os.path.exists(execute_bat_file):
+            logger.info(("Setting up execution string -> %s" % execute_bat_file), level=level)
+            execute_pattern = "START python <file_name>"
+            execute_string = "START python <file_name>"
+            execute_string = execute_string.replace("<file_name>", execution_file_name)
+            io.replace_line_in_file(execute_bat_file, execute_pattern, execute_string)
+
+
 def create_init_file(source_folder, **kwargs):
     """Creates a __init__.py file in the given folder.
 
@@ -185,7 +238,10 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     if os.path.exists(dest_file):
         logger.info(("File Packaged -> %s" % dest_file), level=level)
 
-        # TODO: if the packaging_type is main, need to create the initialization.bat
+        # If the packaging_type is main, need to create the execute.bat
+        if packaging_type == "main":
+            execute_bat_file = os.path.join(os.path.dirname(dest_file), "execute.bat")
+            create_execute_bat(execute_bat_file, os.path.basename(dest_file), remove_previous=True, level=level+1)
 
         # In this case is explorable. Can contain imports, ui dependencies, etc.
         if packaging_type in explorable_packaging_types and file_type in explorable_file_types:
@@ -229,8 +285,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             # If it has qss files, packages the imports as libraries
             if qss_files:
                 for qss_file in qss_files:
-                    print qss_file
-                    # Prints the type of packaging.
+                    # Prints the qss dependency.
                     logger.info(("Packaging QSS dependency -> %s" % qss_file), level=level)
                     pack_file(qss_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "styles"))
 
@@ -245,9 +300,6 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
 
 
 # TODO: fill all this past days docstrings and comments
-
-# TODO: fill this function to pack the installer.
-# TODO: create the way to see what pip installed packages must be included in the install part.
 def pack_installer(source_file, pack_folder=None, **kwargs):
     """Packs a installer folder for the source file and dependencies inside the pack folder, creating a installer folder.
 
@@ -255,7 +307,7 @@ def pack_installer(source_file, pack_folder=None, **kwargs):
         source_file (string): Path to the file to use as root.
         pack_folder (string): The path to the folder to create the intall folder inside.
         **kwargs: Extra arguments like log level, etc.
-            remove_previous (bool, optional): Indicates if it has to remove the previous pack intaller folder.
+            remove_previous (bool, optional): Indicates if it has to remove the previous pack installer folder.
             level (int): Indicates the level of depth in the logs.
     """
     # Gets the logs level values from the kwargs
@@ -285,15 +337,13 @@ def pack_installer(source_file, pack_folder=None, **kwargs):
             # Pack the sources folder.
             source_folder = os.path.join(get_current_folder(), "install", "source")
             source_dest_folder = os.path.join(install_folder, "source")
-            logger.info(("Packaging Instsall Sources Folder -> %s" % source_dest_folder), level=level)
+            logger.info(("Packaging Install Sources Folder -> %s" % source_dest_folder), level=level)
             shutil.copytree(source_folder, source_dest_folder)
 
-            # TODO: pack the install.bat. BETTER IF CREATED ON FLY. Create function for it.
+            # Creates the install.bat with all the steps.
+            install_bat_file = os.path.join(install_folder, "install.bat")
+            create_install_bat(install_bat_file, remove_previous=True, level=level+1)
 
-            # TODO: Use the following code to fill the install.bat
-            # Searches pip dependent modules to prepare the install.bat for a good resources install.
-            pip_dependencies = inspector.get_file_pip_dependencies(source_file, recursive=True)
-            print pip_dependencies
 
 def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
     """Packs a python file and all depedencies in and independent module folder.
@@ -313,8 +363,11 @@ def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
     if os.path.exists(source_file):
         logger.info(("File Exists -> %s" % source_file))
 
+        # This will be the module name.
+        module_name = os.path.basename(os.path.splitext(source_file)[0])
+
         # The real pack folder is a new folder with the name of the module in the provided pack folder.
-        pack_folder = os.path.join(pack_folder, os.path.basename(os.path.splitext(source_file)[0]))
+        pack_folder = os.path.join(pack_folder, module_name)
 
         # packs the file
         pack_file(source_file, pack_folder=pack_folder, level=1, remove_previous=remove_previous)
