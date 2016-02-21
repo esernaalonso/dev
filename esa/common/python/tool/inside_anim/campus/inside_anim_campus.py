@@ -10,9 +10,12 @@ from PySide import QtCore, QtGui
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
 import esa.common.python.lib.theme.theme as theme
+import esa.common.python.tool.inside_anim.campus.credential.credential as credential
 
+reload(utils)
 reload(ui)
 reload(theme)
+reload(credential)
 
 #######################################
 # attributes
@@ -53,12 +56,13 @@ class InsideAnimCampus(QtGui.QDialog):
 class InsideAnimCampusMainWidget(QtGui.QWidget):
     def __init__(self):
         super(InsideAnimCampusMainWidget, self).__init__()
-        self.initUI()
+        self.credentials = credential.Credentials()
+        self.initLoginUI()
 
     def get_current_file(self):
         return os.path.abspath(inspect.getsourcefile(lambda:0))
 
-    def initUI(self):
+    def initLoginUI(self):
         # Load UI file
         current_file = self.get_current_file()
         current_folder = os.path.dirname(current_file)
@@ -66,28 +70,41 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.ui = ui.loadUiWidgetFromPyFile(main_ui_file, parent=self)
 
         # Layout
-        # self.setMinimumSize(200, 100)
-
         self.setLayout(QtGui.QVBoxLayout())
         self.layout().addWidget(self.ui)
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(2, 2, 2, 2)
 
         # Store ui elements for use later in signals or functions
-
-        # self.sld_cartoon_level = ui.get_child(self.ui, "sld_cartoon_level")
-        # self.rb_drama = ui.get_child(self.ui, "rb_drama")
-        # self.rb_comedy = ui.get_child(self.ui, "rb_comedy")
-        # self.rb_mistery = ui.get_child(self.ui, "rb_mistery")
-        # self.pb_apply = ui.get_child(self.ui, "pb_apply")
-        # self.pb_unapply = ui.get_child(self.ui, "pb_unapply")
-        # self.pb_para_final = ui.get_child(self.ui, "pb_para_final")
+        self.le_user = ui.get_child(self.ui, "le_user")
+        self.le_pass = ui.get_child(self.ui, "le_pass")
+        self.lb_info = ui.get_child(self.ui, "lb_info")
+        self.pb_login = ui.get_child(self.ui, "pb_login")
 
         # Connect signals
+        self.pb_login.clicked.connect(self.check_login)
 
-        # self.pb_para_final.clicked.connect(self.make_film)
-        # self.pb_apply.clicked.connect(self.make_film)
-        # self.pb_unapply.clicked.connect(self.make_film)
+    def check_login(self):
+        self.credentials.validate(self.le_user.text(), self.le_pass.text())
+        self.lb_info.setText(self.credentials.get_connection_message())
+
+        if self.credentials.is_validated():
+            while self.layout().count():
+                self.layout().takeAt(0).widget().setParent(None)
+            self.initUI()
+
+    def initUI(self):
+        # Load UI file
+        current_file = self.get_current_file()
+        current_folder = os.path.dirname(current_file)
+        main_ui_file = ui.get_ui_file("main.ui", current_folder)
+        self.ui = ui.loadUiWidgetFromPyFile(main_ui_file, parent=self)
+
+        # Layout
+        self.setLayout(QtGui.QVBoxLayout())
+        self.layout().addWidget(self.ui)
+        self.layout().setSpacing(0)
+        self.layout().setContentsMargins(2, 2, 2, 2)
 
 
 def InsideAnimCampusRun():
