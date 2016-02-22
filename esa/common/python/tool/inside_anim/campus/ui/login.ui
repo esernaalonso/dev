@@ -1025,7 +1025,7 @@ QScrollBar::sub-line:horizontal
        </property>
        <property name="maximumSize">
         <size>
-         <width>450</width>
+         <width>16777215</width>
          <height>160</height>
         </size>
        </property>

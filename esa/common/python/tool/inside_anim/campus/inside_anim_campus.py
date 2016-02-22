@@ -40,6 +40,9 @@ class InsideAnimCampus(QtGui.QDialog):
         # Title
         self.setWindowTitle("Inside Animation Campus")
 
+        # Allows maximize and minimize
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMinMaxButtonsHint)
+
         # layout
         self.setLayout(QtGui.QVBoxLayout())
 

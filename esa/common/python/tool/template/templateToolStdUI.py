@@ -36,6 +36,9 @@ class TemplateToolStdUI(QtGui.QDialog):
         # Title
         self.setWindowTitle("Osom Template Tool")
 
+        # Allows maximize and minimize
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMinMaxButtonsHint)
+
         # layout
         self.setLayout(QtGui.QVBoxLayout())
 
