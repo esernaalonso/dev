@@ -11,12 +11,10 @@ import pymysql
 def check_connection(host=None, user=None, password=None, db=None, charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor):
     try:
         connection = pymysql.connect(host=host, user=user, password=password, db=db, charset=charset, cursorclass=cursorclass)
+        connection.close()
     except Exception as e:
         print e
-        connection.close()
         return False
-    finally:
-        connection.close()
 
     return True
 

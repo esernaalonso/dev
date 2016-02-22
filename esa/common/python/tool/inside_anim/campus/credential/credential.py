@@ -25,10 +25,12 @@ class Credentials(object):
         self.validated = db.check_connection()
 
         if self.validated:
+            self.user = user
+            self.password = password
             self.validated = db.check_user_password(user, password)
 
             if not self.validated:
-                self.connection_message = "Unable to log in the system. Check the user and/or password."
+                self.connection_message = "Unable to log in the system. Check your user and password."
         else:
             self.connection_message = "Unable to connect with the database, check your internet connection and if the problem persists, contact the technical service."
 
