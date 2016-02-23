@@ -1,9 +1,8 @@
 #######################################
 # imports
 
-# import maya.cmds as cmds
-# import maya.OpenMayaUI as apiUI
 import sys, os, inspect
+import ctypes
 
 from PySide import QtCore, QtGui
 
@@ -40,6 +39,10 @@ class InsideAnimCampus(QtGui.QDialog):
         # Title
         self.setWindowTitle("Inside Animation Campus")
 
+        # Icon for the window
+        image_app_icon = image.get_image_file("app_icon.png", self.get_current_folder())
+        self.setWindowIcon(image.create_pixmap(image_app_icon))
+
         # Allows maximize and minimize
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMinMaxButtonsHint)
 
@@ -52,6 +55,12 @@ class InsideAnimCampus(QtGui.QDialog):
         self.layout().setSpacing(0)
 
         self.show()
+
+    def get_current_file(self):
+        return os.path.abspath(inspect.getsourcefile(lambda:0))
+
+    def get_current_folder(self):
+        return os.path.dirname(self.get_current_file())
 
     def closeEvent(self, event):
         self.opened = False
@@ -123,9 +132,21 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
 
 
 def InsideAnimCampusRun():
+    # Creates the application
     app = QtGui.QApplication(sys.argv)
+
+    # Applies the theme for the application
     theme.apply_style(app, "inside_anim_dark.qss")
-    test = InsideAnimCampus()
+
+    # If windows, indicetes the process is a separate one to allow the taskbar to use the window icon.
+    if os.name == "nt":
+        myappid = 'custom.process.inside_anim.campus' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
+    # Creates the aplication execution and UI
+    execution = InsideAnimCampus()
+
+    # Enters the application loop
     sys.exit(app.exec_())
 
 
