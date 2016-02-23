@@ -277,6 +277,18 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
                     logger.info(("Packaging UI dependency -> %s" % ui_file), level=level)
                     pack_file(ui_file, pack_folder=dest_folder, level=level+1, packaging_type="ui")
 
+            # Search dependencies like png and jpg files and package them.
+            logger.info(("Searching source image dependencies -> %s" % source_file), level=level)
+            image_search_folder = os.path.dirname(source_file)
+            image_files = inspector.get_file_image_dependencies(source_file)
+
+            # If it has image files, packages the imports as libraries
+            if image_files:
+                for image_file in image_files:
+                    # Prints the type of packaging.
+                    logger.info(("Packaging UI dependency -> %s" % image_file), level=level)
+                    pack_file(image_file, pack_folder=dest_folder, level=level+1, packaging_type="image")
+
             # Search dependencies like qss files and package them.
             logger.info(("Searching source QSS dependencies -> %s" % source_file), level=level)
             qss_search_folder = os.path.dirname(source_file)
@@ -382,7 +394,8 @@ def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
 # execution
 
 if __name__ == "__main__":
-    source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
+    # source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
+    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus.py"
     pack_folder = "F:\\project\\tmp\\pack"
 
     pack_module(source_file, pack_folder=pack_folder, remove_previous=True)
