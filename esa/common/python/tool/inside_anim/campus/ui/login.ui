@@ -1099,12 +1099,19 @@ QScrollBar::sub-line:horizontal
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QLineEdit" name="le_user"/>
+             <widget class="QLineEdit" name="le_user">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QLineEdit" name="le_pass">
               <property name="echoMode">
                <enum>QLineEdit::Password</enum>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>

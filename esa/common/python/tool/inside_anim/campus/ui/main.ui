@@ -890,6 +890,12 @@ QScrollBar::sub-line:horizontal
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="text">
         <string>TEST</string>
        </property>

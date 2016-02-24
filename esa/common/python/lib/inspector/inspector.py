@@ -135,6 +135,17 @@ def get_file_qss_dependencies(source_file):
     return qss_dependencies
 
 
+def get_file_font_dependencies(source_file):
+    font_dependencies = []
+    qss_dependencies = get_file_qss_dependencies(source_file)
+
+    if qss_dependencies:
+        for qss_dependency in qss_dependencies:
+            font_dependencies += theme.get_style_file_font_dependencies(qss_dependency)
+
+    return font_dependencies
+
+
 def get_file_import_statements(source_file):
     """Gets the import statements lines from a given file. Skips the commented imports.
 

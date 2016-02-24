@@ -294,12 +294,24 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             qss_search_folder = os.path.dirname(source_file)
             qss_files = inspector.get_file_qss_dependencies(source_file)
 
-            # If it has qss files, packages the imports as libraries
+            # If it has qss files, packages the imports as themes
             if qss_files:
                 for qss_file in qss_files:
                     # Prints the qss dependency.
                     logger.info(("Packaging QSS dependency -> %s" % qss_file), level=level)
                     pack_file(qss_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "styles"))
+
+            # Search dependencies like font .ttf files and package them.
+            logger.info(("Searching source font TTF dependencies -> %s" % source_file), level=level)
+            font_search_folder = os.path.dirname(source_file)
+            font_files = inspector.get_file_font_dependencies(source_file)
+
+            # If it has ttf files, packages the imports as fonts
+            if font_files:
+                for font_file in font_files:
+                    # Prints the font dependency.
+                    logger.info(("Packaging QSS dependency -> %s" % font_file), level=level)
+                    pack_file(font_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "fonts"))
 
         else:
             logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)

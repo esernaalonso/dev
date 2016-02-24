@@ -1,5 +1,7 @@
 QWidget
 {
+    font-family: Comfortaa;
+    font-size: 13px;
     color: #e1e1e1;
     background-color: #444444;
     selection-background-color:#5d5d5d;
