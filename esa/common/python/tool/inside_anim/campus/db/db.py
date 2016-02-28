@@ -32,7 +32,7 @@ def connection(sql):
 
 
 def check_user(user_name):
-    sql="SELECT `username`, `email` FROM `user`"
+    sql="SELECT `username`, `email` FROM `t_user`"
     result = connection(sql)
 
     for row in result:
@@ -44,7 +44,7 @@ def check_user(user_name):
 
 def check_user_password(user_name, user_password):
     if check_user(user_name):
-        sql="SELECT `username`, `email`, `password` FROM `user`"
+        sql="SELECT `username`, `email`, `password` FROM `t_user`"
         result = connection(sql)
 
         for row in result:
