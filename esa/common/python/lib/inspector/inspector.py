@@ -14,7 +14,8 @@ import esa.common.python.lib.ui.ui as ui
 import esa.common.python.lib.image.image as image
 
 reload(theme)
-reload (ui)
+reload(ui)
+reload(image)
 
 #######################################
 # functionality

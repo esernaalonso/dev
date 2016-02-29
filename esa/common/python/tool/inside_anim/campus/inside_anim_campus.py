@@ -8,12 +8,14 @@ from PySide import QtCore, QtGui
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
+import esa.common.python.lib.streaming.streaming as streaming
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.tool.inside_anim.campus.credential.credential as credential
 
 reload(utils)
 reload(ui)
+reload(streaming)
 reload(theme)
 reload(credential)
 
@@ -129,6 +131,9 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.layout().addWidget(self.ui)
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(2, 2, 2, 2)
+
+        self.wg_browser = ui.get_child(self.ui, "wg_browser")
+        self.wg_browser.layout().addWidget(streaming.get_streaming_widget("test"))
 
 
 def InsideAnimCampusRun():

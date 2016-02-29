@@ -902,6 +902,11 @@ QScrollBar::sub-line:horizontal
       </widget>
      </item>
      <item>
+      <widget class="QWidget" name="wg_browser" native="true">
+       <layout class="QGridLayout" name="gridLayout_2"/>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
