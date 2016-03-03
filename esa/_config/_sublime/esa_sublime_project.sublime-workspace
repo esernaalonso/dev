@@ -628,6 +628,7 @@
 	],
 	"file_history":
 	[
+		"/P/dev/esa/common/python/lib/streaming/jwplayer/jwplayer.html5.js",
 		"/E/download/words.py",
 		"/C/Users/Eduardo/Desktop/vplayer_v.py",
 		"/C/Program Files/MySQL/MySQL Workbench 6.3 CE/data/code_editor.xml",
@@ -754,8 +755,7 @@
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/examples/04_console_complete_import.py",
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/examples/02_eval.py",
 		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/examples/01_execute_script.py",
-		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Package Control.sublime-settings",
-		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/SublimeBlender-master/Main.sublime-menu"
+		"/C/Users/Eduardo/AppData/Roaming/Sublime Text 3/Packages/User/Package Control.sublime-settings"
 	],
 	"find":
 	{

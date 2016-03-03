@@ -72,7 +72,8 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
     def __init__(self):
         super(InsideAnimCampusMainWidget, self).__init__()
         self.credentials = credential.Credentials()
-        self.initLoginUI()
+        # self.initLoginUI()
+        self.initUI()
 
     def get_current_file(self):
         return os.path.abspath(inspect.getsourcefile(lambda:0))

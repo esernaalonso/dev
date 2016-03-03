@@ -33,6 +33,10 @@ class Window(QtGui.QWidget):
             dialog.setFileMode(QtGui.QFileDialog.ExistingFile)
             if dialog.exec_() == QtGui.QDialog.Accepted:
                 path = dialog.selectedFiles()[0]
+                # path = QtCore.QUrl("http://www.campus.insideanim.com/wp-content/uploads/tmp/creatures_tiger_walk_cycle_hss_001_user_.mp4")
+                path = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures_tiger_walk_cycle_hss_001.mp4")
+                print path
+                # self.media.setCurrentSource(path)
                 self.media.setCurrentSource(Phonon.MediaSource(path))
                 self.media.play()
             dialog.deleteLater()
