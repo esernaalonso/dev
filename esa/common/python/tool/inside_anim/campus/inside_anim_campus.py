@@ -5,6 +5,9 @@ import sys, os, inspect
 import ctypes
 
 from PySide import QtCore, QtGui
+from PySide.phonon import Phonon
+from PySide import phonon
+# from PySide.phonon import VideoPlayer, SeekSlider, VolumeSlider
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
@@ -86,7 +89,7 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         current_file = self.get_current_file()
         current_folder = os.path.dirname(current_file)
         main_ui_file = ui.get_ui_file("login.ui", current_folder)
-        self.ui = ui.loadUiWidgetFromPyFile(main_ui_file, parent=self)
+        self.ui = ui.loadUiWidget(main_ui_file, parent=self)
 
         # Layout.
         self.setLayout(QtGui.QVBoxLayout())
@@ -125,7 +128,7 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         current_file = self.get_current_file()
         current_folder = os.path.dirname(current_file)
         main_ui_file = ui.get_ui_file("main.ui", current_folder)
-        self.ui = ui.loadUiWidgetFromPyFile(main_ui_file, parent=self)
+        self.ui = ui.loadUiWidget(main_ui_file, parent=self)
 
         # Layout
         self.setLayout(QtGui.QVBoxLayout())
@@ -133,8 +136,9 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(2, 2, 2, 2)
 
-        self.wg_browser = ui.get_child(self.ui, "wg_browser")
-        self.wg_browser.layout().addWidget(streaming.get_streaming_widget("test"))
+        test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv")
+        self.wg_test_video = ui.get_child(self.ui, "wg_test_video")
+        self.wg_test_video.layout().addWidget(streaming.get_streaming_widget(test_video_link))
 
 
 def InsideAnimCampusRun():

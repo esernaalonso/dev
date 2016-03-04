@@ -1,21 +1,7 @@
-from nodebox.graphics import *
-from nodebox.graphics.physics import Flock
+import pysideuic as pui
 
-flock = Flock(40, 0, 0, 500, 500)
-flock.sight = 300
-
-def draw(canvas):
-    background(1)
-    fill(0, 0.75)
-    flock.update(cohesion=0.15)
-    for boid in flock:
-        push()
-        translate(boid.x, boid.y)
-        scale(0.5 + 1.5 * boid.depth)
-        rotate(boid.heading)
-        arrow(0, 0, 15)
-        pop()
-
-canvas.fps = 24
-canvas.size = 600, 400
-canvas.run(draw)
+file_ui = "P:/dev/esa/common/python/lib/streaming/ui/streaming.ui"
+file_py = "P:/dev/esa/common/python/lib/streaming/ui/streaming_ui_generated.py"
+file_py_f = open(file_py, "w")
+pui.compileUi(file_ui, file_py_f)
+file_py_f.close()

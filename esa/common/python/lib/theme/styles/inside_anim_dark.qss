@@ -298,6 +298,20 @@ QComboBox QAbstractItemView
     outline: none;
 }
 
+/*QFrame[frameShape="4"]
+{
+    color: #2a2a2a;
+    background-color: #2a2a2a;
+    border: 1px;
+}
+
+QFrame[frameShape="5"]
+{
+    color: #2a2a2a;
+    background-color: #2a2a2a;
+    border: 1px;
+}*/
+
 QLineEdit
 {
     background-color: #2a2a2a;
