@@ -71,7 +71,7 @@ def load_font(font_file):
     if os.path.exists(font_file):
         return QtGui.QFontDatabase.addApplicationFont(font_file)
 
-def apply_style(application, style_name):
+def apply_style(ui_component, style_name):
     style_file = get_style_file(style_name)
 
     if style_file:
@@ -80,7 +80,7 @@ def apply_style(application, style_name):
             load_font(font_file)
 
         style_string = get_style_file_string(style_file)
-        application.setStyleSheet(style_string)
+        ui_component.setStyleSheet(style_string)
 
 #######################################
 # execution

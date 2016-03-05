@@ -7,18 +7,17 @@ import ctypes
 from PySide import QtCore, QtGui
 from PySide.phonon import Phonon
 from PySide import phonon
-# from PySide.phonon import VideoPlayer, SeekSlider, VolumeSlider
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
-import esa.common.python.lib.streaming.streaming as streaming
+import esa.common.python.lib.media.video as video
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.tool.inside_anim.campus.credential.credential as credential
 
 reload(utils)
 reload(ui)
-reload(streaming)
+reload(video)
 reload(theme)
 reload(credential)
 
@@ -43,6 +42,9 @@ class InsideAnimCampus(QtGui.QDialog):
     def initUI(self):
         # Title
         self.setWindowTitle("Inside Animation Campus")
+
+        # Applies the theme for the widget
+        theme.apply_style(self, "inside_anim_dark.qss")
 
         # Icon for the window
         image_app_icon = image.get_image_file("app_icon.png", self.get_current_folder())
@@ -138,15 +140,16 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
 
         test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv")
         self.wg_test_video = ui.get_child(self.ui, "wg_test_video")
-        self.wg_test_video.layout().addWidget(streaming.get_streaming_widget(test_video_link))
+        self.wg_test_video.layout().addWidget(video.get_video_player(test_video_link))
+        theme.apply_style(self.wg_test_video, "video_player.qss")
 
 
 def InsideAnimCampusRun():
     # Creates the application
     app = QtGui.QApplication(sys.argv)
 
-    # Applies the theme for the application
-    theme.apply_style(app, "inside_anim_dark.qss")
+    # # Applies the theme for the application
+    # theme.apply_style(app, "inside_anim_dark.qss")
 
     # If windows, indicetes the process is a separate one to allow the taskbar to use the window icon.
     if os.name == "nt":

@@ -9,10 +9,12 @@ from PySide import QtCore, QtGui
 from PySide.phonon import Phonon
 
 import esa.common.python.lib.ui.ui as ui
-import esa.common.python.lib.streaming.ui.streaming_ui as streaming_ui
+import esa.common.python.lib.media.ui.video_player_ui as video_player_ui
+import esa.common.python.lib.theme.theme as theme
 
 reload(ui)
-reload(streaming_ui)
+reload(video_player_ui)
+reload(theme)
 
 #######################################
 # functionality
@@ -26,22 +28,16 @@ def get_current_folder():
     return os.path.dirname(get_current_file())
 
 
-def get_streaming_widget(streaming_url):
-    # streaming_widget_file = ui.get_ui_file("streaming.ui", get_current_folder(), recursive=True)
-    # if streaming_widget_file:
-    streaming_widget = streaming_ui.StreamingPlayer(url=streaming_url)
-
-    # print streaming_url
-    #
-    # streaming_widget.video_player.play(streaming_url)
-
-    return streaming_widget
+def get_video_player(video_url):
+    if video_url:
+        video_widget = video_player_ui.StreamingPlayer(url=video_url)
+        return video_widget
 
 
 #######################################
 # execution
 
 if __name__ == "__main__":
-    streaming_link = "test"
-    get_streaming_widget(streaming_link)
+    video_link = "test"
+    get_video_widget(video_link)
     pass

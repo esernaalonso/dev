@@ -1,6 +1,10 @@
 from PySide import QtCore, QtGui
 from PySide import phonon
 
+import esa.common.python.lib.theme.theme as theme
+
+reload(theme)
+
 class StreamingPlayer(QtGui.QWidget):
     def __init__(self, url=None):
         super(StreamingPlayer, self).__init__()
@@ -10,7 +14,9 @@ class StreamingPlayer(QtGui.QWidget):
 
     def initUI(self):
         self.setObjectName("StreamingPlayer")
-        self.setStyleSheet("QLayout{ border: 1px solid #3A3939; border-radius: 2px;}")
+
+        # Applies the theme for the widget
+        # theme.apply_style(self, "video_player.qss")
 
         self.resize(640, 505)
         self.setMinimumSize(QtCore.QSize(640, 505))
@@ -33,7 +39,7 @@ class StreamingPlayer(QtGui.QWidget):
 
         self.horizontal_layout = QtGui.QHBoxLayout()
         self.horizontal_layout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
-        self.horizontal_layout.setContentsMargins(3, -1, 3, -1)
+        self.horizontal_layout.setContentsMargins(3, 3, 3, 3)
         self.horizontal_layout.setObjectName("horizontal_layout")
 
         self.pb_play = QtGui.QPushButton(self)
@@ -55,6 +61,9 @@ class StreamingPlayer(QtGui.QWidget):
         self.horizontal_layout.addWidget(self.volume_slider)
 
         self.grid_layout.addLayout(self.horizontal_layout, 1, 0, 1, 1)
+
+        # Applies the theme for the widget
+        theme.apply_style(self, "video_player.qss")
 
 
     def set_url(self, url):
