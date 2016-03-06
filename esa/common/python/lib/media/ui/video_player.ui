@@ -148,7 +148,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pb_maximize">
+      <widget class="QPushButton" name="pb_full_screen">
        <property name="maximumSize">
         <size>
          <width>20</width>

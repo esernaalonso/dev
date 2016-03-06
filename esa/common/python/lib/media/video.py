@@ -29,7 +29,8 @@ def get_current_folder():
 
 
 def get_video_player(video_url):
-    video_widget = video_player_ui.VideoPlayer(url=video_url)
+    video_widget = video_player_ui.VideoPlayer()
+    video_widget.set_url(video_url)
     return video_widget
 
 
