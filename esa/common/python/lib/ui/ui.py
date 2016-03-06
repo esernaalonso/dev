@@ -91,12 +91,17 @@ def get_child(root_element, name):
     return None
 
 
-def insert_widget(parent_widget, widget_container_name, child_widget_name, ui_folder):
-    if parent_widget and widget_container_name and child_widget_name and ui_folder:
-        widget_container = get_child(parent_widget, widget_container_name)
-        child_widget = get_ui_file(child_widget_name, ui_folder, recursive=True)
+def insert_widget(parent_widget, widget_container, child_widget, ui_folder):
+    if parent_widget and widget_container and child_widget:
+        widget_container = get_child(parent_widget, widget_container)
 
-        if widget_container and child_widget:
+        if isinstance(child_widget, str):
+            if ui_folder:
+                ui_file = get_ui_file(child_widget, ui_folder, recursive=True)
+                if ui_file:
+                    child_widget = loadUiWidget(ui_file)
+
+        if widget_container and child_widget and not isinstance(child_widget, str):
             widget_container.layout().addWidget(child_widget)
             return child_widget
 

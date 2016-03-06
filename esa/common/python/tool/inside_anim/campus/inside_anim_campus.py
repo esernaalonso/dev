@@ -44,7 +44,7 @@ class InsideAnimCampus(QtGui.QDialog):
         self.setWindowTitle("Inside Animation Campus")
 
         # Applies the theme for the widget
-        theme.apply_style(self, "inside_anim_dark.qss")
+        # theme.apply_style(self, "inside_anim_dark.qss")
 
         # Icon for the window
         image_app_icon = image.get_image_file("app_icon.png", self.get_current_folder())
@@ -88,9 +88,7 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
 
     def initLoginUI(self):
         # Load UI file.
-        current_file = self.get_current_file()
-        current_folder = os.path.dirname(current_file)
-        main_ui_file = ui.get_ui_file("login.ui", current_folder)
+        main_ui_file = ui.get_ui_file("login.ui", self.get_current_folder())
         self.ui = ui.loadUiWidget(main_ui_file, parent=self)
 
         # Layout.
@@ -148,10 +146,10 @@ def InsideAnimCampusRun():
     # Creates the application
     app = QtGui.QApplication(sys.argv)
 
-    # # Applies the theme for the application
-    # theme.apply_style(app, "inside_anim_dark.qss")
+    # Applies the theme for the application
+    theme.apply_style(app, "inside_anim_dark.qss")
 
-    # If windows, indicetes the process is a separate one to allow the taskbar to use the window icon.
+    # If windows, indicates the process is a separate one to allow the taskbar to use the window icon.
     if os.name == "nt":
         myappid = 'custom.process.inside_anim.campus' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
