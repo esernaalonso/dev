@@ -13,30 +13,6 @@ reload(theme)
 reload(ui)
 reload(image)
 
-class Overlay(QtGui.QLabel):
-    def __init__(self, parent=None):
-        super(Overlay, self).__init__(parent)
-
-        self.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-        self.setText("OVERLAY TEXT")
-
-        # palette = QtGui.QPalette(self.palette())
-        # palette.setColor(palette.Background, QtCore.Qt.transparent)
-
-        # self.setPalette(palette)
-
-        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        # self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        # self.setStyleSheet("background:transparent;")
-
-    # def paintEvent(self, event):
-    #     painter = QtGui.QPainter()
-    #     painter.begin(self)
-    #     painter.setRenderHint(QtGui.QPainter.Antialiasing)
-    #     painter.fillRect(event.rect(), QtGui.QBrush(QtGui.QColor(255, 255, 255, 127)))
-    #     painter.drawLine(self.width()/8, self.height()/8, 7*self.width()/8, 7*self.height()/8)
-    #     painter.drawLine(self.width()/8, 7*self.height()/8, 7*self.width()/8, self.height()/8)
-    #     painter.setPen(QtGui.QPen(QtCore.Qt.NoPen))
 
 class VideoPlayerFullScreen(QtGui.QWidget):
     def __init__(self, video_player_widget=None):
@@ -64,11 +40,16 @@ class VideoPlayerFullScreen(QtGui.QWidget):
 
 
 class VideoPlayer(QtGui.QWidget):
-    def __init__(self, url=None):
+    def __init__(self):
         super(VideoPlayer, self).__init__()
 
         self.is_full_screen = False
         self.normal_mode_parent = None
+
+        self.url = None
+        self.mediaObject = None
+        self.framerate = 24
+        self.time_display_mode = "current"
 
         self.initUI()
 
@@ -97,14 +78,6 @@ class VideoPlayer(QtGui.QWidget):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(0, 0, 0, 0)
 
-        # Watermark widget
-        # self.graphics_scene = QtGui.QGraphicsScene()
-        # self.watermark_text = self.graphics_scene.addText("THIS IS A WATERMARK")
-        #
-        # self.lb_watermark = QtGui.QLabel()
-        # self.lb_watermark.setText("THIS IS A WATERMARK")
-        # self.lb_watermark.setStyleSheet("background: transparent;")
-
         # Phonon components to manage a video.
 
         # Video Player
@@ -115,10 +88,6 @@ class VideoPlayer(QtGui.QWidget):
         self.video_player_size_policy.setHeightForWidth(self.video_player.sizePolicy().hasHeightForWidth())
         self.video_player.setSizePolicy(self.video_player_size_policy)
         self.video_player.setObjectName("video_player")
-
-        # self.lb_watermark.setParent(self.video_player)
-        # self.graphics_scene.setParent(self.video_player)
-        # self.watermark_text.setPos(150, 150)
 
         # Seek Slider - timeline
         self.seek_slider = phonon.Phonon.SeekSlider(self)
@@ -131,24 +100,21 @@ class VideoPlayer(QtGui.QWidget):
         self.volume_slider.setMuteVisible(False)
         self.volume_slider.setObjectName("volume_slider")
 
-        # Watermark.
-        self.overlay = Overlay(self)
-
-        # self.sbt_watermark = phonon.Phonon.SubtitleDescription()
-        # self.media_controller = None
-
         # Inserts the phonon components in the widget containers prepared for them.
         ui.insert_widget(self, "wg_video", self.video_player, None)
         ui.insert_widget(self, "wg_seek", self.seek_slider, None)
         ui.insert_widget(self, "wg_volume", self.volume_slider, None)
 
         # Stores controls to use with signals and/or to get values in process.
+        self.pb_time = ui.get_child(self, "pb_time")
+        self.pb_time_total = ui.get_child(self, "pb_time_total")
+
         self.pb_refresh = ui.get_child(self, "pb_refresh")
         self.pb_play_prev = ui.get_child(self, "pb_play_prev")
-        self.pb_play_decrease = ui.get_child(self, "pb_play_decrease")
-        self.pb_play_inverse = ui.get_child(self, "pb_play_inverse")
+        # self.pb_play_decrease = ui.get_child(self, "pb_play_decrease")
+        # self.pb_play_inverse = ui.get_child(self, "pb_play_inverse")
         self.pb_play = ui.get_child(self, "pb_play")
-        self.pb_play_increase = ui.get_child(self, "pb_play_increase")
+        # self.pb_play_increase = ui.get_child(self, "pb_play_increase")
         self.pb_play_next = ui.get_child(self, "pb_play_next")
         self.pb_volume_down = ui.get_child(self, "pb_volume_down")
         self.pb_volume_up = ui.get_child(self, "pb_volume_up")
@@ -158,11 +124,11 @@ class VideoPlayer(QtGui.QWidget):
         # Load the ui icons.
         self.refresh_icon = image.get_image_file("refresh.png", self.get_current_folder())
         self.play_prev_icon = image.get_image_file("play_prev.png", self.get_current_folder())
-        self.play_decrease_icon = image.get_image_file("play_decrease.png", self.get_current_folder())
-        self.play_inverse_icon = image.get_image_file("play_inverse.png", self.get_current_folder())
+        # self.play_decrease_icon = image.get_image_file("play_decrease.png", self.get_current_folder())
+        # self.play_inverse_icon = image.get_image_file("play_inverse.png", self.get_current_folder())
         self.play_icon = image.get_image_file("play.png", self.get_current_folder())
         self.pause_icon = image.get_image_file("pause.png", self.get_current_folder())
-        self.play_increase_icon = image.get_image_file("play_increase.png", self.get_current_folder())
+        # self.play_increase_icon = image.get_image_file("play_increase.png", self.get_current_folder())
         self.play_next_icon = image.get_image_file("play_next.png", self.get_current_folder())
         self.volume_up_icon = image.get_image_file("volume_up.png", self.get_current_folder())
         self.volume_down_icon = image.get_image_file("volume_down.png", self.get_current_folder())
@@ -174,10 +140,10 @@ class VideoPlayer(QtGui.QWidget):
         # Applies the icons.
         self.pb_refresh.setIcon(image.create_pixmap(self.refresh_icon))
         self.pb_play_prev.setIcon(image.create_pixmap(self.play_prev_icon))
-        self.pb_play_decrease.setIcon(image.create_pixmap(self.play_decrease_icon))
-        self.pb_play_inverse.setIcon(image.create_pixmap(self.play_inverse_icon))
+        # self.pb_play_decrease.setIcon(image.create_pixmap(self.play_decrease_icon))
+        # self.pb_play_inverse.setIcon(image.create_pixmap(self.play_inverse_icon))
         self.pb_play.setIcon(image.create_pixmap(self.play_icon))
-        self.pb_play_increase.setIcon(image.create_pixmap(self.play_increase_icon))
+        # self.pb_play_increase.setIcon(image.create_pixmap(self.play_increase_icon))
         self.pb_play_next.setIcon(image.create_pixmap(self.play_next_icon))
         self.pb_volume_down.setIcon(image.create_pixmap(self.volume_down_icon))
         self.pb_volume_up.setIcon(image.create_pixmap(self.volume_up_icon))
@@ -185,31 +151,120 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_expand.setIcon(image.create_pixmap(self.expand_icon))
 
         # Creates the signals
+        self.pb_refresh.clicked.connect(self.refresh)
+        self.pb_play_prev.clicked.connect(self.frame_step_prev)
         self.pb_play.clicked.connect(self.toggle_play)
+        self.pb_play_next.clicked.connect(self.frame_step_next)
+        self.pb_time.clicked.connect(self.toggle_time_display_mode)
+        self.pb_volume_down.clicked.connect(self.volume_down)
+        self.pb_volume_up.clicked.connect(self.volume_up)
+        self.pb_volume_on.clicked.connect(self.toggle_volume)
         self.pb_expand.clicked.connect(self.toggle_full_screen)
 
-    def set_url(self, url):
+    def refresh(self):
+        self.pause()
+        self.set_url(self.url)
+
+    def set_url(self, url, framerate=24):
         if url:
+            self.url = url
+            self.framerate = framerate
+
             self.video_player.play(url)
-            self.video_player.pause()
 
             self.seek_slider.setMediaObject(self.video_player.mediaObject())
             self.volume_slider.setAudioOutput(self.video_player.audioOutput())
+            self.mediaObject = self.video_player.mediaObject()
+            self.mediaObject.setTickInterval(1)
+            self.audio_output = self.video_player.audioOutput()
 
-            # self.media_controller = phonon.Phonon.MediaController(self.video_player.mediaObject())
-            # subtitle_file = os.path.join(self.get_current_folder(), "test_subtitle.srt")
-            # self.media_controller.loadSubtitleFile(subtitle_file)
-            # test_subtitle = phonon.Phonon.SubtitleDescription(1, {"file":subtitle_file})
-            # print test_subtitle.propertyNames()
-            # print test_subtitle.index()
-            # print test_subtitle.isValid()
-            # print test_subtitle.property("file")
-            # print test_subtitle.description()
-            # print test_subtitle.name()
-            # test_subtitle.name = os.path.join(self.get_current_folder(), "test_subtitle.srt")
-            # self.media_controller.setCurrentSubtitle(test_subtitle)
-            # print self.media_controller.currentSubtitle()
-            # print self.media_controller.availableSubtitles()
+            self.video_player.pause()
+
+            self.pb_time_total.setText(self.get_time_string(mode="total"))
+
+            # Create the signal for the time play
+            self.mediaObject.tick.connect(self.update_time_label)
+
+    def get_time(self, mode="current"):
+        time_miliseconds = self.mediaObject.currentTime()
+        if mode == "remaining":
+            time_miliseconds = self.mediaObject.remainingTime()
+        if mode == "total":
+            time_miliseconds = self.mediaObject.totalTime()
+
+        current_time_seconds = time_miliseconds/1000
+        current_time_minutes = current_time_seconds/60
+        current_time_hours = current_time_minutes/60
+
+        hours = current_time_hours
+        minutes = current_time_minutes - hours*60
+        seconds = current_time_seconds - minutes*60 - hours*60
+        miliseconds = time_miliseconds - seconds*1000 - minutes*60*1000 - hours*60*60*1000
+
+        frames = miliseconds/(1000/self.framerate)
+
+        return hours, minutes, seconds, miliseconds, frames
+
+    def get_time_string(self, mode="current"):
+        hours, minutes, seconds, miliseconds, frames = self.get_time(mode=mode)
+        return ("%d:%02d:%02d:%02d" %(hours, minutes, seconds, frames))
+
+    def update_time_label(self):
+        self.pb_time.setText(self.get_time_string(mode=self.time_display_mode))
+
+    def toggle_time_display_mode(self):
+            self.time_display_mode = "remaining" if self.time_display_mode == "current" else "current"
+            self.pb_time.setText(self.get_time_string(mode=self.time_display_mode))
+
+    def volume_step(self, mode="up"):
+        new_volume = self.audio_output.volume()
+        new_volume += 0.05 if mode == "up" else -0.05
+
+        if new_volume < 0:
+            new_volume = 0
+        elif new_volume > 1:
+            new_volume = 1
+
+        self.pb_volume_on.setIcon(image.create_pixmap(self.volume_off_icon if new_volume==0 else self.volume_on_icon))
+        self.audio_output.setMuted(new_volume == 0)
+
+        self.audio_output.setVolume(new_volume)
+
+    def volume_down(self):
+        self.volume_step(mode="down")
+
+    def volume_up(self):
+        self.volume_step(mode="up")
+
+    def toggle_volume(self):
+        self.audio_output.setMuted(not self.audio_output.isMuted())
+        self.pb_volume_on.setIcon(image.create_pixmap(self.volume_off_icon if self.audio_output.isMuted() else self.volume_on_icon))
+
+    def frame_step(self, mode="next"):
+        if self.video_player.isPlaying():
+            self.mediaObject.pause()
+
+        total_time_miliseconds = self.mediaObject.totalTime()
+        time_miliseconds = self.mediaObject.currentTime()
+
+        frame_miliseconds = (1000/self.framerate)
+
+        if mode == "next":
+            time_miliseconds += frame_miliseconds
+            if time_miliseconds > total_time_miliseconds:
+                time_miliseconds = total_time_miliseconds
+        elif mode == "prev":
+            time_miliseconds -= frame_miliseconds
+            if time_miliseconds < 0:
+                time_miliseconds = 0
+
+        self.video_player.seek(time_miliseconds)
+
+    def frame_step_prev(self):
+        self.frame_step(mode="prev")
+
+    def frame_step_next(self):
+        self.frame_step(mode="next")
 
     def toggle_play(self):
         if self.video_player.mediaObject():
@@ -217,6 +272,8 @@ class VideoPlayer(QtGui.QWidget):
                 self.pause()
             else:
                 self.play()
+
+            self.pb_time_total.setText(self.get_time_string(mode="total"))
 
     def play(self):
         if self.video_player.mediaObject():

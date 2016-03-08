@@ -138,7 +138,9 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
 
         test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv")
         self.wg_test_video = ui.get_child(self.ui, "wg_test_video")
-        self.wg_test_video.layout().addWidget(video.get_video_player(test_video_link))
+        self.video_player = video.video_player_widget()
+        self.wg_test_video.layout().addWidget(self.video_player)
+        self.video_player.set_url(test_video_link, framerate=25)
         theme.apply_style(self.wg_test_video, "video_player.qss")
 
 

@@ -9,11 +9,11 @@ from PySide import QtCore, QtGui
 from PySide.phonon import Phonon
 
 import esa.common.python.lib.ui.ui as ui
-import esa.common.python.lib.media.ui.video_player_ui as video_player_ui
+import esa.common.python.lib.media.ui.video_player as video_player
 import esa.common.python.lib.theme.theme as theme
 
 reload(ui)
-reload(video_player_ui)
+reload(video_player)
 reload(theme)
 
 #######################################
@@ -28,9 +28,8 @@ def get_current_folder():
     return os.path.dirname(get_current_file())
 
 
-def get_video_player(video_url):
-    video_widget = video_player_ui.VideoPlayer()
-    video_widget.set_url(video_url)
+def video_player_widget():
+    video_widget = video_player.VideoPlayer()
     return video_widget
 
 

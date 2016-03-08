@@ -130,15 +130,15 @@ QProgressBar::chunk:horizontal
 
 QPushButton
 {
-    color: #e1e1e1;
+    color: #707070;
     background-color: #222222;
     border-width: 1px;
     border-color: #222222;
     border-style: solid;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
     border-radius: 1px;
     outline: none;
 }
@@ -149,10 +149,10 @@ QPushButton:disabled
     border-width: 1px;
     border-color: #404040;
     border-style: solid;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
     color: #454545;
 }
 
@@ -458,7 +458,7 @@ QDial:hover
 
 QLabel
 {
-    color: #e1e1e1;
+    color: #707070;
     background: transparent;
 }
 
