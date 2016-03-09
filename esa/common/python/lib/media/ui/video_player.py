@@ -14,6 +14,108 @@ reload(ui)
 reload(image)
 
 
+# TODO: Create a class to handle the key execution.
+
+
+class CustomVideoPlayer(phonon.Phonon.VideoPlayer):
+    def __init__(self):
+        super(CustomVideoPlayer, self).__init__()
+        pass
+
+    def get_parent_video_player(self):
+        video_player = self
+        while video_player.objectName() != "VideoPlayer":
+            video_player = video_player.parent()
+        return video_player
+
+    def eventFilter(self, widget, event):
+        return QtGui.QWidget.eventFilter(self, widget, event)
+
+    def event(self, event):
+        if (event.type() == QtCore.QEvent.KeyRelease):
+            key = event.key()
+            if key == QtCore.Qt.Key_Left:
+                self.get_parent_video_player().frame_step_prev()
+                return True
+            if key == QtCore.Qt.Key_Right:
+                self.get_parent_video_player().frame_step_next()
+                return True
+            if key == QtCore.Qt.Key_Space:
+                self.get_parent_video_player().toggle_play()
+                return True
+        # if (event.type() == QtCore.QEvent.ShortcutOverride):
+        #     key = event.key()
+        #     if key == QtCore.Qt.Key_Left:
+        #         return True
+        return QtGui.QWidget.event(self, event)
+
+
+class CustomSeekSlider(phonon.Phonon.SeekSlider):
+    def __init__(self):
+        super(CustomSeekSlider, self).__init__()
+        pass
+
+    def get_parent_video_player(self):
+        video_player = self
+        while video_player.objectName() != "VideoPlayer":
+            video_player = video_player.parent()
+        return video_player
+
+    def eventFilter(self, widget, event):
+        return QtGui.QWidget.eventFilter(self, widget, event)
+
+    def event(self, event):
+        if (event.type() == QtCore.QEvent.KeyRelease):
+            key = event.key()
+            if key == QtCore.Qt.Key_Left:
+                self.get_parent_video_player().frame_step_prev()
+                return True
+            if key == QtCore.Qt.Key_Right:
+                self.get_parent_video_player().frame_step_next()
+                return True
+            if key == QtCore.Qt.Key_Space:
+                self.get_parent_video_player().toggle_play()
+                return True
+        # if (event.type() == QtCore.QEvent.ShortcutOverride):
+        #     key = event.key()
+        #     if key == QtCore.Qt.Key_Left:
+        #         return True
+        return QtGui.QWidget.event(self, event)
+
+
+class CustomVolumeSlider(phonon.Phonon.VolumeSlider):
+    def __init__(self):
+        super(CustomVolumeSlider, self).__init__()
+        pass
+
+    def get_parent_video_player(self):
+        video_player = self
+        while video_player.objectName() != "VideoPlayer":
+            video_player = video_player.parent()
+        return video_player
+
+    def eventFilter(self, widget, event):
+        return QtGui.QWidget.eventFilter(self, widget, event)
+
+    def event(self, event):
+        if (event.type() == QtCore.QEvent.KeyRelease):
+            key = event.key()
+            if key == QtCore.Qt.Key_Left:
+                self.get_parent_video_player().frame_step_prev()
+                return True
+            if key == QtCore.Qt.Key_Right:
+                self.get_parent_video_player().frame_step_next()
+                return True
+            if key == QtCore.Qt.Key_Space:
+                self.get_parent_video_player().toggle_play()
+                return True
+        # if (event.type() == QtCore.QEvent.ShortcutOverride):
+        #     key = event.key()
+        #     if key == QtCore.Qt.Key_Left:
+        #         return True
+        return QtGui.QWidget.event(self, event)
+
+
 class VideoPlayerFullScreen(QtGui.QWidget):
     def __init__(self, video_player_widget=None):
         super(VideoPlayerFullScreen, self).__init__()
@@ -42,6 +144,8 @@ class VideoPlayerFullScreen(QtGui.QWidget):
 class VideoPlayer(QtGui.QWidget):
     def __init__(self):
         super(VideoPlayer, self).__init__()
+
+        self.installEventFilter(self)
 
         self.is_full_screen = False
         self.normal_mode_parent = None
@@ -81,7 +185,8 @@ class VideoPlayer(QtGui.QWidget):
         # Phonon components to manage a video.
 
         # Video Player
-        self.video_player = phonon.Phonon.VideoPlayer(self)
+        # self.video_player = phonon.Phonon.VideoPlayer(self)
+        self.video_player = CustomVideoPlayer()
         self.video_player_size_policy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.video_player_size_policy.setHorizontalStretch(0)
         self.video_player_size_policy.setVerticalStretch(0)
@@ -90,14 +195,18 @@ class VideoPlayer(QtGui.QWidget):
         self.video_player.setObjectName("video_player")
 
         # Seek Slider - timeline
-        self.seek_slider = phonon.Phonon.SeekSlider(self)
+        # self.seek_slider = phonon.Phonon.SeekSlider(self)
+        self.seek_slider = CustomSeekSlider()
         self.seek_slider.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.seek_slider.setSingleStep(0)
         self.seek_slider.setObjectName("seek_slider")
 
         # Volume Slider.
-        self.volume_slider = phonon.Phonon.VolumeSlider(self)
+        # self.volume_slider = phonon.Phonon.VolumeSlider(self)
+        self.volume_slider = CustomVolumeSlider()
         self.volume_slider.setMaximumSize(QtCore.QSize(150, 20))
         self.volume_slider.setMuteVisible(False)
+        self.volume_slider.setSingleStep(0)
         self.volume_slider.setObjectName("volume_slider")
 
         # Inserts the phonon components in the widget containers prepared for them.
@@ -108,6 +217,8 @@ class VideoPlayer(QtGui.QWidget):
         # Stores controls to use with signals and/or to get values in process.
         self.pb_time = ui.get_child(self, "pb_time")
         self.pb_time_total = ui.get_child(self, "pb_time_total")
+        self.pb_time.setStyleSheet("QPushButton {text-align: left;}")
+        self.pb_time_total.setStyleSheet("QPushButton {text-align: left;}")
 
         self.pb_refresh = ui.get_child(self, "pb_refresh")
         self.pb_play_prev = ui.get_child(self, "pb_play_prev")
@@ -301,3 +412,11 @@ class VideoPlayer(QtGui.QWidget):
         self.normal_mode_parent.layout().addWidget(self)
         self.is_full_screen = False
         self.video_player_full_screen.close()
+
+    def event(self, event):
+        if (event.type() == QtCore.QEvent.KeyPress):
+            key = event.key()
+            # if key == QtCore.Qt.Key_Space:
+            #     self.toggle_play()
+            #     return True
+        return QtGui.QWidget.event(self, event)
