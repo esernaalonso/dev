@@ -6,7 +6,6 @@ import os
 import inspect
 
 from PySide import QtCore, QtGui
-from PySide.phonon import Phonon
 
 import esa.common.python.lib.ui.ui as ui
 import esa.common.python.lib.media.ui.video_player as video_player

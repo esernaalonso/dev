@@ -14,106 +14,93 @@ reload(ui)
 reload(image)
 
 
-# TODO: Create a class to handle the key execution.
-
-
-class CustomVideoPlayer(phonon.Phonon.VideoPlayer):
+class KeyEventHandler(object):
     def __init__(self):
-        super(CustomVideoPlayer, self).__init__()
+        super(KeyEventHandler, self).__init__()
         pass
 
-    def get_parent_video_player(self):
-        video_player = self
+    def get_parent_video_player(self, event_widget):
+        video_player = event_widget
         while video_player.objectName() != "VideoPlayer":
             video_player = video_player.parent()
         return video_player
 
-    def eventFilter(self, widget, event):
-        return QtGui.QWidget.eventFilter(self, widget, event)
+    def process_event(self, event_widget, event):
+        # If it is a key release event.
+        if (event.type() == QtCore.QEvent.KeyRelease):
+
+            if event.key() == QtCore.Qt.Key_Left:
+                self.get_parent_video_player(event_widget).frame_step_prev()
+
+            elif event.key() == QtCore.Qt.Key_Right:
+                self.get_parent_video_player(event_widget).frame_step_next()
+
+            elif event.key() == QtCore.Qt.Key_Up:
+                self.get_parent_video_player(event_widget).volume_up()
+
+            elif event.key() == QtCore.Qt.Key_Down:
+                self.get_parent_video_player(event_widget).volume_down()
+
+            elif event.key() == QtCore.Qt.Key_Space:
+                self.get_parent_video_player(event_widget).toggle_play()
+
+            return QtGui.QWidget.event(event_widget, event)
+
+        # if is the mouse click
+        if (event.type() == QtCore.QEvent.Type.MouseButtonRelease):
+
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.get_parent_video_player(event_widget).toggle_play()
+                return True
+
+        # if is the mouse double click
+        if (event.type() == QtCore.QEvent.Type.MouseButtonDblClick):
+
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.get_parent_video_player(event_widget).toggle_full_screen()
+                return True
+
+
+
+        return True
+
+class CustomVideoPlayer(phonon.Phonon.VideoPlayer):
+    # doubleClicked = QtCore.Signal()
+
+    def __init__(self):
+        super(CustomVideoPlayer, self).__init__()
+        self.event_handler = KeyEventHandler()
 
     def event(self, event):
-        if (event.type() == QtCore.QEvent.KeyRelease):
-            key = event.key()
-            if key == QtCore.Qt.Key_Left:
-                self.get_parent_video_player().frame_step_prev()
-                return True
-            if key == QtCore.Qt.Key_Right:
-                self.get_parent_video_player().frame_step_next()
-                return True
-            if key == QtCore.Qt.Key_Space:
-                self.get_parent_video_player().toggle_play()
-                return True
-        # if (event.type() == QtCore.QEvent.ShortcutOverride):
-        #     key = event.key()
-        #     if key == QtCore.Qt.Key_Left:
-        #         return True
-        return QtGui.QWidget.event(self, event)
+        return self.event_handler.process_event(self, event)
+
+    # def mouseReleaseEvent(self, event):
+    #     return self.event_handler.process_event(self, event)
+
+    # def mouseDoubleClickEvent(self, event):
+    #     print event.type()
+    #     # return self.event_handler.process_event(self, event)
+
+    # def doubleClicked(self):
+    #     pass
 
 
 class CustomSeekSlider(phonon.Phonon.SeekSlider):
     def __init__(self):
         super(CustomSeekSlider, self).__init__()
-        pass
-
-    def get_parent_video_player(self):
-        video_player = self
-        while video_player.objectName() != "VideoPlayer":
-            video_player = video_player.parent()
-        return video_player
-
-    def eventFilter(self, widget, event):
-        return QtGui.QWidget.eventFilter(self, widget, event)
+        self.event_handler = KeyEventHandler()
 
     def event(self, event):
-        if (event.type() == QtCore.QEvent.KeyRelease):
-            key = event.key()
-            if key == QtCore.Qt.Key_Left:
-                self.get_parent_video_player().frame_step_prev()
-                return True
-            if key == QtCore.Qt.Key_Right:
-                self.get_parent_video_player().frame_step_next()
-                return True
-            if key == QtCore.Qt.Key_Space:
-                self.get_parent_video_player().toggle_play()
-                return True
-        # if (event.type() == QtCore.QEvent.ShortcutOverride):
-        #     key = event.key()
-        #     if key == QtCore.Qt.Key_Left:
-        #         return True
-        return QtGui.QWidget.event(self, event)
+        return self.event_handler.process_event(self, event)
 
 
 class CustomVolumeSlider(phonon.Phonon.VolumeSlider):
     def __init__(self):
         super(CustomVolumeSlider, self).__init__()
-        pass
-
-    def get_parent_video_player(self):
-        video_player = self
-        while video_player.objectName() != "VideoPlayer":
-            video_player = video_player.parent()
-        return video_player
-
-    def eventFilter(self, widget, event):
-        return QtGui.QWidget.eventFilter(self, widget, event)
+        self.event_handler = KeyEventHandler()
 
     def event(self, event):
-        if (event.type() == QtCore.QEvent.KeyRelease):
-            key = event.key()
-            if key == QtCore.Qt.Key_Left:
-                self.get_parent_video_player().frame_step_prev()
-                return True
-            if key == QtCore.Qt.Key_Right:
-                self.get_parent_video_player().frame_step_next()
-                return True
-            if key == QtCore.Qt.Key_Space:
-                self.get_parent_video_player().toggle_play()
-                return True
-        # if (event.type() == QtCore.QEvent.ShortcutOverride):
-        #     key = event.key()
-        #     if key == QtCore.Qt.Key_Left:
-        #         return True
-        return QtGui.QWidget.event(self, event)
+        return self.event_handler.process_event(self, event)
 
 
 class VideoPlayerFullScreen(QtGui.QWidget):
@@ -413,10 +400,5 @@ class VideoPlayer(QtGui.QWidget):
         self.is_full_screen = False
         self.video_player_full_screen.close()
 
-    def event(self, event):
-        if (event.type() == QtCore.QEvent.KeyPress):
-            key = event.key()
-            # if key == QtCore.Qt.Key_Space:
-            #     self.toggle_play()
-            #     return True
-        return QtGui.QWidget.event(self, event)
+    # TODO: Mouse wheel to control volume
+    # TODO: Create a way to detect the streaming buffer load.

@@ -5,8 +5,6 @@ import sys, os, inspect
 import ctypes
 
 from PySide import QtCore, QtGui
-from PySide.phonon import Phonon
-from PySide import phonon
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
