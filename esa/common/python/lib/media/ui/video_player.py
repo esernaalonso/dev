@@ -48,19 +48,17 @@ class KeyEventHandler(object):
 
         # if is the mouse click
         if (event.type() == QtCore.QEvent.Type.MouseButtonRelease):
-
-            if event.button() == QtCore.Qt.MouseButton.LeftButton:
-                self.get_parent_video_player(event_widget).toggle_play()
-                return True
+            if isinstance(event_widget, CustomVideoPlayer):
+                if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                    self.get_parent_video_player(event_widget).toggle_play()
+                    return True
 
         # if is the mouse double click
         if (event.type() == QtCore.QEvent.Type.MouseButtonDblClick):
-
-            if event.button() == QtCore.Qt.MouseButton.LeftButton:
-                self.get_parent_video_player(event_widget).toggle_full_screen()
-                return True
-
-
+            if isinstance(event_widget, CustomVideoPlayer):
+                if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                    self.get_parent_video_player(event_widget).toggle_full_screen()
+                    return True
 
         return True
 
@@ -73,16 +71,6 @@ class CustomVideoPlayer(phonon.Phonon.VideoPlayer):
 
     def event(self, event):
         return self.event_handler.process_event(self, event)
-
-    # def mouseReleaseEvent(self, event):
-    #     return self.event_handler.process_event(self, event)
-
-    # def mouseDoubleClickEvent(self, event):
-    #     print event.type()
-    #     # return self.event_handler.process_event(self, event)
-
-    # def doubleClicked(self):
-    #     pass
 
 
 class CustomSeekSlider(phonon.Phonon.SeekSlider):
@@ -359,9 +347,13 @@ class VideoPlayer(QtGui.QWidget):
         self.video_player.seek(time_miliseconds)
 
     def frame_step_prev(self):
+        if self.video_player.isPlaying():
+            self.pause()
         self.frame_step(mode="prev")
 
     def frame_step_next(self):
+        if self.video_player.isPlaying():
+            self.pause()
         self.frame_step(mode="next")
 
     def toggle_play(self):

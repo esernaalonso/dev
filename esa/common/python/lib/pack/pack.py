@@ -175,6 +175,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
         recursive (bool, optional): Indicates if pack all dependencies. Default True.
         **kwargs: Extra arguments to have some more options.
             level (int): Indicates the level of depth in the logs.
+            packaging_mode (string): Indicates the packaging mode for the file. To do special operations.
             packaging_type (string): Indicates the type of packaging for the file.
             remove_previous (bool): Indicates if removes previous packaging.
 
@@ -183,8 +184,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     """
 
     # Some configurations
-    remove_previous_packaging_types = ["main"]
-    explorable_packaging_types = ["main", "lib"]
+    remove_previous_packaging_modes = ["root"]
+    explorable_packaging_types = ["lib"]
     explorable_file_types = [".py"]
     packable_import_types = ["custom_module"]
 
@@ -192,7 +193,10 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     level = 0
     if "level" in kwargs: level = kwargs["level"]
 
-    packaging_type = "main"
+    packaging_mode = "root"
+    if "packaging_mode" in kwargs: packaging_mode = kwargs["packaging_mode"]
+
+    packaging_type = "lib"
     if "packaging_type" in kwargs: packaging_type = kwargs["packaging_type"]
 
     remove_previous = False
@@ -207,11 +211,12 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     logger.info(("Packaging File -> %s" % source_file), level=level)
 
     # This should be the destination path folder
-    # If is the main one, needs to add the subfolder with tool name.
+    # If is the root one, needs to add the subfolder with tool name.
     # If not, the packaging type should be used as subfolder name. If already is in that level, does not add it again.
     package_sub_folder = ""
-    if packaging_type == "main":
-        package_sub_folder = os.path.basename(os.path.splitext(source_file)[0])
+    if packaging_mode == "root":
+        # package_sub_folder = os.path.basename(os.path.splitext(source_file)[0])
+        package_sub_folder = ""
     elif os.path.basename(os.path.normpath(pack_folder)) != packaging_type:
         package_sub_folder = packaging_type
     dest_folder = os.path.join(pack_folder, package_sub_folder)
@@ -222,7 +227,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     logger.info(("Destination File -> %s" % dest_file), level=level)
 
     # If has to remove the previous and it exists, mark it
-    remove_previous_folder = remove_previous and packaging_type in remove_previous_packaging_types
+    remove_previous_folder = remove_previous and packaging_mode in remove_previous_packaging_modes
 
     # If dest pack folder does not exist, cannot start the packaging. Tries to create it.
     setup_file_pack_folder(dest_file, remove_previous=remove_previous_folder, level=level+1)
@@ -238,8 +243,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     if os.path.exists(dest_file):
         logger.info(("File Packaged -> %s" % dest_file), level=level)
 
-        # If the packaging_type is main, need to create the execute.bat
-        if packaging_type == "main":
+        # If the packaging_mode is root, need to create the execute.bat
+        if packaging_mode == "root":
             execute_bat_file = os.path.join(os.path.dirname(dest_file), "execute.bat")
             create_execute_bat(execute_bat_file, os.path.basename(dest_file), remove_previous=True, level=level+1)
 
@@ -252,13 +257,13 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
 
             # If it has imports info, packages the imports as libraries
             if imports_info:
-                import_relative_path = "lib" if packaging_type=="main" else ""
+                import_relative_path = "lib" if packaging_mode=="root" else ""
 
                 for import_info in imports_info:
                     if import_info["type"] in packable_import_types:
                         # Packages the import source as a library
                         logger.info(("Packaging lib file -> %s" % import_info["path"]), level=level)
-                        pack_file(import_info["path"], pack_folder=dest_folder, level=level+1, packaging_type="lib")
+                        pack_file(import_info["path"], pack_folder=dest_folder, level=level+1, packaging_type="lib", packaging_mode="regular")
 
                         # After packaging the lib, must replace in dest_file the import for the new one.
                         import_statement = inspector.build_import_statement(import_info, force_relative=True, relative_path=import_relative_path)
@@ -275,10 +280,10 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
                 for ui_file in ui_files:
                     # Prints the type of packaging.
                     logger.info(("Packaging UI dependency -> %s" % ui_file), level=level)
-                    pack_file(ui_file, pack_folder=dest_folder, level=level+1, packaging_type="ui")
+                    pack_file(ui_file, pack_folder=dest_folder, level=level+1, packaging_type="uis", packaging_mode="regular")
 
             # Search dependencies like png and jpg files and package them.
-            logger.info(("Searching source image dependencies -> %s" % source_file), level=level)
+            logger.info(("Searching source Image dependencies -> %s" % source_file), level=level)
             image_search_folder = os.path.dirname(source_file)
             image_files = inspector.get_file_image_dependencies(source_file)
 
@@ -286,8 +291,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             if image_files:
                 for image_file in image_files:
                     # Prints the type of packaging.
-                    logger.info(("Packaging UI dependency -> %s" % image_file), level=level)
-                    pack_file(image_file, pack_folder=dest_folder, level=level+1, packaging_type="image")
+                    logger.info(("Packaging Image dependency -> %s" % image_file), level=level)
+                    pack_file(image_file, pack_folder=dest_folder, level=level+1, packaging_type="images", packaging_mode="regular")
 
             # Search dependencies like qss files and package them.
             logger.info(("Searching source QSS dependencies -> %s" % source_file), level=level)
@@ -299,7 +304,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
                 for qss_file in qss_files:
                     # Prints the qss dependency.
                     logger.info(("Packaging QSS dependency -> %s" % qss_file), level=level)
-                    pack_file(qss_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "styles"))
+                    # pack_file(qss_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "styles"), packaging_mode="regular")
+                    pack_file(qss_file, pack_folder=dest_folder, level=level+1, packaging_type="styles", packaging_mode="regular")
 
             # Search dependencies like font .ttf files and package them.
             logger.info(("Searching source font TTF dependencies -> %s" % source_file), level=level)
@@ -311,7 +317,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
                 for font_file in font_files:
                     # Prints the font dependency.
                     logger.info(("Packaging QSS dependency -> %s" % font_file), level=level)
-                    pack_file(font_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "fonts"))
+                    # pack_file(font_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "fonts"), packaging_mode="regular")
+                    pack_file(font_file, pack_folder=dest_folder, level=level+1, packaging_type="fonts", packaging_mode="regular")
 
         else:
             logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)
@@ -323,7 +330,6 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
         return None
 
 
-# TODO: fill all this past days docstrings and comments
 def pack_installer(source_file, pack_folder=None, **kwargs):
     """Packs a installer folder for the source file and dependencies inside the pack folder, creating a installer folder.
 
@@ -369,12 +375,13 @@ def pack_installer(source_file, pack_folder=None, **kwargs):
             create_install_bat(install_bat_file, remove_previous=True, level=level+1)
 
 
-def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
+def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous=True, **kwargs):
     """Packs a python file and all depedencies in and independent module folder.
 
     Args:
         source_file (string): Path to the file to use as root.
         pack_folder (string): The path to the folder to use as pack folder.
+        custom_name (string, optional): Custom name for the packed module folder structure.
         remove_previous (bool, optional): Indicates if it has to remove the previous pack folder.
         **kwargs: Extra arguments like custom dependencies, etc.
     """
@@ -387,17 +394,17 @@ def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
     if os.path.exists(source_file):
         logger.info(("File Exists -> %s" % source_file))
 
-        # This will be the module name.
-        module_name = os.path.basename(os.path.splitext(source_file)[0])
-
-        # The real pack folder is a new folder with the name of the module in the provided pack folder.
-        pack_folder = os.path.join(pack_folder, module_name)
-
-        # packs the file
-        pack_file(source_file, pack_folder=pack_folder, level=1, remove_previous=remove_previous)
+        # This will be the module name. Uses the given file name as module name if a custom name is not provided
+        module_name = os.path.basename(os.path.splitext(source_file)[0]) if not custom_name else custom_name
 
         # Creates the installer
-        pack_installer(source_file, pack_folder=pack_folder, level=1, remove_previous=remove_previous)
+        # The real pack folder is a new folder with the name of the module in the provided pack folder.
+        pack_installer_folder = os.path.join(pack_folder, module_name)
+        pack_installer(source_file, pack_folder=pack_installer_folder, level=1, remove_previous=remove_previous)
+
+        # Packs the file. Creates one more level folder to contain the actual application.
+        pack_module_folder = os.path.join(pack_folder, module_name, module_name)
+        pack_file(source_file, pack_folder=pack_module_folder, level=1, remove_previous=remove_previous)
     else:
         logger.error(("Source File must be provided -> %s" % source_file))
         return None
@@ -407,7 +414,7 @@ def pack_module(source_file, pack_folder=None, remove_previous=True, **kwargs):
 
 if __name__ == "__main__":
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
-    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus.py"
+    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus_launcher.py"
     pack_folder = "F:\\project\\tmp\\pack"
 
-    pack_module(source_file, pack_folder=pack_folder, remove_previous=True)
+    pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True)

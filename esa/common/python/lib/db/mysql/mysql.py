@@ -48,6 +48,6 @@ if __name__ == "__main__":
                 db='insideanim_school_db',
                 charset='utf8mb4',
                 cursorclass=pymysql.cursors.DictCursor,
-                sql="SELECT * FROM `user`")
+                sql="SELECT * FROM `t_user`")
 
     print result
