@@ -115,6 +115,11 @@ class VideoPlayerFullScreen(QtGui.QWidget):
         if self.video_player_widget:
             self.layout().addWidget(self.video_player_widget)
 
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        screen_res = QtGui.QApplication.desktop().screenGeometry(screen)
+        self.move(QtCore.QPoint(screen_res.x(), screen_res.y()))
+        self.showFullScreen()
+
 
 class VideoPlayer(QtGui.QWidget):
     def __init__(self):
@@ -385,7 +390,12 @@ class VideoPlayer(QtGui.QWidget):
         self.normal_mode_parent = self.parent()
         self.is_full_screen = True
         self.video_player_full_screen = VideoPlayerFullScreen(video_player_widget=self)
-        self.video_player_full_screen.showFullScreen()
+        # frameGm = self.frameGeometry()
+        # screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        # QtGui.QApplication.desktop().screenGeometry(screen)
+
+        # self.video_player_full_screen.move(frameGm.topLeft())
+        # self.video_player_full_screen.showFullScreen()
 
     def exit_full_screen(self):
         self.normal_mode_parent.layout().addWidget(self)
