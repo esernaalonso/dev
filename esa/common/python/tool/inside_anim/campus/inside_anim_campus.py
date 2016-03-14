@@ -79,8 +79,8 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
     def __init__(self):
         super(InsideAnimCampusMainWidget, self).__init__()
         self.credentials = credential.Credentials()
-        self.initLoginUI()
-        # self.initUI()
+        # self.initLoginUI()
+        self.initUI()
 
     def get_current_file(self):
         return os.path.abspath(inspect.getsourcefile(lambda:0))
@@ -138,7 +138,9 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(2, 2, 2, 2)
 
-        test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv")
+        test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior.flv")
+        # test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv")
+        # test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt03_morphology_of_limbs.flv")
         self.wg_test_video = ui.get_child(self.ui, "wg_test_video")
         self.video_player = video.video_player_widget()
         self.wg_test_video.layout().addWidget(self.video_player)

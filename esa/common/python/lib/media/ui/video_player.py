@@ -4,6 +4,7 @@ from PySide import phonon
 import os
 import sys
 import inspect
+import urllib
 
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.lib.image.image as image
@@ -26,6 +27,8 @@ class KeyEventHandler(object):
         return video_player
 
     def process_event(self, event_widget, event):
+        # print event.type()
+
         # If it is a key release event.
         if (event.type() == QtCore.QEvent.KeyRelease):
 
@@ -59,6 +62,28 @@ class KeyEventHandler(object):
                 if event.button() == QtCore.Qt.MouseButton.LeftButton:
                     self.get_parent_video_player(event_widget).toggle_full_screen()
                     return True
+
+        if (event.type() == QtCore.QEvent.Type.Wheel):
+            if isinstance(event_widget, CustomVideoPlayer) or isinstance(event_widget, CustomVolumeSlider):
+                num_degrees = event.delta()/8
+                num_steps = num_degrees/15
+                parent_widget = self.get_parent_video_player(event_widget)
+                for i in range(abs(num_steps)):
+                    if num_steps > 0:
+                        parent_widget.volume_up()
+                    elif num_steps < 0:
+                        parent_widget.volume_down()
+                return True
+            elif isinstance(event_widget, CustomSeekSlider):
+                num_degrees = event.delta()/8
+                num_steps = num_degrees/15
+                parent_widget = self.get_parent_video_player(event_widget)
+                for i in range(abs(num_steps)):
+                    if num_steps > 0:
+                        parent_widget.frame_step_next()
+                    elif num_steps < 0:
+                        parent_widget.frame_step_prev()
+                return True
 
         return True
 
@@ -134,6 +159,9 @@ class VideoPlayer(QtGui.QWidget):
         self.mediaObject = None
         self.framerate = 24
         self.time_display_mode = "current"
+        self.last_time = 0
+
+        self.timer = QtCore.QTimer()
 
         self.initUI()
 
@@ -207,6 +235,8 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_play = ui.get_child(self, "pb_play")
         # self.pb_play_increase = ui.get_child(self, "pb_play_increase")
         self.pb_play_next = ui.get_child(self, "pb_play_next")
+        self.lb_loading = ui.get_child(self, "lb_loading")
+        self.lb_state = ui.get_child(self, "lb_state")
         self.pb_volume_down = ui.get_child(self, "pb_volume_down")
         self.pb_volume_up = ui.get_child(self, "pb_volume_up")
         self.pb_volume_on = ui.get_child(self, "pb_volume_on")
@@ -221,6 +251,7 @@ class VideoPlayer(QtGui.QWidget):
         self.pause_icon = image.get_image_file("pause.png", self.get_current_folder())
         # self.play_increase_icon = image.get_image_file("play_increase.png", self.get_current_folder())
         self.play_next_icon = image.get_image_file("play_next.png", self.get_current_folder())
+        self.loading_icon = image.get_image_file("squares_002.gif", self.get_current_folder())
         self.volume_up_icon = image.get_image_file("volume_up.png", self.get_current_folder())
         self.volume_down_icon = image.get_image_file("volume_down.png", self.get_current_folder())
         self.volume_on_icon = image.get_image_file("volume_on.png", self.get_current_folder())
@@ -241,6 +272,12 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_on.setIcon(image.create_pixmap(self.volume_on_icon))
         self.pb_expand.setIcon(image.create_pixmap(self.expand_icon))
 
+        # Special config for the ui elements dedicated to show the buffering process.
+        self.lb_state.setMovie(image.create_movie(self.loading_icon))
+        self.lb_state.movie().setScaledSize(QtCore.QSize(18,18))
+        self.lb_state.movie().start()
+        self.update_buffering_ui(force=True, force_state=False)
+
         # Creates the signals
         self.pb_refresh.clicked.connect(self.refresh)
         self.pb_play_prev.clicked.connect(self.frame_step_prev)
@@ -251,6 +288,7 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_up.clicked.connect(self.volume_up)
         self.pb_volume_on.clicked.connect(self.toggle_volume)
         self.pb_expand.clicked.connect(self.toggle_full_screen)
+        self.timer.timeout.connect(self.update_buffering_ui)
 
     def refresh(self):
         self.pause()
@@ -261,20 +299,53 @@ class VideoPlayer(QtGui.QWidget):
             self.url = url
             self.framerate = framerate
 
+            # q_url = QtCore.QUrl(url)
+            # q_byte_array = QtCore.QByteArray()
+            # q_buffer = QtCore.QBuffer(q_byte_array)
+            # q_data_stream = QtCore.QDataStream(q_url)
+
+            # self.stream = MediaStream(url=self.url)
+            # self.mediaSource = phonon.Phonon.MediaSource(self.stream)
+
+            # self.video_player.play(q_buffer)
             self.video_player.play(url)
+            self.video_player.pause()
+            # self.video_player.load(self.mediaSource)
+            # self.video_player.play(self.mediaSource)
+
+            self.mediaObject = self.video_player.mediaObject()
+            self.mediaObject.setTickInterval(1)
+            self.timer.setInterval(1000)
+
+            self.audio_output = self.video_player.audioOutput()
 
             self.seek_slider.setMediaObject(self.video_player.mediaObject())
             self.volume_slider.setAudioOutput(self.video_player.audioOutput())
-            self.mediaObject = self.video_player.mediaObject()
-            self.mediaObject.setTickInterval(1)
-            self.audio_output = self.video_player.audioOutput()
 
-            self.video_player.pause()
+            # self.video_player.pause()
+
+            # print self.mediaObject.currentSource().type()
+            # print self.mediaObject.currentSource().stream()
+            # print self.mediaObject.currentSource().stream().needData()
 
             self.pb_time_total.setText(self.get_time_string(mode="total"))
 
             # Create the signal for the time play
             self.mediaObject.tick.connect(self.update_time_label)
+            # self.mediaObject.tick.connect(self.update_buffering_ui)
+            # self.mediaObject.stateChanged.connect(self.status_changed)
+            # self.mediaObject.bufferStatus.connect(self.buffer_status)
+            # self.mediaObject.bufferStatus.connect(self.show_buffer)
+            # self.connect(self.mediaObject, QtCore.SIGNAL("bufferStatus(int)"), self.show_buffer)
+
+    # def buffer_status(self, percentFilled):
+    #     print percentFilled
+    #     print "=========================================="
+    #
+    # def status_changed(self, new_state, old_state):
+    #     print old_state
+    #     print new_state
+    #     print "------------------------------------------"
 
     def get_time(self, mode="current"):
         time_miliseconds = self.mediaObject.currentTime()
@@ -302,6 +373,26 @@ class VideoPlayer(QtGui.QWidget):
 
     def update_time_label(self):
         self.pb_time.setText(self.get_time_string(mode=self.time_display_mode))
+        self.last_time = self.mediaObject.currentTime() if self.mediaObject else 0
+        # print self.video_player.isPlaying()
+
+        # print self.mediaObject.currentSource().type()
+        # print self.mediaObject.currentSource().url()
+        # print self.mediaObject.currentSource().stream()
+        # self.mediaObject.bufferStatus.emit(self.show_buffer)
+        # self.mediaObject.emit(QtCore.SIGNAL("bufferStatus(int)"), self.bufferStatus)
+
+    def update_buffering_ui(self, tick=0, force=False, force_state=False):
+        current_time = self.mediaObject.currentTime() if self.mediaObject else 0
+        # print current_time
+        # print force
+        # print self.video_player.isPlaying()
+        new_state = (self.last_time == current_time and self.video_player.isPlaying()) if not force else force_state
+        # print new_state
+        # print "--------------------------"
+        self.lb_loading.setVisible(new_state)
+        self.lb_state.setVisible(new_state)
+        # self.last_time = self.mediaObject.currentTime() if self.mediaObject else 0
 
     def toggle_time_display_mode(self):
             self.time_display_mode = "remaining" if self.time_display_mode == "current" else "current"
@@ -311,10 +402,8 @@ class VideoPlayer(QtGui.QWidget):
         new_volume = self.audio_output.volume()
         new_volume += 0.05 if mode == "up" else -0.05
 
-        if new_volume < 0:
-            new_volume = 0
-        elif new_volume > 1:
-            new_volume = 1
+        new_volume = 0 if new_volume < 0 else new_volume
+        new_volume = 1 if new_volume > 1 else new_volume
 
         self.pb_volume_on.setIcon(image.create_pixmap(self.volume_off_icon if new_volume==0 else self.volume_on_icon))
         self.audio_output.setMuted(new_volume == 0)
@@ -372,13 +461,18 @@ class VideoPlayer(QtGui.QWidget):
 
     def play(self):
         if self.video_player.mediaObject():
+            self.timer.start()
             self.video_player.play()
             self.pb_play.setIcon(image.create_pixmap(self.pause_icon))
 
     def pause(self):
         if self.video_player.mediaObject():
+            self.timer.stop()
             self.video_player.pause()
             self.pb_play.setIcon(image.create_pixmap(self.play_icon))
+            # print "PAUSA"
+            self.update_buffering_ui(force=True, force_state=False)
+            # print "AFTER PAUSA"
 
     def toggle_full_screen(self):
         if not self.is_full_screen:
@@ -402,5 +496,55 @@ class VideoPlayer(QtGui.QWidget):
         self.is_full_screen = False
         self.video_player_full_screen.close()
 
-    # TODO: Mouse wheel to control volume
     # TODO: Create a way to detect the streaming buffer load.
+
+
+# class MediaStream(phonon.Phonon.AbstractMediaStream):
+#     def __init__(self, parent=None, url=None):
+#         phonon.Phonon.AbstractMediaStream.__init__(self, parent)
+#
+#         self.url = url
+#         url_file = urllib.urlopen(self.url)
+#         url_size = long(url_file.info().getheaders("Content-Length")[0])
+#         # print url_size
+#
+#         self.timer = QtCore.QTimer(self)
+#         self.setStreamSeekable(True)
+#         self.setStreamSize(url_size)
+#
+#         self.timer.timeout.connect(self.moreData)
+#         self.timer.setInterval(1000)
+#
+#         print self.streamSize()
+#         self.timer.start()
+#
+#     def getMediaData(self, bytes=1024):
+#         url_file = urllib.urlopen(self.url)
+#         data = url_file.read(bytes).decode()
+#         print data
+#         return data
+#         # return QtCore.QByteArray(data)
+#
+#     @QtCore.Slot()
+#     def moreData(self):
+#         print "moreData"
+#         data = self.getMediaData()
+#         if data.isEmpty():
+#             print "empty"
+#             self.endOfData()
+#         else:
+#             print "write"
+#             self.writeData(data)
+#
+#     def needData(self):
+#         print "needData"
+#         self.timer.start()
+#         self.moreData()
+#
+#     def enoughData(self):
+#         print "enoughData"
+#         self.timer.stop()
+#
+#     def reset(self):
+#         print "reset"
+#         self.seekStream(0)
