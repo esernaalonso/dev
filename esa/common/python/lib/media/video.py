@@ -8,7 +8,7 @@ import inspect
 from PySide import QtCore, QtGui
 
 import esa.common.python.lib.ui.ui as ui
-import esa.common.python.lib.media.ui.video_player as video_player
+import esa.common.python.lib.media.video_player as video_player
 import esa.common.python.lib.theme.theme as theme
 
 reload(ui)

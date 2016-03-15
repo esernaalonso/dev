@@ -27,47 +27,76 @@ class KeyEventHandler(object):
         return video_player
 
     def process_event(self, event_widget, event):
-        # print event.type()
+
+        # If is a mouse move.
+        if (event.type() == QtCore.QEvent.Type.HoverMove):
+            parent_widget = self.get_parent_video_player(event_widget)
+            if parent_widget.is_full_screen:
+                parent_widget.update_controls_visibility(state=True)
 
         # If it is a key release event.
         if (event.type() == QtCore.QEvent.KeyRelease):
+            parent_widget = self.get_parent_video_player(event_widget)
+            if parent_widget.is_full_screen:
+                parent_widget.update_controls_visibility(state=True)
 
             if event.key() == QtCore.Qt.Key_Left:
-                self.get_parent_video_player(event_widget).frame_step_prev()
+                parent_widget.frame_step_prev()
+                return True
 
             elif event.key() == QtCore.Qt.Key_Right:
-                self.get_parent_video_player(event_widget).frame_step_next()
+                parent_widget.frame_step_next()
+                return True
 
             elif event.key() == QtCore.Qt.Key_Up:
-                self.get_parent_video_player(event_widget).volume_up()
+                parent_widget.volume_up()
+                return True
 
             elif event.key() == QtCore.Qt.Key_Down:
-                self.get_parent_video_player(event_widget).volume_down()
+                parent_widget.volume_down()
+                return True
 
             elif event.key() == QtCore.Qt.Key_Space:
-                self.get_parent_video_player(event_widget).toggle_play()
+                parent_widget.toggle_play()
+                return True
+
+            elif event.key() == QtCore.Qt.Key_F and event.modifiers() == QtCore.Qt.ShiftModifier:
+                parent_widget.toggle_full_screen()
+                return True
+
+            elif event.key() == QtCore.Qt.Key_Escape:
+                parent_widget.exit_full_screen()
+                return True
 
             return QtGui.QWidget.event(event_widget, event)
 
         # if is the mouse click
         if (event.type() == QtCore.QEvent.Type.MouseButtonRelease):
+            parent_widget = self.get_parent_video_player(event_widget)
+            if parent_widget.is_full_screen:
+                parent_widget.update_controls_visibility(state=True)
             if isinstance(event_widget, CustomVideoPlayer):
                 if event.button() == QtCore.Qt.MouseButton.LeftButton:
-                    self.get_parent_video_player(event_widget).toggle_play()
+                    parent_widget.toggle_play()
                     return True
 
         # if is the mouse double click
         if (event.type() == QtCore.QEvent.Type.MouseButtonDblClick):
+            parent_widget = self.get_parent_video_player(event_widget)
+            if parent_widget.is_full_screen:
+                parent_widget.update_controls_visibility(state=True)
             if isinstance(event_widget, CustomVideoPlayer):
                 if event.button() == QtCore.Qt.MouseButton.LeftButton:
-                    self.get_parent_video_player(event_widget).toggle_full_screen()
+                    parent_widget.toggle_full_screen()
                     return True
 
         if (event.type() == QtCore.QEvent.Type.Wheel):
+            parent_widget = self.get_parent_video_player(event_widget)
+            if parent_widget.is_full_screen:
+                parent_widget.update_controls_visibility(state=True)
             if isinstance(event_widget, CustomVideoPlayer) or isinstance(event_widget, CustomVolumeSlider):
                 num_degrees = event.delta()/8
                 num_steps = num_degrees/15
-                parent_widget = self.get_parent_video_player(event_widget)
                 for i in range(abs(num_steps)):
                     if num_steps > 0:
                         parent_widget.volume_up()
@@ -77,7 +106,6 @@ class KeyEventHandler(object):
             elif isinstance(event_widget, CustomSeekSlider):
                 num_degrees = event.delta()/8
                 num_steps = num_degrees/15
-                parent_widget = self.get_parent_video_player(event_widget)
                 for i in range(abs(num_steps)):
                     if num_steps > 0:
                         parent_widget.frame_step_next()
@@ -88,8 +116,6 @@ class KeyEventHandler(object):
         return True
 
 class CustomVideoPlayer(phonon.Phonon.VideoPlayer):
-    # doubleClicked = QtCore.Signal()
-
     def __init__(self):
         super(CustomVideoPlayer, self).__init__()
         self.event_handler = KeyEventHandler()
@@ -126,7 +152,7 @@ class VideoPlayerFullScreen(QtGui.QWidget):
         self.setObjectName("VideoPlayerFullScreen")
 
         # Applies the theme for the widget
-        # theme.apply_style(self, "video_player.qss")
+        theme.apply_style(self, "video_player.qss")
 
         # Allows full screen
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.FramelessWindowHint)
@@ -137,9 +163,11 @@ class VideoPlayerFullScreen(QtGui.QWidget):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(0, 0, 0, 0)
 
+        # Adds the video player to the new full screen container.
         if self.video_player_widget:
             self.layout().addWidget(self.video_player_widget)
 
+        # Shows the full screen.
         screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
         screen_res = QtGui.QApplication.desktop().screenGeometry(screen)
         self.move(QtCore.QPoint(screen_res.x(), screen_res.y()))
@@ -162,6 +190,7 @@ class VideoPlayer(QtGui.QWidget):
         self.last_time = 0
 
         self.timer = QtCore.QTimer()
+        self.timer_hide_controls = QtCore.QTimer()
 
         self.initUI()
 
@@ -193,7 +222,6 @@ class VideoPlayer(QtGui.QWidget):
         # Phonon components to manage a video.
 
         # Video Player
-        # self.video_player = phonon.Phonon.VideoPlayer(self)
         self.video_player = CustomVideoPlayer()
         self.video_player_size_policy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.video_player_size_policy.setHorizontalStretch(0)
@@ -203,14 +231,12 @@ class VideoPlayer(QtGui.QWidget):
         self.video_player.setObjectName("video_player")
 
         # Seek Slider - timeline
-        # self.seek_slider = phonon.Phonon.SeekSlider(self)
         self.seek_slider = CustomSeekSlider()
         self.seek_slider.setMaximumSize(QtCore.QSize(16777215, 20))
         self.seek_slider.setSingleStep(0)
         self.seek_slider.setObjectName("seek_slider")
 
         # Volume Slider.
-        # self.volume_slider = phonon.Phonon.VolumeSlider(self)
         self.volume_slider = CustomVolumeSlider()
         self.volume_slider.setMaximumSize(QtCore.QSize(150, 20))
         self.volume_slider.setMuteVisible(False)
@@ -223,6 +249,8 @@ class VideoPlayer(QtGui.QWidget):
         ui.insert_widget(self, "wg_volume", self.volume_slider, None)
 
         # Stores controls to use with signals and/or to get values in process.
+        self.wg_controls_bar = ui.get_child(self, "wg_controls_bar")
+
         self.pb_time = ui.get_child(self, "pb_time")
         self.pb_time_total = ui.get_child(self, "pb_time_total")
         self.pb_time.setStyleSheet("QPushButton {text-align: left;}")
@@ -230,10 +258,7 @@ class VideoPlayer(QtGui.QWidget):
 
         self.pb_refresh = ui.get_child(self, "pb_refresh")
         self.pb_play_prev = ui.get_child(self, "pb_play_prev")
-        # self.pb_play_decrease = ui.get_child(self, "pb_play_decrease")
-        # self.pb_play_inverse = ui.get_child(self, "pb_play_inverse")
         self.pb_play = ui.get_child(self, "pb_play")
-        # self.pb_play_increase = ui.get_child(self, "pb_play_increase")
         self.pb_play_next = ui.get_child(self, "pb_play_next")
         self.lb_loading = ui.get_child(self, "lb_loading")
         self.lb_state = ui.get_child(self, "lb_state")
@@ -245,11 +270,8 @@ class VideoPlayer(QtGui.QWidget):
         # Load the ui icons.
         self.refresh_icon = image.get_image_file("refresh.png", self.get_current_folder())
         self.play_prev_icon = image.get_image_file("play_prev.png", self.get_current_folder())
-        # self.play_decrease_icon = image.get_image_file("play_decrease.png", self.get_current_folder())
-        # self.play_inverse_icon = image.get_image_file("play_inverse.png", self.get_current_folder())
         self.play_icon = image.get_image_file("play.png", self.get_current_folder())
         self.pause_icon = image.get_image_file("pause.png", self.get_current_folder())
-        # self.play_increase_icon = image.get_image_file("play_increase.png", self.get_current_folder())
         self.play_next_icon = image.get_image_file("play_next.png", self.get_current_folder())
         self.loading_icon = image.get_image_file("squares_002.gif", self.get_current_folder())
         self.volume_up_icon = image.get_image_file("volume_up.png", self.get_current_folder())
@@ -262,10 +284,7 @@ class VideoPlayer(QtGui.QWidget):
         # Applies the icons.
         self.pb_refresh.setIcon(image.create_pixmap(self.refresh_icon))
         self.pb_play_prev.setIcon(image.create_pixmap(self.play_prev_icon))
-        # self.pb_play_decrease.setIcon(image.create_pixmap(self.play_decrease_icon))
-        # self.pb_play_inverse.setIcon(image.create_pixmap(self.play_inverse_icon))
         self.pb_play.setIcon(image.create_pixmap(self.play_icon))
-        # self.pb_play_increase.setIcon(image.create_pixmap(self.play_increase_icon))
         self.pb_play_next.setIcon(image.create_pixmap(self.play_next_icon))
         self.pb_volume_down.setIcon(image.create_pixmap(self.volume_down_icon))
         self.pb_volume_up.setIcon(image.create_pixmap(self.volume_up_icon))
@@ -278,6 +297,10 @@ class VideoPlayer(QtGui.QWidget):
         self.lb_state.movie().start()
         self.update_buffering_ui(force=True, force_state=False)
 
+        # Config the timer to hide the controls
+        self.timer_hide_controls_ticks_count = 0
+        self.timer_hide_controls.setInterval(1000)
+
         # Creates the signals
         self.pb_refresh.clicked.connect(self.refresh)
         self.pb_play_prev.clicked.connect(self.frame_step_prev)
@@ -289,6 +312,7 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_on.clicked.connect(self.toggle_volume)
         self.pb_expand.clicked.connect(self.toggle_full_screen)
         self.timer.timeout.connect(self.update_buffering_ui)
+        self.timer_hide_controls.timeout.connect(self.update_controls_visibility)
 
     def refresh(self):
         self.pause()
@@ -299,19 +323,8 @@ class VideoPlayer(QtGui.QWidget):
             self.url = url
             self.framerate = framerate
 
-            # q_url = QtCore.QUrl(url)
-            # q_byte_array = QtCore.QByteArray()
-            # q_buffer = QtCore.QBuffer(q_byte_array)
-            # q_data_stream = QtCore.QDataStream(q_url)
-
-            # self.stream = MediaStream(url=self.url)
-            # self.mediaSource = phonon.Phonon.MediaSource(self.stream)
-
-            # self.video_player.play(q_buffer)
             self.video_player.play(url)
             self.video_player.pause()
-            # self.video_player.load(self.mediaSource)
-            # self.video_player.play(self.mediaSource)
 
             self.mediaObject = self.video_player.mediaObject()
             self.mediaObject.setTickInterval(1)
@@ -322,30 +335,18 @@ class VideoPlayer(QtGui.QWidget):
             self.seek_slider.setMediaObject(self.video_player.mediaObject())
             self.volume_slider.setAudioOutput(self.video_player.audioOutput())
 
-            # self.video_player.pause()
-
-            # print self.mediaObject.currentSource().type()
-            # print self.mediaObject.currentSource().stream()
-            # print self.mediaObject.currentSource().stream().needData()
-
             self.pb_time_total.setText(self.get_time_string(mode="total"))
 
             # Create the signal for the time play
             self.mediaObject.tick.connect(self.update_time_label)
-            # self.mediaObject.tick.connect(self.update_buffering_ui)
-            # self.mediaObject.stateChanged.connect(self.status_changed)
-            # self.mediaObject.bufferStatus.connect(self.buffer_status)
-            # self.mediaObject.bufferStatus.connect(self.show_buffer)
-            # self.connect(self.mediaObject, QtCore.SIGNAL("bufferStatus(int)"), self.show_buffer)
 
-    # def buffer_status(self, percentFilled):
-    #     print percentFilled
-    #     print "=========================================="
-    #
-    # def status_changed(self, new_state, old_state):
-    #     print old_state
-    #     print new_state
-    #     print "------------------------------------------"
+    def update_controls_visibility(self, tick=0, state=False):
+        self.timer_hide_controls_ticks_count += 1
+
+        if self.timer_hide_controls_ticks_count > 5 or state:
+            self.wg_controls_bar.setVisible(state)
+            if state:
+                self.timer_hide_controls_ticks_count = 0
 
     def get_time(self, mode="current"):
         time_miliseconds = self.mediaObject.currentTime()
@@ -374,29 +375,17 @@ class VideoPlayer(QtGui.QWidget):
     def update_time_label(self):
         self.pb_time.setText(self.get_time_string(mode=self.time_display_mode))
         self.last_time = self.mediaObject.currentTime() if self.mediaObject else 0
-        # print self.video_player.isPlaying()
-
-        # print self.mediaObject.currentSource().type()
-        # print self.mediaObject.currentSource().url()
-        # print self.mediaObject.currentSource().stream()
-        # self.mediaObject.bufferStatus.emit(self.show_buffer)
-        # self.mediaObject.emit(QtCore.SIGNAL("bufferStatus(int)"), self.bufferStatus)
 
     def update_buffering_ui(self, tick=0, force=False, force_state=False):
         current_time = self.mediaObject.currentTime() if self.mediaObject else 0
-        # print current_time
-        # print force
-        # print self.video_player.isPlaying()
         new_state = (self.last_time == current_time and self.video_player.isPlaying()) if not force else force_state
-        # print new_state
-        # print "--------------------------"
         self.lb_loading.setVisible(new_state)
         self.lb_state.setVisible(new_state)
-        # self.last_time = self.mediaObject.currentTime() if self.mediaObject else 0
 
     def toggle_time_display_mode(self):
-            self.time_display_mode = "remaining" if self.time_display_mode == "current" else "current"
-            self.pb_time.setText(self.get_time_string(mode=self.time_display_mode))
+        self.time_display_mode = "remaining" if self.time_display_mode == "current" else "current"
+        self.pb_time.setText(self.get_time_string(mode=self.time_display_mode))
+        self.seek_slider.setFocus()
 
     def volume_step(self, mode="up"):
         new_volume = self.audio_output.volume()
@@ -412,9 +401,11 @@ class VideoPlayer(QtGui.QWidget):
 
     def volume_down(self):
         self.volume_step(mode="down")
+        self.seek_slider.setFocus()
 
     def volume_up(self):
         self.volume_step(mode="up")
+        self.seek_slider.setFocus()
 
     def toggle_volume(self):
         self.audio_output.setMuted(not self.audio_output.isMuted())
@@ -444,11 +435,13 @@ class VideoPlayer(QtGui.QWidget):
         if self.video_player.isPlaying():
             self.pause()
         self.frame_step(mode="prev")
+        self.seek_slider.setFocus()
 
     def frame_step_next(self):
         if self.video_player.isPlaying():
             self.pause()
         self.frame_step(mode="next")
+        self.seek_slider.setFocus()
 
     def toggle_play(self):
         if self.video_player.mediaObject():
@@ -464,6 +457,7 @@ class VideoPlayer(QtGui.QWidget):
             self.timer.start()
             self.video_player.play()
             self.pb_play.setIcon(image.create_pixmap(self.pause_icon))
+            self.seek_slider.setFocus()
 
     def pause(self):
         if self.video_player.mediaObject():
@@ -472,6 +466,7 @@ class VideoPlayer(QtGui.QWidget):
             self.pb_play.setIcon(image.create_pixmap(self.play_icon))
             # print "PAUSA"
             self.update_buffering_ui(force=True, force_state=False)
+            self.seek_slider.setFocus()
             # print "AFTER PAUSA"
 
     def toggle_full_screen(self):
@@ -484,67 +479,13 @@ class VideoPlayer(QtGui.QWidget):
         self.normal_mode_parent = self.parent()
         self.is_full_screen = True
         self.video_player_full_screen = VideoPlayerFullScreen(video_player_widget=self)
-        # frameGm = self.frameGeometry()
-        # screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
-        # QtGui.QApplication.desktop().screenGeometry(screen)
-
-        # self.video_player_full_screen.move(frameGm.topLeft())
-        # self.video_player_full_screen.showFullScreen()
+        self.timer_hide_controls.start()
+        self.seek_slider.setFocus()
 
     def exit_full_screen(self):
         self.normal_mode_parent.layout().addWidget(self)
         self.is_full_screen = False
         self.video_player_full_screen.close()
-
-    # TODO: Create a way to detect the streaming buffer load.
-
-
-# class MediaStream(phonon.Phonon.AbstractMediaStream):
-#     def __init__(self, parent=None, url=None):
-#         phonon.Phonon.AbstractMediaStream.__init__(self, parent)
-#
-#         self.url = url
-#         url_file = urllib.urlopen(self.url)
-#         url_size = long(url_file.info().getheaders("Content-Length")[0])
-#         # print url_size
-#
-#         self.timer = QtCore.QTimer(self)
-#         self.setStreamSeekable(True)
-#         self.setStreamSize(url_size)
-#
-#         self.timer.timeout.connect(self.moreData)
-#         self.timer.setInterval(1000)
-#
-#         print self.streamSize()
-#         self.timer.start()
-#
-#     def getMediaData(self, bytes=1024):
-#         url_file = urllib.urlopen(self.url)
-#         data = url_file.read(bytes).decode()
-#         print data
-#         return data
-#         # return QtCore.QByteArray(data)
-#
-#     @QtCore.Slot()
-#     def moreData(self):
-#         print "moreData"
-#         data = self.getMediaData()
-#         if data.isEmpty():
-#             print "empty"
-#             self.endOfData()
-#         else:
-#             print "write"
-#             self.writeData(data)
-#
-#     def needData(self):
-#         print "needData"
-#         self.timer.start()
-#         self.moreData()
-#
-#     def enoughData(self):
-#         print "enoughData"
-#         self.timer.stop()
-#
-#     def reset(self):
-#         print "reset"
-#         self.seekStream(0)
+        self.timer_hide_controls.stop()
+        self.update_controls_visibility(state=True)
+        self.seek_slider.setFocus()
