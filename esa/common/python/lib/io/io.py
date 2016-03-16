@@ -32,12 +32,22 @@ def get_subfolders(folder_path, recursive=True):
     return subfolders
 
 
-def get_files(folder_path, extensions=None, recursive=True):
+def get_files(folder_path, extensions=None, filters=None, recursive=True):
     subfolders = get_subfolders(folder_path, recursive=recursive)
     files = []
 
     for folder in subfolders:
         files += get_folder_files(folder, extensions=extensions)
+
+    # If it has filters, keeps only the files that matches them.
+    if filters:
+        filtered_files = []
+        for current_file in files:
+            for filter_word in filters:
+                if filter_word.lower() in current_file.lower():
+                    filtered_files.append(current_file)
+                    break
+        files = filtered_files
 
     return files
 

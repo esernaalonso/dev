@@ -146,7 +146,7 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.video_player = video.video_player_widget()
         self.wg_test_video.layout().addWidget(self.video_player)
         self.video_player.set_url(test_video_link, framerate=25)
-        theme.apply_style(self.wg_test_video, "video_player.qss")
+        theme.apply_style(self.wg_test_video, "inside_anim_video_player.qss")
 
 
 def InsideAnimCampusRun():

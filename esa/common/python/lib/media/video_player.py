@@ -185,6 +185,7 @@ class VideoPlayer(QtGui.QWidget):
 
         self.url = None
         self.mediaObject = None
+        self.audio_output = None
         self.framerate = 24
         self.time_display_mode = "current"
         self.last_time = 0
@@ -318,7 +319,18 @@ class VideoPlayer(QtGui.QWidget):
         self.pause()
         self.set_url(self.url)
 
+    def is_ready(self):
+        if self.url and self.mediaObject and self.audio_output:
+            return True
+        else:
+            return False
+
     def set_url(self, url, framerate=24):
+        # Clears the values.
+        self.url = None
+        self.mediaObject = None
+        self.audio_output = None
+
         if url:
             self.url = url
             self.framerate = framerate
@@ -349,11 +361,13 @@ class VideoPlayer(QtGui.QWidget):
                 self.timer_hide_controls_ticks_count = 0
 
     def get_time(self, mode="current"):
-        time_miliseconds = self.mediaObject.currentTime()
-        if mode == "remaining":
-            time_miliseconds = self.mediaObject.remainingTime()
-        if mode == "total":
-            time_miliseconds = self.mediaObject.totalTime()
+        time_miliseconds = 0
+        if self.mediaObject:
+            time_miliseconds = self.mediaObject.currentTime()
+            if mode == "remaining":
+                time_miliseconds = self.mediaObject.remainingTime()
+            if mode == "total":
+                time_miliseconds = self.mediaObject.totalTime()
 
         current_time_seconds = time_miliseconds/1000
         current_time_minutes = current_time_seconds/60
@@ -388,16 +402,17 @@ class VideoPlayer(QtGui.QWidget):
         self.seek_slider.setFocus()
 
     def volume_step(self, mode="up"):
-        new_volume = self.audio_output.volume()
-        new_volume += 0.05 if mode == "up" else -0.05
+        if self.audio_output:
+            new_volume = self.audio_output.volume()
+            new_volume += 0.05 if mode == "up" else -0.05
 
-        new_volume = 0 if new_volume < 0 else new_volume
-        new_volume = 1 if new_volume > 1 else new_volume
+            new_volume = 0 if new_volume < 0 else new_volume
+            new_volume = 1 if new_volume > 1 else new_volume
 
-        self.pb_volume_on.setIcon(image.create_pixmap(self.volume_off_icon if new_volume==0 else self.volume_on_icon))
-        self.audio_output.setMuted(new_volume == 0)
+            self.pb_volume_on.setIcon(image.create_pixmap(self.volume_off_icon if new_volume==0 else self.volume_on_icon))
+            self.audio_output.setMuted(new_volume == 0)
 
-        self.audio_output.setVolume(new_volume)
+            self.audio_output.setVolume(new_volume)
 
     def volume_down(self):
         self.volume_step(mode="down")
@@ -408,28 +423,30 @@ class VideoPlayer(QtGui.QWidget):
         self.seek_slider.setFocus()
 
     def toggle_volume(self):
-        self.audio_output.setMuted(not self.audio_output.isMuted())
-        self.pb_volume_on.setIcon(image.create_pixmap(self.volume_off_icon if self.audio_output.isMuted() else self.volume_on_icon))
+        if self.audio_output:
+            self.audio_output.setMuted(not self.audio_output.isMuted())
+            self.pb_volume_on.setIcon(image.create_pixmap(self.volume_off_icon if self.audio_output.isMuted() else self.volume_on_icon))
 
     def frame_step(self, mode="next"):
-        if self.video_player.isPlaying():
-            self.mediaObject.pause()
+        if self.mediaObject:
+            if self.video_player.isPlaying():
+                self.mediaObject.pause()
 
-        total_time_miliseconds = self.mediaObject.totalTime()
-        time_miliseconds = self.mediaObject.currentTime()
+            total_time_miliseconds = self.mediaObject.totalTime()
+            time_miliseconds = self.mediaObject.currentTime()
 
-        frame_miliseconds = (1000/self.framerate)
+            frame_miliseconds = (1000/self.framerate)
 
-        if mode == "next":
-            time_miliseconds += frame_miliseconds
-            if time_miliseconds > total_time_miliseconds:
-                time_miliseconds = total_time_miliseconds
-        elif mode == "prev":
-            time_miliseconds -= frame_miliseconds
-            if time_miliseconds < 0:
-                time_miliseconds = 0
+            if mode == "next":
+                time_miliseconds += frame_miliseconds
+                if time_miliseconds > total_time_miliseconds:
+                    time_miliseconds = total_time_miliseconds
+            elif mode == "prev":
+                time_miliseconds -= frame_miliseconds
+                if time_miliseconds < 0:
+                    time_miliseconds = 0
 
-        self.video_player.seek(time_miliseconds)
+            self.video_player.seek(time_miliseconds)
 
     def frame_step_prev(self):
         if self.video_player.isPlaying():
@@ -453,14 +470,14 @@ class VideoPlayer(QtGui.QWidget):
             self.pb_time_total.setText(self.get_time_string(mode="total"))
 
     def play(self):
-        if self.video_player.mediaObject():
+        if self.mediaObject:
             self.timer.start()
             self.video_player.play()
             self.pb_play.setIcon(image.create_pixmap(self.pause_icon))
             self.seek_slider.setFocus()
 
     def pause(self):
-        if self.video_player.mediaObject():
+        if self.mediaObject:
             self.timer.stop()
             self.video_player.pause()
             self.pb_play.setIcon(image.create_pixmap(self.play_icon))
@@ -476,11 +493,12 @@ class VideoPlayer(QtGui.QWidget):
             self.exit_full_screen()
 
     def enter_full_screen(self):
-        self.normal_mode_parent = self.parent()
-        self.is_full_screen = True
-        self.video_player_full_screen = VideoPlayerFullScreen(video_player_widget=self)
-        self.timer_hide_controls.start()
-        self.seek_slider.setFocus()
+        if self.mediaObject:
+            self.normal_mode_parent = self.parent()
+            self.is_full_screen = True
+            self.video_player_full_screen = VideoPlayerFullScreen(video_player_widget=self)
+            self.timer_hide_controls.start()
+            self.seek_slider.setFocus()
 
     def exit_full_screen(self):
         self.normal_mode_parent.layout().addWidget(self)
