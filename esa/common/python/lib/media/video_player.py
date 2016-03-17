@@ -6,13 +6,17 @@ import sys
 import inspect
 import urllib
 
+import esa.common.python.lib.osys.power_management as power_management
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.lib.image.image as image
+import video as video
 import esa.common.python.lib.ui.ui as ui
 
+reload(power_management)
 reload(theme)
-reload(ui)
 reload(image)
+# reload(video)
+reload(ui)
 
 
 class KeyEventHandler(object):
@@ -325,7 +329,7 @@ class VideoPlayer(QtGui.QWidget):
         else:
             return False
 
-    def set_url(self, url, framerate=24):
+    def set_url(self, url):
         # Clears the values.
         self.url = None
         self.mediaObject = None
@@ -333,7 +337,7 @@ class VideoPlayer(QtGui.QWidget):
 
         if url:
             self.url = url
-            self.framerate = framerate
+            self.framerate = video.get_video_frame_rate(url)
 
             self.video_player.play(url)
             self.video_player.pause()
@@ -375,7 +379,7 @@ class VideoPlayer(QtGui.QWidget):
 
         hours = current_time_hours
         minutes = current_time_minutes - hours*60
-        seconds = current_time_seconds - minutes*60 - hours*60
+        seconds = current_time_seconds - minutes*60 - hours*60*60
         miliseconds = time_miliseconds - seconds*1000 - minutes*60*1000 - hours*60*60*1000
 
         frames = miliseconds/(1000/self.framerate)
@@ -384,7 +388,7 @@ class VideoPlayer(QtGui.QWidget):
 
     def get_time_string(self, mode="current"):
         hours, minutes, seconds, miliseconds, frames = self.get_time(mode=mode)
-        return ("%d:%02d:%02d:%02d" %(hours, minutes, seconds, frames))
+        return ("%d:%02d:%02d:%02d" %(hours, minutes, seconds, frames + 1))
 
     def update_time_label(self):
         self.pb_time.setText(self.get_time_string(mode=self.time_display_mode))
@@ -481,10 +485,8 @@ class VideoPlayer(QtGui.QWidget):
             self.timer.stop()
             self.video_player.pause()
             self.pb_play.setIcon(image.create_pixmap(self.play_icon))
-            # print "PAUSA"
             self.update_buffering_ui(force=True, force_state=False)
             self.seek_slider.setFocus()
-            # print "AFTER PAUSA"
 
     def toggle_full_screen(self):
         if not self.is_full_screen:

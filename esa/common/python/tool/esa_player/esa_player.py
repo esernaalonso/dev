@@ -1,7 +1,11 @@
 #######################################
 # imports
 
-import sys, os, inspect, re
+import sys
+import os
+import inspect
+import re
+import random
 import ctypes
 
 from PySide import QtCore, QtGui
@@ -12,12 +16,14 @@ import esa.common.python.lib.io.io as io
 import esa.common.python.lib.media.video as video
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.theme.theme as theme
+import esa.common.python.lib.osys.power_management as power_management
 
 reload(utils)
 reload(ui)
 reload(video)
 reload(image)
 reload(theme)
+reload(power_management)
 
 #######################################
 # attributes
@@ -35,6 +41,8 @@ class ESAPlayer(QtGui.QDialog):
         self.setObjectName('ESAPlayer')
         self.opened = True
 
+        power_management.prevent_standby()
+
         self.initUI()
 
     def initUI(self):
@@ -45,7 +53,7 @@ class ESAPlayer(QtGui.QDialog):
         # theme.apply_style(self, "esa_dark.qss")
 
         # Icon for the window
-        image_app_icon = image.get_image_file("play_yellow_32.png", self.get_current_folder())
+        image_app_icon = image.get_image_file("play_yellow.png", self.get_current_folder())
         self.setWindowIcon(image.create_pixmap(image_app_icon))
 
         # Allows maximize and minimize
@@ -72,6 +80,7 @@ class ESAPlayer(QtGui.QDialog):
         return os.path.dirname(self.get_current_file())
 
     def closeEvent(self, event):
+        power_management.allow_standby()
         self.opened = False
 
 
@@ -117,24 +126,23 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.pb_filter = ui.get_child(self.ui, "pb_filter")
         self.pb_clear = ui.get_child(self.ui, "pb_clear")
         self.lw_video = ui.get_child(self.ui, "lw_video")
+        self.lb_playing_name = ui.get_child(self.ui, "lb_playing_name")
+        self.pb_loop = ui.get_child(self.ui, "pb_loop")
+        self.pb_random = ui.get_child(self.ui, "pb_random")
 
         self.wg_video_player = ui.get_child(self.ui, "wg_video_player")
         self.video_player = video.video_player_widget()
         self.wg_video_player.layout().addWidget(self.video_player)
         theme.apply_style(self.wg_video_player, "video_player.qss")
-        self.wg_video_player.setEnabled(False)
+        self.set_video_player_state(False)
 
         # Set the ui images.
-        self.pb_folder.setIcon(image.create_pixmap(image.get_image_file("folder_16.png", self.get_current_folder())))
-        self.pb_filter.setIcon(image.create_pixmap(image.get_image_file("search_16.png", self.get_current_folder())))
-        self.pb_clear.setIcon(image.create_pixmap(image.get_image_file("eraser_16.png", self.get_current_folder())))
+        self.pb_folder.setIcon(image.create_pixmap(image.get_image_file("folder.png", self.get_current_folder())))
+        self.pb_filter.setIcon(image.create_pixmap(image.get_image_file("search.png", self.get_current_folder())))
+        self.pb_clear.setIcon(image.create_pixmap(image.get_image_file("eraser.png", self.get_current_folder())))
 
-        # test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior.flv")
-        # test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv")
-        # test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt03_morphology_of_limbs.flv")
-
-
-        # self.video_player.set_url(test_video_link, framerate=25)
+        self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop.png", self.get_current_folder())))
+        self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random.png", self.get_current_folder())))
 
         # Signals
         self.pb_folder.released.connect(self.choose_folder)
@@ -142,25 +150,78 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.le_filter.returnPressed.connect(self.fill_video_list)
         self.pb_filter.clicked.connect(self.fill_video_list)
         self.pb_clear.clicked.connect(self.clear_filters)
-        self.lw_video.itemDoubleClicked.connect(self.play_video)
+        # self.lw_video.itemDoubleClicked.connect(self.play_video)
+        self.lw_video.itemSelectionChanged.connect(self.play_video)
+        # self.lw_video.itemEntered.connect(self.play_video)
+        self.pb_loop.toggled.connect(self.update_icons)
+        self.pb_random.toggled.connect(self.update_icons)
 
-    def play_video(self, item):
+    def update_icons(self):
+        """ Function to update some icons depending on the state of the ui controls.
+        """
+        if self.pb_loop.isChecked():
+            self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop_checked.png", self.get_current_folder())))
+        else:
+            self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop.png", self.get_current_folder())))
+
+        if self.pb_random.isChecked():
+            self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random_checked.png", self.get_current_folder())))
+        else:
+            self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random.png", self.get_current_folder())))
+
+    def video_player_state_changed(self):
+        """ Operations to do when the player state changes.
+        """
+        if self.video_player.is_ready():
+            pass
+            # TODO: In case of we want to perform operations in the future when state changes.
+
+    def set_video_player_state(self, state):
+        """ Hides or shows the video player controls bar and the enabled state for the player widget
+
+        state (bool): New state.
+        """
+        self.wg_video_player.setEnabled(state)
+        self.video_player.wg_controls_bar.setVisible(state)
+
+    def play_next(self):
+        """ Jumps to the next item to play
+        """
+        if self.pb_loop.isChecked():
+            current_index = self.lw_video.currentRow()
+            next_index = (current_index + 1) if (current_index + 1) < self.lw_video.count() else 0
+            if self.pb_random.isChecked():
+                next_index = random.randint(0, self.lw_video.count() - 1)
+
+            self.lw_video.setCurrentRow(next_index)
+
+    def play_video(self):
         """ Plays the selected video in the player.
         """
-        # Searches the actual video
+        self.set_video_player_state(False)
+        if self.video_player.mediaObject:
+            self.video_player.mediaObject.finished.disconnect(self.play_next)
+            self.video_player.mediaObject.stateChanged.disconnect(self.video_player_state_changed)
+
+        # Searches the video file
+        item = self.lw_video.currentItem()
         candidates = io.get_files(self.current_folder, extensions=self.allowed_extensions, filters=[item.text()])
 
         # If exists, plays it in the player.
         if candidates:
             video_file = candidates[0]
-            video_source = QtCore.QUrl(video_file)
-            self.video_player.set_url(video_source, framerate=24)
-            self.wg_video_player.setEnabled(self.video_player.is_ready())
+            self.video_player.set_url(video_file)
+
+            self.set_video_player_state(self.video_player.is_ready())
+
             if self.video_player.is_ready():
+                self.lb_playing_name.setText("Playing: %s" % os.path.basename(video_file))
+                self.video_player.mediaObject.finished.connect(self.play_next)
+                self.video_player.mediaObject.stateChanged.connect(self.video_player_state_changed)
                 self.video_player.play()
 
     def clear_filters(self):
-        """Clears the filters and updates the ui.
+        """ Clears the filters and updates the ui.
         """
         self.le_filter.setFocus()
         self.le_filter.setText("")

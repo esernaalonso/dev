@@ -138,14 +138,14 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(2, 2, 2, 2)
 
-        test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior.flv")
-        # test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv")
-        # test_video_link = QtCore.QUrl("http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt03_morphology_of_limbs.flv")
+        test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior.flv"
+        # test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv"
+        # test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt03_morphology_of_limbs.flv"
 
         self.wg_test_video = ui.get_child(self.ui, "wg_test_video")
         self.video_player = video.video_player_widget()
         self.wg_test_video.layout().addWidget(self.video_player)
-        self.video_player.set_url(test_video_link, framerate=25)
+        self.video_player.set_url(test_video_link)
         theme.apply_style(self.wg_test_video, "inside_anim_video_player.qss")
 
 
