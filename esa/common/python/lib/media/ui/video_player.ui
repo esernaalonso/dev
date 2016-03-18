@@ -126,7 +126,23 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pb_play_prev">
+         <widget class="QPushButton" name="pb_track_prev">
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_step_prev">
           <property name="maximumSize">
            <size>
             <width>20</width>
@@ -158,7 +174,23 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pb_play_next">
+         <widget class="QPushButton" name="pb_step_next">
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_track_next">
           <property name="maximumSize">
            <size>
             <width>20</width>
@@ -183,7 +215,7 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
+            <width>10</width>
             <height>10</height>
            </size>
           </property>
@@ -225,7 +257,7 @@
          <widget class="QWidget" name="wg_seek" native="true">
           <property name="minimumSize">
            <size>
-            <width>90</width>
+            <width>40</width>
             <height>0</height>
            </size>
           </property>
@@ -397,7 +429,7 @@
          <widget class="QWidget" name="wg_volume" native="true">
           <property name="minimumSize">
            <size>
-            <width>75</width>
+            <width>40</width>
             <height>0</height>
            </size>
           </property>
@@ -427,11 +459,61 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>15</width>
+            <width>10</width>
             <height>10</height>
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_random">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_loop">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pb_expand">

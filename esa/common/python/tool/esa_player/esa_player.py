@@ -16,6 +16,7 @@ import esa.common.python.lib.io.io as io
 import esa.common.python.lib.media.video as video
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.theme.theme as theme
+import esa.common.python.lib.logger.logger as logger
 import esa.common.python.lib.osys.power_management as power_management
 
 reload(utils)
@@ -23,6 +24,7 @@ reload(ui)
 reload(video)
 reload(image)
 reload(theme)
+reload(logger)
 reload(power_management)
 
 #######################################
@@ -127,14 +129,18 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.pb_clear = ui.get_child(self.ui, "pb_clear")
         self.lw_video = ui.get_child(self.ui, "lw_video")
         self.lb_playing_name = ui.get_child(self.ui, "lb_playing_name")
-        self.pb_loop = ui.get_child(self.ui, "pb_loop")
-        self.pb_random = ui.get_child(self.ui, "pb_random")
 
         self.wg_video_player = ui.get_child(self.ui, "wg_video_player")
         self.video_player = video.video_player_widget()
         self.wg_video_player.layout().addWidget(self.video_player)
         theme.apply_style(self.wg_video_player, "video_player.qss")
+        self.video_player.set_step_options(mode="percent", size=0.01, pause_on_step=False)
         self.set_video_player_state(False)
+
+        self.pb_track_prev = ui.get_child(self.ui, "pb_track_prev")
+        self.pb_track_next = ui.get_child(self.ui, "pb_track_next")
+        self.pb_loop = ui.get_child(self.ui, "pb_loop")
+        self.pb_random = ui.get_child(self.ui, "pb_random")
 
         # Set the ui images.
         self.pb_folder.setIcon(image.create_pixmap(image.get_image_file("folder.png", self.get_current_folder())))
@@ -153,21 +159,23 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         # self.lw_video.itemDoubleClicked.connect(self.play_video)
         self.lw_video.itemSelectionChanged.connect(self.play_video)
         # self.lw_video.itemEntered.connect(self.play_video)
-        self.pb_loop.toggled.connect(self.update_icons)
-        self.pb_random.toggled.connect(self.update_icons)
+        # self.pb_loop.toggled.connect(self.update_icons)
+        # self.pb_random.toggled.connect(self.update_icons)
+        self.pb_track_prev.clicked.connect(self.play_prev)
+        self.pb_track_next.clicked.connect(self.play_next)
 
-    def update_icons(self):
-        """ Function to update some icons depending on the state of the ui controls.
-        """
-        if self.pb_loop.isChecked():
-            self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop_checked.png", self.get_current_folder())))
-        else:
-            self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop.png", self.get_current_folder())))
-
-        if self.pb_random.isChecked():
-            self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random_checked.png", self.get_current_folder())))
-        else:
-            self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random.png", self.get_current_folder())))
+    # def update_icons(self):
+    #     """ Function to update some icons depending on the state of the ui controls.
+    #     """
+    #     if self.pb_loop.isChecked():
+    #         self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop_checked.png", self.get_current_folder())))
+    #     else:
+    #         self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop.png", self.get_current_folder())))
+    #
+    #     if self.pb_random.isChecked():
+    #         self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random_checked.png", self.get_current_folder())))
+    #     else:
+    #         self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random.png", self.get_current_folder())))
 
     def video_player_state_changed(self):
         """ Operations to do when the player state changes.
@@ -184,24 +192,57 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.wg_video_player.setEnabled(state)
         self.video_player.wg_controls_bar.setVisible(state)
 
+    def change_track(self, direction="next"):
+        """ Jumps to the next / prev item to play or random.
+
+            Args:
+                direction (str, optional): Indicates if go to next or prev
+        """
+
+        current_index = self.lw_video.currentRow()
+        new_index = current_index
+
+        if direction == "next":
+            new_index = (current_index + 1) if (current_index + 1) < self.lw_video.count() else 0
+        if direction == "prev":
+            new_index = (current_index - 1) if (current_index - 1) >= 0 else (self.lw_video.count() - 1)
+
+        if self.pb_random.isChecked():
+            new_index = random.randint(0, self.lw_video.count() - 1)
+
+        if new_index != current_index:
+            self.lw_video.setCurrentRow(new_index)
+
+    def play_prev(self):
+        """ Jumps to the prev item to play
+        """
+        self.change_track(direction="prev")
+
     def play_next(self):
         """ Jumps to the next item to play
         """
-        if self.pb_loop.isChecked():
-            current_index = self.lw_video.currentRow()
-            next_index = (current_index + 1) if (current_index + 1) < self.lw_video.count() else 0
-            if self.pb_random.isChecked():
-                next_index = random.randint(0, self.lw_video.count() - 1)
+        self.change_track(direction="next")
 
-            self.lw_video.setCurrentRow(next_index)
+    def loop(self):
+        if self.pb_loop.isChecked():
+            self.play_next()
 
     def play_video(self):
         """ Plays the selected video in the player.
         """
+        if self.video_player.is_ready():
+            try:
+                self.video_player.media_object.finished.disconnect(self.loop)
+            except Exception as e:
+                logger.warning(("Signal disconnect Fail -> %s" % e), level=0)
+
+            try:
+                self.video_player.media_object.stateChanged.disconnect(self.video_player_state_changed)
+            except Exception as e:
+                logger.warning(("Signal disconnect Fail -> %s" % e), level=0)
+
+
         self.set_video_player_state(False)
-        if self.video_player.mediaObject:
-            self.video_player.mediaObject.finished.disconnect(self.play_next)
-            self.video_player.mediaObject.stateChanged.disconnect(self.video_player_state_changed)
 
         # Searches the video file
         item = self.lw_video.currentItem()
@@ -216,8 +257,8 @@ class ESAPlayerMainWidget(QtGui.QWidget):
 
             if self.video_player.is_ready():
                 self.lb_playing_name.setText("Playing: %s" % os.path.basename(video_file))
-                self.video_player.mediaObject.finished.connect(self.play_next)
-                self.video_player.mediaObject.stateChanged.connect(self.video_player_state_changed)
+                self.video_player.media_object.finished.connect(self.loop)
+                self.video_player.media_object.stateChanged.connect(self.video_player_state_changed)
                 self.video_player.play()
 
     def clear_filters(self):

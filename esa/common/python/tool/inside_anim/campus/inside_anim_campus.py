@@ -145,6 +145,8 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.wg_test_video = ui.get_child(self.ui, "wg_test_video")
         self.video_player = video.video_player_widget()
         self.wg_test_video.layout().addWidget(self.video_player)
+        self.video_player.set_step_options(mode="frame", size=1, pause_on_step=True)
+        self.video_player.set_controls_visibility(["pb_track_prev", "pb_track_next", "pb_loop", "pb_random"], False)
         self.video_player.set_url(test_video_link)
         theme.apply_style(self.wg_test_video, "inside_anim_video_player.qss")
 
