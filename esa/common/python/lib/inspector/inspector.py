@@ -11,6 +11,7 @@ import pip
 
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.lib.ui.ui as ui
+import esa.common.python.lib.io.io as io
 import esa.common.python.lib.image.image as image
 
 reload(theme)
@@ -93,7 +94,7 @@ def get_file_image_dependencies(source_file):
 
         folder = os.path.dirname(source_file)
 
-        regx = re.compile('.*"(.*\.png|.*\.jpg)".*', re.MULTILINE)
+        regx = re.compile('.*"(.*\.png|.*\.jpg|.*\.gif|.*\.bmp)".*', re.MULTILINE)
         matches = regx.findall(data)
         if len(matches) > 0:
             for match in matches:
@@ -104,6 +105,36 @@ def get_file_image_dependencies(source_file):
                         image_dependencies.append(image_dependency)
 
     return image_dependencies
+
+
+def get_file_exe_dependencies(source_file):
+    """Gets the lines that contain a call to a .exe file from a given file. Skips the commented lines.
+
+    Args:
+        source_file (string): Path of the file where search the .exe dependencies in.
+
+    Returns:
+        List of strings: List of paths pointing to the .exe files found.
+    """
+    exe_dependencies = []
+
+    with open(source_file, "r") as f:
+        data = f.read()
+        f.close()
+
+        folder = os.path.dirname(source_file)
+
+        regx = re.compile('.*"(.*\.exe)".*', re.MULTILINE)
+        matches = regx.findall(data)
+        if len(matches) > 0:
+            for match in matches:
+                match = match.lstrip()
+                if not match.startswith("#") and match != "":
+                    exe_dependency = io.get_file(str(match), folder, recursive=True)
+                    if exe_dependency:
+                        exe_dependencies.append(exe_dependency)
+
+    return exe_dependencies
 
 
 def get_file_qss_dependencies(source_file):
@@ -382,7 +413,8 @@ def get_file_pip_dependencies(source_file, recursive=True):
 
 if __name__ == "__main__":
     # testFile = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
-    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus.py"
+    # source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus.py"
+    source_file = "P:\\dev\\esa\\common\\python\\lib\\ffmpeg\\ffmpeg.py"
 
     # imports = get_file_imports_info(testFile)
     # for imp in imports:
@@ -399,8 +431,8 @@ if __name__ == "__main__":
     # pip_dependencies = get_file_pip_dependencies(testFile)
     # print pip_dependencies
 
-    image_files = get_file_image_dependencies(source_file)
-    for img in image_files:
-        print img
+    exe_files = get_file_exe_dependencies(source_file)
+    for exe in exe_files:
+        print exe
 
     pass

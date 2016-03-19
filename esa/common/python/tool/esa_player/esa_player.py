@@ -14,6 +14,7 @@ import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
 import esa.common.python.lib.io.io as io
 import esa.common.python.lib.media.video as video
+import esa.common.python.lib.media.video_player as video_player
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.lib.logger.logger as logger
@@ -97,7 +98,7 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.updating_ui = False
 
         # Allowed extensions
-        self.allowed_extensions = [".avi", ".flv", ".mp4", ".mov"]
+        self.allowed_extensions = [".avi", ".flv", ".mkv", ".mp4", ".mov"]
 
         self.initUI()
 
@@ -131,7 +132,7 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.lb_playing_name = ui.get_child(self.ui, "lb_playing_name")
 
         self.wg_video_player = ui.get_child(self.ui, "wg_video_player")
-        self.video_player = video.video_player_widget()
+        self.video_player = video_player.video_player_widget()
         self.wg_video_player.layout().addWidget(self.video_player)
         theme.apply_style(self.wg_video_player, "video_player.qss")
         self.video_player.set_step_options(mode="percent", size=0.01, pause_on_step=False)

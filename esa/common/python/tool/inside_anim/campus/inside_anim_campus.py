@@ -8,17 +8,10 @@ from PySide import QtCore, QtGui
 
 import esa.common.python.lib.utils as utils
 import esa.common.python.lib.ui.ui as ui
-import esa.common.python.lib.media.video as video
+import esa.common.python.lib.media.video_player as video_player
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.tool.inside_anim.campus.credential.credential as credential
-
-reload(utils)
-reload(ui)
-reload(video)
-reload(image)
-reload(theme)
-reload(credential)
 
 #######################################
 # attributes
@@ -143,7 +136,7 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         # test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt03_morphology_of_limbs.flv"
 
         self.wg_test_video = ui.get_child(self.ui, "wg_test_video")
-        self.video_player = video.video_player_widget()
+        self.video_player = video_player.video_player_widget()
         self.wg_test_video.layout().addWidget(self.video_player)
         self.video_player.set_step_options(mode="frame", size=1, pause_on_step=True)
         self.video_player.set_controls_visibility(["pb_track_prev", "pb_track_next", "pb_loop", "pb_random"], False)

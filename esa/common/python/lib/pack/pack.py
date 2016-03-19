@@ -275,7 +275,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             ui_search_folder = os.path.dirname(source_file)
             ui_files = inspector.get_file_ui_dependencies(source_file)
 
-            # If it has ui files, packages the imports as libraries
+            # If it has ui files, packages the files as uis
             if ui_files:
                 for ui_file in ui_files:
                     # Prints the type of packaging.
@@ -287,7 +287,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             image_search_folder = os.path.dirname(source_file)
             image_files = inspector.get_file_image_dependencies(source_file)
 
-            # If it has image files, packages the imports as libraries
+            # If it has image files, packages the files as images
             if image_files:
                 for image_file in image_files:
                     # Prints the type of packaging.
@@ -299,7 +299,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             qss_search_folder = os.path.dirname(source_file)
             qss_files = inspector.get_file_qss_dependencies(source_file)
 
-            # If it has qss files, packages the imports as themes
+            # If it has qss files, packages the files as themes
             if qss_files:
                 for qss_file in qss_files:
                     # Prints the qss dependency.
@@ -312,13 +312,26 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
             font_search_folder = os.path.dirname(source_file)
             font_files = inspector.get_file_font_dependencies(source_file)
 
-            # If it has ttf files, packages the imports as fonts
+            # If it has ttf files, packages the files as fonts
             if font_files:
                 for font_file in font_files:
                     # Prints the font dependency.
-                    logger.info(("Packaging QSS dependency -> %s" % font_file), level=level)
+                    logger.info(("Packaging TTF dependency -> %s" % font_file), level=level)
                     # pack_file(font_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "fonts"), packaging_mode="regular")
                     pack_file(font_file, pack_folder=dest_folder, level=level+1, packaging_type="fonts", packaging_mode="regular")
+
+            # Search dependencies like qss files and package them.
+            logger.info(("Searching source EXE dependencies -> %s" % source_file), level=level)
+            exe_search_folder = os.path.dirname(source_file)
+            exe_files = inspector.get_file_exe_dependencies(source_file)
+
+            # If it has exe files, packages the files as exes
+            if exe_files:
+                for exe_file in exe_files:
+                    # Prints the exe dependency.
+                    logger.info(("Packaging EXE dependency -> %s" % exe_file), level=level)
+                    # pack_file(exe_file, pack_folder=dest_folder, level=level+1, packaging_type=os.path.join("lib", "exes"), packaging_mode="regular")
+                    pack_file(exe_file, pack_folder=dest_folder, level=level+1, packaging_type="exes", packaging_mode="regular")
 
         else:
             logger.info(("Packaging/File Type non explorable. Direct Copy to -> %s" % dest_file), level=level)
@@ -414,7 +427,9 @@ def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous
 
 if __name__ == "__main__":
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
-    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus_launcher.py"
+    # source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus_launcher.py"
+    source_file = "P:\\dev\\esa\\common\\python\\tool\\esa_player\\esa_player_launcher.py"
     pack_folder = "F:\\project\\tmp\\pack"
 
-    pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True)
+    # pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True)
+    pack_module(source_file, pack_folder=pack_folder, custom_name="esa_player", remove_previous=True)

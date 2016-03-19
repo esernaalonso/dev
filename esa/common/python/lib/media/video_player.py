@@ -9,14 +9,8 @@ import urllib
 import esa.common.python.lib.osys.power_management as power_management
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.lib.image.image as image
-import video as video
+import esa.common.python.lib.media.video as video
 import esa.common.python.lib.ui.ui as ui
-
-reload(power_management)
-reload(theme)
-reload(image)
-# reload(video)
-reload(ui)
 
 
 class KeyEventHandler(object):
@@ -561,3 +555,8 @@ class VideoPlayer(QtGui.QWidget):
         self.timer_hide_controls.stop()
         self.update_controls_visibility(state=True)
         self.seek_slider.setFocus()
+
+
+def video_player_widget():
+    video_widget = VideoPlayer()
+    return video_widget

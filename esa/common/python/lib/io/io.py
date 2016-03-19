@@ -52,6 +52,18 @@ def get_files(folder_path, extensions=None, filters=None, recursive=True):
     return files
 
 
+def get_file(name, folder, recursive=True):
+    extension = os.path.splitext(name)[1]
+    extensions = [extension] if extension else None
+    requested_files = get_files(folder, extensions=extensions, recursive=recursive)
+
+    for requested_file in requested_files:
+        short_name = os.path.basename(os.path.splitext(name)[0])
+        file_base_name = os.path.basename(os.path.splitext(requested_file)[0])
+        if short_name == file_base_name:
+            return requested_file
+
+
 def replace_line_in_file(source_file, replace_pattern, replace_string, keep_old_commented=False):
     # Creates a temporal file to do the operations
     temp_file_handler, temp_file_path = tempfile.mkstemp(dir=os.path.dirname(source_file))
