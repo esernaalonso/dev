@@ -428,8 +428,11 @@ def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous
 if __name__ == "__main__":
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus_launcher.py"
-    source_file = "P:\\dev\\esa\\common\\python\\tool\\esa_player\\esa_player_launcher.py"
+    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\summus_monitor_test_launcher.py"
+    # source_file = "P:\\dev\\esa\\common\\python\\tool\\esa_player\\esa_player_launcher.py"
     pack_folder = "F:\\project\\tmp\\pack"
 
     # pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True)
-    pack_module(source_file, pack_folder=pack_folder, custom_name="esa_player", remove_previous=True)
+    pack_module(source_file, pack_folder=pack_folder, custom_name="summus_monitor_test", remove_previous=True)
+    # pack_module(source_file, pack_folder=pack_folder, custom_name="esa_player", remove_previous=True)
+    # pack_module(source_file, pack_folder=pack_folder, custom_name="template_tool", remove_previous=True)
