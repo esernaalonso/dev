@@ -1,1 +1,1 @@
-START python <file_name>
+START <python_command> <file_name>

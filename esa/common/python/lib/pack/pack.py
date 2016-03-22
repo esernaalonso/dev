@@ -8,13 +8,14 @@ import inspect
 
 import esa.common.python.lib.logger.logger as logger
 import esa.common.python.lib.inspector.inspector as inspector
+import esa.common.python.dist.dist as dist
 import esa.common.python.lib.io.io as io
 import esa.common.python.lib.ui.ui as ui
 
-reload(logger)
-reload(inspector)
-reload(io)
-reload(ui)
+# reload(logger)
+# reload(inspector)
+# reload(io)
+# reload(ui)
 
 #######################################
 # functionality
@@ -55,7 +56,7 @@ def create_install_bat(install_bat_file, remove_previous=False, **kwargs):
                     io.replace_line_in_file(install_bat_file, pip_pattern, pip_string)
 
 
-def create_execute_bat(execute_bat_file, execution_file_name, remove_previous=False, **kwargs):
+def create_execute_bat(execute_bat_file, execution_file_name, remove_previous=False, standalone=True, **kwargs):
     # Gets the logs level values from the kwargs
     level = 0
     if "level" in kwargs: level = kwargs["level"]
@@ -74,8 +75,12 @@ def create_execute_bat(execute_bat_file, execution_file_name, remove_previous=Fa
         # Searches pip dependent modules to prepare the install.bat for a good resources install.
         if os.path.exists(execute_bat_file):
             logger.info(("Setting up execution string -> %s" % execute_bat_file), level=level)
-            execute_pattern = "START python <file_name>"
-            execute_string = "START python <file_name>"
+            execute_pattern = "START <python_command> <file_name>"
+            execute_string = "START <python_command> <file_name>"
+            if standalone:
+                execute_string = execute_string.replace("<python_command>", os.path.join("python_dist", "python.exe"))
+            else:
+                execute_string = execute_string.replace("<python_command>", "python")
             execute_string = execute_string.replace("<file_name>", execution_file_name)
             io.replace_line_in_file(execute_bat_file, execute_pattern, execute_string)
 
@@ -202,6 +207,9 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     remove_previous = False
     if "remove_previous" in kwargs: remove_previous = kwargs["remove_previous"]
 
+    standalone = True
+    if "standalone" in kwargs: standalone = kwargs["standalone"]
+
     # If source file does not exist, cannot start the packaging.
     if not os.path.exists(source_file):
         logger.error(("File to Pack does not exist -> %s" % source_file), level=level)
@@ -219,6 +227,8 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
         package_sub_folder = ""
     elif os.path.basename(os.path.normpath(pack_folder)) != packaging_type:
         package_sub_folder = packaging_type
+        if not package_sub_folder.startswith("lib") and not pack_folder.endswith("lib"):
+            package_sub_folder = os.path.join("lib", package_sub_folder)
     dest_folder = os.path.join(pack_folder, package_sub_folder)
     logger.info(("Destination Folder -> %s" % dest_folder), level=level)
 
@@ -246,7 +256,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
         # If the packaging_mode is root, need to create the execute.bat
         if packaging_mode == "root":
             execute_bat_file = os.path.join(os.path.dirname(dest_file), "execute.bat")
-            create_execute_bat(execute_bat_file, os.path.basename(dest_file), remove_previous=True, level=level+1)
+            create_execute_bat(execute_bat_file, os.path.basename(dest_file), standalone=standalone, remove_previous=True, level=level+1)
 
         # In this case is explorable. Can contain imports, ui dependencies, etc.
         if packaging_type in explorable_packaging_types and file_type in explorable_file_types:
@@ -388,7 +398,44 @@ def pack_installer(source_file, pack_folder=None, **kwargs):
             create_install_bat(install_bat_file, remove_previous=True, level=level+1)
 
 
-def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous=True, **kwargs):
+def pack_dist(pack_folder=None, **kwargs):
+    """Packs a installer folder for the source file and dependencies inside the pack folder, creating a installer folder.
+
+    Args:
+        pack_folder (string): The path to the folder to create the python dist folder inside.
+        **kwargs: Extra arguments like log level, etc.
+            remove_previous (bool, optional): Indicates if it has to remove the previous pack dist folder.
+            level (int): Indicates the level of depth in the logs.
+    """
+    # Gets the logs level values from the kwargs
+    level = 0
+    if "level" in kwargs: level = kwargs["level"]
+
+    remove_previous = False
+    if "remove_previous" in kwargs: remove_previous = kwargs["remove_previous"]
+
+    if os.path.exists(source_file):
+        dist_folder = os.path.join(pack_folder, "python_dist")
+
+        # if a clean pack is needed, the old one is deleted.
+        if os.path.exists(dist_folder) and remove_previous:
+            logger.info(("Removing Current Dist Folder -> %s" % dist_folder), level=level)
+            shutil.rmtree(dist_folder)
+
+        # if the dist_folder doesn't exist, is created.
+        if not os.path.exists(dist_folder):
+            logger.info(("Creating Dist Folder -> %s" % dist_folder), level=level)
+
+            # Pack the dist folder.
+            source_dist_folder = dist.get_dist_folder(type="miniconda2")
+            if source_dist_folder and os.path.exists(source_dist_folder):
+                logger.info(("Packaging Dist Folder -> %s" % source_dist_folder), level=level)
+                shutil.copytree(source_dist_folder, dist_folder)
+
+                # TODO: remove unused folders and files.
+
+
+def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous=True, standalone=True, **kwargs):
     """Packs a python file and all depedencies in and independent module folder.
 
     Args:
@@ -396,6 +443,7 @@ def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous
         pack_folder (string): The path to the folder to use as pack folder.
         custom_name (string, optional): Custom name for the packed module folder structure.
         remove_previous (bool, optional): Indicates if it has to remove the previous pack folder.
+        standalone (bool, optional): Indicates if it has to be executable standalone or needs python installed.
         **kwargs: Extra arguments like custom dependencies, etc.
     """
 
@@ -410,14 +458,22 @@ def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous
         # This will be the module name. Uses the given file name as module name if a custom name is not provided
         module_name = os.path.basename(os.path.splitext(source_file)[0]) if not custom_name else custom_name
 
+        # pack_installer_folder = os.path.join(pack_folder, module_name)
+        pack_module_folder = os.path.join(pack_folder, module_name)
+
         # Creates the installer
         # The real pack folder is a new folder with the name of the module in the provided pack folder.
-        pack_installer_folder = os.path.join(pack_folder, module_name)
-        pack_installer(source_file, pack_folder=pack_installer_folder, level=1, remove_previous=remove_previous)
+        # pack_installer(source_file, pack_folder=pack_installer_folder, level=1, remove_previous=remove_previous)
 
         # Packs the file. Creates one more level folder to contain the actual application.
-        pack_module_folder = os.path.join(pack_folder, module_name, module_name)
+        # pack_module_folder = os.path.join(pack_folder, module_name, module_name)
+        # pack_module_folder = os.path.join(pack_folder, module_name)
         pack_file(source_file, pack_folder=pack_module_folder, level=1, remove_previous=remove_previous)
+
+        # Creates the python dist in case the mode is standalone:
+        if standalone:
+            pack_dist(pack_folder=pack_module_folder, level=1, remove_previous=remove_previous)
+
     else:
         logger.error(("Source File must be provided -> %s" % source_file))
         return None
@@ -426,10 +482,13 @@ def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous
 # execution
 
 if __name__ == "__main__":
+    # source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI_launcher.py"
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
-    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus_launcher.py"
+    # source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus_launcher.py"
+    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus.py"
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\summus_monitor_test_launcher.py"
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\esa_player\\esa_player_launcher.py"
+
     pack_folder = "F:\\project\\tmp\\pack"
 
     pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True)
