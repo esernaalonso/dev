@@ -8,7 +8,7 @@
 
 import os
 
-from PySide import QtCore, QtGui, QtUiTools
+from PySide import QtCore, QtGui, QtUiTools, QtXml
 
 import esa.common.python.lib.logger.logger as logger
 import esa.common.python.lib.io.io as io

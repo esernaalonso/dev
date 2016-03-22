@@ -66,7 +66,7 @@ class TemplateToolStdUIMainWidget(QtGui.QWidget):
         current_file = self.get_current_file()
         current_folder = os.path.dirname(current_file)
         main_ui_file = ui.get_ui_file("templateToolStdUI.ui", current_folder)
-        self.ui = ui.loadUiWidgetFromPyFile(main_ui_file, parent=self)
+        self.ui = ui.loadUiWidget(main_ui_file, parent=self)
 
         # Layout
         # self.setMinimumSize(200, 100)

@@ -13,4 +13,7 @@
 # print extension
 # print "--------------------------"
 
-import esa.common.python.lib.media.video as video
+# import esa.common.python.lib.media.video as video
+
+import sys
+print sys.platform
