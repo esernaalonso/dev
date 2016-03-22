@@ -1,0 +1,38 @@
+{
+  "_etag": "\"56ddf18f-1d0\"", 
+  "_mod": "Mon, 07 Mar 2016 21:24:31 GMT", 
+  "_url": "https://repo.continuum.io/pkgs/free/noarch/", 
+  "info": {}, 
+  "packages": {
+    "matplotlib-tests-1.5.1-py_0.tar.bz2": {
+      "build": "py_0", 
+      "build_number": 0, 
+      "depends": [
+        "python"
+      ], 
+      "license": "PSF-based (http://matplotlib.sourceforge.net/users/license.html)", 
+      "license_family": "PSF", 
+      "md5": "23256aaa796a208646b9744860421c44", 
+      "name": "matplotlib-tests", 
+      "sig": null, 
+      "size": 35931550, 
+      "subdir": "noarch", 
+      "version": "1.5.1"
+    }, 
+    "suds-jurko-0.6-py_0.tar.bz2": {
+      "build": "py_0", 
+      "build_number": 0, 
+      "depends": [
+        "python"
+      ], 
+      "license": "GNU Library or Lesser General Public License (LGPL)", 
+      "license_family": "GPL2", 
+      "md5": "6a8b95dbd6ce44b286678f35dc76d686", 
+      "name": "suds-jurko", 
+      "sig": null, 
+      "size": 227478, 
+      "subdir": "noarch", 
+      "version": "0.6"
+    }
+  }
+}

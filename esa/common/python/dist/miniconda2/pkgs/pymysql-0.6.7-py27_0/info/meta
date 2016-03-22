@@ -1,0 +1,7 @@
+pkg: pymysql-0.6.7
+dist: pymysql-0.6.7-py27_0
+home: https://github.com/PyMySQL/PyMySQL/
+license: MIT
+has_bin: False
+has_lib: False
+has_py: False

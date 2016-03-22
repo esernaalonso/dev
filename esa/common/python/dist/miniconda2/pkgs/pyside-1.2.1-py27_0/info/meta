@@ -1,0 +1,7 @@
+pkg: pyside-1.2.1
+dist: pyside-1.2.1-py27_0
+home: https://pypi.python.org/pypi/PySide
+license: LGPL
+has_bin: False
+has_lib: False
+has_py: False

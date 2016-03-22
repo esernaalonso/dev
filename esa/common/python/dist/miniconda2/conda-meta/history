@@ -1,0 +1,42 @@
+==> 2016-03-21 20:51:05 <==
+# cmd: F:\project\dev\esa\common\python\dist\miniconda2\Scripts\conda-script.py install pyside
+conda-3.19.0-py27_0
+conda-env-2.4.5-py27_0
+menuinst-1.3.1-py27_0
+msvc_runtime-1.0.1-vc9_0
+pip-7.1.2-py27_0
+pycosat-0.6.1-py27_0
+pycrypto-2.6.1-py27_3
+python-2.7.11-0
+pyyaml-3.11-py27_2
+requests-2.9.0-py27_0
+setuptools-18.8.1-py27_0
+wheel-0.26.0-py27_1
+==> 2016-03-21 20:53:02 <==
+# cmd: F:\project\dev\esa\common\python\dist\miniconda2\Scripts\conda-script.py install pyside
+-conda-3.19.0-py27_0
+-menuinst-1.3.1-py27_0
+-pip-7.1.2-py27_0
+-python-2.7.11-0
+-pyyaml-3.11-py27_2
+-requests-2.9.0-py27_0
+-setuptools-18.8.1-py27_0
+-wheel-0.26.0-py27_1
++conda-4.0.5-py27_0
++menuinst-1.3.2-py27_0
++pip-8.1.1-py27_0
++pyside-1.2.1-py27_0
++python-2.7.11-2
++pyyaml-3.11-py27_3
++requests-2.9.1-py27_0
++setuptools-20.3-py27_0
++wheel-0.29.0-py27_0
+# install specs: ['pyside', 'conda', 'python 2.7*']
+==> 2016-03-21 20:53:24 <==
+# cmd: F:\project\dev\esa\common\python\dist\miniconda2\Scripts\conda-script.py install psutil
++psutil-4.1.0-py27_0
+# install specs: ['psutil', 'conda', 'python 2.7*']
+==> 2016-03-21 20:53:37 <==
+# cmd: F:\project\dev\esa\common\python\dist\miniconda2\Scripts\conda-script.py install pymysql
++pymysql-0.6.7-py27_0
+# install specs: ['pymysql', 'conda', 'python 2.7*']

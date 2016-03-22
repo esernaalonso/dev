@@ -1,0 +1,20 @@
+==> git log -n1 <==
+commit 9d28a9a8ec6b966ad5cb9c1e5806645eecac1405
+Author: Ilan Schnell <ilanschnell@gmail.com>
+Date:   Thu Dec 17 13:33:54 2015 -0600
+
+    add release date
+
+==> git describe --tags --dirty <==
+3.19.0
+
+==> git status <==
+HEAD detached at 3.19.0
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	ANACONDA_DIST.txt
+	bld.bat
+
+nothing added to commit but untracked files present (use "git add" to track)
+

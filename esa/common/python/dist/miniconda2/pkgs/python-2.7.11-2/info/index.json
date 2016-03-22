@@ -1,0 +1,17 @@
+{
+  "arch": "x86_64", 
+  "build": "2", 
+  "build_number": 2, 
+  "depends": [
+    "msvc_runtime"
+  ], 
+  "license": "PSF", 
+  "name": "python", 
+  "platform": "win", 
+  "requires": [
+    "msvc_runtime 1.0.1"
+  ], 
+  "subdir": "win-64", 
+  "track_features": "vc9", 
+  "version": "2.7.11"
+}
