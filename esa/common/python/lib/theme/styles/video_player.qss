@@ -764,7 +764,7 @@ QStatusBar::item
 QMenu
 {
     border: 1px solid #757575;
-    color: #e1e1e1;
+    color: #757575;
     background-color: #222222;
     margin: 0px;
 }

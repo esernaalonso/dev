@@ -32,6 +32,11 @@ def create_pixmap(source_image):
         return QtGui.QPixmap(source_image)
 
 
+def create_icon(source_image):
+    if os.path.exists(source_image):
+        return QtGui.QIcon(source_image)
+
+
 def create_movie(source_image):
     if os.path.exists(source_image):
         return QtGui.QMovie(source_image)

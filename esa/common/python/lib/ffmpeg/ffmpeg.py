@@ -40,7 +40,7 @@ def run(command_options, exe_name="ffmpeg.exe"):
 # execution
 
 if __name__ == "__main__":
-    url = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior.flv"
+    url = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior.mp4"
     ffmpeg_options = ["-i", url]
     output = run(ffmpeg_options, exe_name="ffprobe.exe")
     print "-----------------------------------"

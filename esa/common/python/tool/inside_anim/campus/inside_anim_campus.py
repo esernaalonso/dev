@@ -72,8 +72,8 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
     def __init__(self):
         super(InsideAnimCampusMainWidget, self).__init__()
         self.credentials = credential.Credentials()
-        self.initLoginUI()
-        # self.initUI()
+        # self.initLoginUI()
+        self.initUI()
 
     def get_current_file(self):
         return os.path.abspath(inspect.getsourcefile(lambda:0))
@@ -131,8 +131,10 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(2, 2, 2, 2)
 
+        # test_video_link = "P:/insideAnim/educ/masters/animation/05_creatures/01_creatures_workshop/video/creatures01_lsn01_sbt01_the_basis_of_animal_behavior.mp4"
+        # test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_quarter.mp4"
         # test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior.flv"
-        test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv"
+        # test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt02_animal_anatomy_vs_human_anatomy.flv"
         # test_video_link = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt03_morphology_of_limbs.flv"
 
         self.wg_test_video = ui.get_child(self.ui, "wg_test_video")
@@ -140,8 +142,23 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.wg_test_video.layout().addWidget(self.video_player)
         self.video_player.set_step_options(mode="frame", size=1, pause_on_step=True)
         self.video_player.set_controls_visibility(["pb_track_prev", "pb_track_next", "pb_loop", "pb_random"], False)
-        self.video_player.set_url(test_video_link)
         theme.apply_style(self.wg_test_video, "inside_anim_video_player.qss")
+
+        video_0 = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_quarter.mp4"
+        video_1 = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_third.mp4"
+        video_2 = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_half.mp4"
+        video_3 = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_twothirds.mp4"
+        video_4 = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_threequarters.mp4"
+        video_5 = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_full.mp4"
+
+        self.video_player.add_url(video_0)
+        self.video_player.add_url(video_1)
+        self.video_player.add_url(video_2)
+        self.video_player.add_url(video_3)
+        self.video_player.add_url(video_4)
+        self.video_player.add_url(video_5)
+
+        self.video_player.set_current_url(0)
 
 
 def InsideAnimCampusRun():

@@ -252,7 +252,9 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         # If exists, plays it in the player.
         if candidates:
             video_file = candidates[0]
-            self.video_player.set_url(video_file)
+            self.video_player.clear_urls()
+            self.video_player.add_url(video_file)
+            self.video_player.set_current_url(0, reset=True)
 
             self.set_video_player_state(self.video_player.is_ready())
 

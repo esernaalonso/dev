@@ -181,12 +181,18 @@ class VideoPlayer(QtGui.QWidget):
         self.is_full_screen = False
         self.normal_mode_parent = None
 
+        self.urls = []
+
         self.url = None
+        self.framerate = 24
+        self.size = None
         self.media_object = None
         self.audio_output = None
-        self.framerate = 24
         self.time_display_mode = "current"
         self.last_time = 0
+
+        self.seek_backup = None
+        self.is_playing_backup = False
 
         # Step configuration parameters
         self.step_mode = "percent" # Can be "frame" or "percent". Indicates the mode to do steps.
@@ -232,6 +238,7 @@ class VideoPlayer(QtGui.QWidget):
         self.video_player_size_policy.setVerticalStretch(0)
         self.video_player_size_policy.setHeightForWidth(self.video_player.sizePolicy().hasHeightForWidth())
         self.video_player.setSizePolicy(self.video_player_size_policy)
+        self.video_player.setVisible(False)
         self.video_player.setObjectName("video_player")
 
         # Seek Slider - timeline
@@ -273,6 +280,7 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_on = ui.get_child(self, "pb_volume_on")
         self.pb_loop = ui.get_child(self.ui, "pb_loop")
         self.pb_random = ui.get_child(self.ui, "pb_random")
+        self.pb_size = ui.get_child(self.ui, "pb_size")
         self.pb_expand = ui.get_child(self, "pb_expand")
 
         # Load the ui icons.
@@ -293,6 +301,7 @@ class VideoPlayer(QtGui.QWidget):
         self.random_icon = image.get_image_file("random.png", self.get_current_folder())
         self.random_icon_checked = image.get_image_file("random_checked.png", self.get_current_folder())
         self.expand_icon = image.get_image_file("expand.png", self.get_current_folder())
+        self.size_icon = image.get_image_file("sizes.png", self.get_current_folder())
         self.reduce_icon = image.get_image_file("reduce.png", self.get_current_folder())
 
         # Applies the icons.
@@ -307,6 +316,7 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_on.setIcon(image.create_pixmap(self.volume_on_icon))
         self.pb_loop.setIcon(image.create_pixmap(self.loop_icon))
         self.pb_random.setIcon(image.create_pixmap(self.random_icon))
+        self.pb_size.setIcon(image.create_pixmap(self.size_icon))
         self.pb_expand.setIcon(image.create_pixmap(self.expand_icon))
 
         # Special config for the ui elements dedicated to show the buffering process.
@@ -330,6 +340,7 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_on.clicked.connect(self.toggle_volume)
         self.pb_loop.toggled.connect(self.update_icons)
         self.pb_random.toggled.connect(self.update_icons)
+        # self.pb_size.clicked.connect(self.show_sizes)
         self.pb_expand.clicked.connect(self.toggle_full_screen)
         self.timer.timeout.connect(self.update_buffering_ui)
         self.timer_hide_controls.timeout.connect(self.update_controls_visibility)
@@ -360,25 +371,64 @@ class VideoPlayer(QtGui.QWidget):
 
     def refresh(self):
         self.pause()
-        self.set_url(self.url)
+        self.set_current_url(self.url, reset=True)
 
     def is_ready(self):
-        if self.url and self.media_object and self.audio_output:
+        if self.media_object and self.audio_output:
             return True
         else:
             return False
 
-    def set_url(self, url):
+    def add_url(self, url):
+        if url not in self.urls:
+            self.urls.append((url, video.get_video_frame_rate(url), video.get_video_size(url)))
+
+        self.update_sizes_menu()
+
+    def clear_urls(self):
+        self.urls = []
+        self.url = None
+        self.framerate = 24
+        self.size = None
+        self.media_object = None
+        self.audio_output = None
+
+        self.update_sizes_menu()
+
+    def url_index(self, url):
+        if isinstance(url, basestring):
+            for i in range(len(self.urls)):
+                if self.urls[i][0] == url:
+                    return i
+        elif isinstance(url, int) and url in range(len(self.urls)):
+            return url
+
+    def remove_url(self, url):
+        index = self.url_index(url)
+        if index is not None:
+            del(self.urls[url])
+
+        self.update_sizes_menu()
+
+    def set_current_url(self, url, reset=False):
+        self.video_player.setVisible(False)
+
+        self.seek_backup = self.media_object.currentTime() if (self.media_object and not reset) else 1
+        self.is_playing_backup = self.video_player.isPlaying() if not reset else False
+
         # Clears the values.
         self.url = None
         self.media_object = None
         self.audio_output = None
 
-        if url:
-            self.url = url
-            self.framerate = video.get_video_frame_rate(url)
+        url_index = self.url_index(url)
 
-            self.video_player.play(url)
+        if url_index is not None:
+            self.url = self.urls[url_index][0]
+            self.framerate = self.urls[url_index][1]
+            self.size = self.urls[url_index][2]
+
+            self.video_player.play(self.url)
             self.video_player.pause()
 
             self.media_object = self.video_player.mediaObject()
@@ -394,6 +444,19 @@ class VideoPlayer(QtGui.QWidget):
 
             # Create the signal for the time play
             self.media_object.tick.connect(self.update_time_label)
+            self.media_object.stateChanged.connect(self.state_changed)
+
+        self.video_player.setVisible(True)
+
+    def state_changed(self, new_state, old_state):
+        if old_state == phonon.Phonon.State.LoadingState and new_state != phonon.Phonon.State.ErrorState:
+            if self.seek_backup is not None and self.media_object:
+                self.media_object.seek(self.seek_backup)
+                self.seek_backup = None
+
+            if self.is_playing_backup and new_state != phonon.Phonon.State.PlayingState:
+                self.is_playing_backup = False
+                self.play()
 
     def update_controls_visibility(self, tick=0, state=False):
         self.timer_hide_controls_ticks_count += 1
@@ -556,6 +619,27 @@ class VideoPlayer(QtGui.QWidget):
         self.update_controls_visibility(state=True)
         self.seek_slider.setFocus()
 
+    def update_sizes_menu(self):
+        # self.contextMenu().activateWindow()
+        # self.contextMenu().popup(QtGui.QCursor.pos())
+
+        # Creates the menu
+        sizes_menu = QtGui.QMenu(self)
+
+        for i in range(len(self.urls)):
+            new_action = QtGui.QAction(self)
+            size_text = "%sx%s" % (self.urls[i][2]["width"], self.urls[i][2]["height"])
+            new_action.setText(size_text)
+
+            if self.urls[i][0] == self.url:
+                sizes_menu.setStyleSheet("QMenu::item::%s {background-color: #555555;}" % size_text)
+
+            new_action.triggered.connect(
+                lambda url=i, reset=False:
+                self.set_current_url(url, reset=reset))
+            sizes_menu.addAction(new_action)
+
+        self.pb_size.setMenu(sizes_menu)
 
 def video_player_widget():
     video_widget = VideoPlayer()

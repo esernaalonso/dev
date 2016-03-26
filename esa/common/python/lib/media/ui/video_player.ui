@@ -516,6 +516,22 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pb_size">
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="pb_expand">
           <property name="maximumSize">
            <size>

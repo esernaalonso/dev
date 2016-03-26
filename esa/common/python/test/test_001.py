@@ -15,5 +15,18 @@
 
 # import esa.common.python.lib.media.video as video
 
-import sys
-print sys.platform
+# import sys
+# print sys.platform
+
+# print (381 % 2)
+
+# if isinstance(url, basestring):
+#     for i in range(len(self.urls)):
+#         if self.urls[i][0] == url:
+#             return i
+# elif isinstance(url, int) and url in range(len(self.urls)):
+#     return url
+
+print isinstance("asdfasd", basestring)
+print isinstance(34, int)
+print (None in range(len([0,1,2,3,4,5,6,7,8,9])))

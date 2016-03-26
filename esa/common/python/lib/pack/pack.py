@@ -432,7 +432,15 @@ def pack_dist(pack_folder=None, **kwargs):
                 logger.info(("Packaging Dist Folder -> %s" % source_dist_folder), level=level)
                 shutil.copytree(source_dist_folder, dist_folder)
 
-                # TODO: remove unused folders and files.
+                # Once is created, removes some unnecesary folders.
+                if os.path.exists(dist_folder):
+                    logger.info(("Dist Folder Packaged -> %s" % dist_folder), level=level)
+                    logger.info(("Removing Unused Folders and Files from Dist Folder -> %s" % dist_folder), level=level)
+                    shutil.rmtree(os.path.join(dist_folder, "conda-meta"))
+                    shutil.rmtree(os.path.join(dist_folder, "envs"))
+                    shutil.rmtree(os.path.join(dist_folder, "info"))
+                    shutil.rmtree(os.path.join(dist_folder, "pkgs"))
+                    os.remove(os.path.join(dist_folder, "Uninstall-Anaconda.exe"))
 
 
 def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous=True, standalone=True, **kwargs):
