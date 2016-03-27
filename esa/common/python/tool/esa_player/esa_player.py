@@ -133,6 +133,7 @@ class ESAPlayerMainWidget(QtGui.QWidget):
 
         self.wg_video_player = ui.get_child(self.ui, "wg_video_player")
         self.video_player = video_player.video_player_widget()
+        self.video_player.set_controls_visibility(["pb_size"], False)
         self.wg_video_player.layout().addWidget(self.video_player)
         theme.apply_style(self.wg_video_player, "video_player.qss")
         self.video_player.set_step_options(mode="percent", size=0.01, pause_on_step=False)

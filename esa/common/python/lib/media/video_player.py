@@ -446,6 +446,7 @@ class VideoPlayer(QtGui.QWidget):
             self.media_object.tick.connect(self.update_time_label)
             self.media_object.stateChanged.connect(self.state_changed)
 
+        self.update_sizes_menu()
         self.video_player.setVisible(True)
 
     def state_changed(self, new_state, old_state):
@@ -620,26 +621,36 @@ class VideoPlayer(QtGui.QWidget):
         self.seek_slider.setFocus()
 
     def update_sizes_menu(self):
-        # self.contextMenu().activateWindow()
-        # self.contextMenu().popup(QtGui.QCursor.pos())
-
         # Creates the menu
-        sizes_menu = QtGui.QMenu(self)
+        # sizes_menu = QtGui.QMenu(self)
+        sizes_menu = VideoSizeMenu(self)
 
         for i in range(len(self.urls)):
             new_action = QtGui.QAction(self)
             size_text = "%sx%s" % (self.urls[i][2]["width"], self.urls[i][2]["height"])
-            new_action.setText(size_text)
 
             if self.urls[i][0] == self.url:
-                sizes_menu.setStyleSheet("QMenu::item::%s {background-color: #555555;}" % size_text)
+                new_action.setCheckable(True)
+                new_action.setChecked(True)
 
-            new_action.triggered.connect(
-                lambda url=i, reset=False:
-                self.set_current_url(url, reset=reset))
+            new_action.setText(size_text)
+
+            new_action.triggered.connect(lambda url=i, reset=False: self.set_current_url(url, reset=reset))
             sizes_menu.addAction(new_action)
 
         self.pb_size.setMenu(sizes_menu)
+
+
+class VideoSizeMenu(QtGui.QMenu):
+    def __init__(self, parent=None):
+        super(VideoSizeMenu, self).__init__(parent)
+
+    def showEvent(self, event):
+        super(VideoSizeMenu, self).showEvent(event)
+        current_size = self.sizeHint()
+        x_offset = current_size.width() - 20
+        y_offset = current_size.height() + 22
+        self.move((self.x() - x_offset), (self.y() - y_offset))
 
 def video_player_widget():
     video_widget = VideoPlayer()

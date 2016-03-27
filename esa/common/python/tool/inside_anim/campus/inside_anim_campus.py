@@ -72,8 +72,8 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
     def __init__(self):
         super(InsideAnimCampusMainWidget, self).__init__()
         self.credentials = credential.Credentials()
-        # self.initLoginUI()
-        self.initUI()
+        self.initLoginUI()
+        # self.initUI()
 
     def get_current_file(self):
         return os.path.abspath(inspect.getsourcefile(lambda:0))
@@ -158,7 +158,7 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.video_player.add_url(video_4)
         self.video_player.add_url(video_5)
 
-        self.video_player.set_current_url(0)
+        self.video_player.set_current_url(2)
 
 
 def InsideAnimCampusRun():
