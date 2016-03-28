@@ -37,7 +37,7 @@
      <property name="handleWidth">
       <number>10</number>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
         <number>3</number>

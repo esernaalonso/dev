@@ -117,6 +117,9 @@
             <height>20</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Reload</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -132,6 +135,9 @@
             <width>20</width>
             <height>20</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Previous Track</string>
           </property>
           <property name="text">
            <string/>
@@ -149,6 +155,9 @@
             <height>20</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Previous Step. (Arrow Left)</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -164,6 +173,9 @@
             <width>20</width>
             <height>20</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Play / Pause. (Space, Mouse Click)</string>
           </property>
           <property name="text">
            <string/>
@@ -181,6 +193,9 @@
             <height>20</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Next Step. (Arrow Right)</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -196,6 +211,9 @@
             <width>20</width>
             <height>20</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Next Track</string>
           </property>
           <property name="text">
            <string/>
@@ -287,18 +305,24 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>65</width>
+            <width>52</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>65</width>
+            <width>52</width>
             <height>20</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Current Time</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="text">
-           <string>0:00:00:00</string>
+           <string>00:00:00</string>
           </property>
           <property name="flat">
            <bool>true</bool>
@@ -326,7 +350,7 @@
            </size>
           </property>
           <property name="text">
-           <string>/</string>
+           <string>-</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -343,18 +367,21 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>65</width>
+            <width>52</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>65</width>
+            <width>52</width>
             <height>20</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Total Time</string>
+          </property>
           <property name="text">
-           <string>0:00:00:00</string>
+           <string>00:00:00</string>
           </property>
           <property name="flat">
            <bool>true</bool>
@@ -385,6 +412,9 @@
             <height>20</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Mute</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -401,6 +431,9 @@
             <height>20</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Volume Down. (Arrow Down, Mouse Wheel)</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -416,6 +449,9 @@
             <width>20</width>
             <height>20</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Volume Up. (Arrow Up, Mouse Wheel)</string>
           </property>
           <property name="text">
            <string/>
@@ -466,31 +502,6 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pb_random">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="pb_loop">
           <property name="minimumSize">
            <size>
@@ -504,6 +515,9 @@
             <height>20</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Loop</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -516,12 +530,96 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pb_random">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Random Track</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_seek_random">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Seek Random</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="sb_seek_random_seconds">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+          <property name="value">
+           <number>5</number>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="pb_size">
           <property name="maximumSize">
            <size>
             <width>20</width>
             <height>20</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Change Resolution</string>
           </property>
           <property name="text">
            <string/>
@@ -538,6 +636,9 @@
             <width>20</width>
             <height>20</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Full Screen. (Shift+F, Esc, Double Click)</string>
           </property>
           <property name="text">
            <string/>

@@ -100,6 +100,10 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         # Allowed extensions
         self.allowed_extensions = [".avi", ".flv", ".mkv", ".mp4", ".mov"]
 
+        self.tmr_crazy_random = QtCore.QTimer()
+        self.tmr_crazy_random.setInterval(1000)
+        self.tmr_crazy_random_counter = 0
+
         self.initUI()
 
     def get_current_file(self):
@@ -130,6 +134,9 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.pb_clear = ui.get_child(self.ui, "pb_clear")
         self.lw_video = ui.get_child(self.ui, "lw_video")
         self.lb_playing_name = ui.get_child(self.ui, "lb_playing_name")
+        # self.pb_crazy_random = ui.get_child(self.ui, "pb_crazy_random")
+        # self.sb_crazy_random_seconds = ui.get_child(self.ui, "sb_crazy_random_seconds")
+        # self.sb_crazy_random_seconds.setVisible(False)
 
         self.wg_video_player = ui.get_child(self.ui, "wg_video_player")
         self.video_player = video_player.video_player_widget()
@@ -143,14 +150,17 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.pb_track_next = ui.get_child(self.ui, "pb_track_next")
         self.pb_loop = ui.get_child(self.ui, "pb_loop")
         self.pb_random = ui.get_child(self.ui, "pb_random")
+        self.pb_seek_random = ui.get_child(self.ui, "pb_seek_random")
+        self.sb_seek_random_seconds = ui.get_child(self.ui, "sb_seek_random_seconds")
 
         # Set the ui images.
         self.pb_folder.setIcon(image.create_pixmap(image.get_image_file("folder.png", self.get_current_folder())))
         self.pb_filter.setIcon(image.create_pixmap(image.get_image_file("search.png", self.get_current_folder())))
         self.pb_clear.setIcon(image.create_pixmap(image.get_image_file("eraser.png", self.get_current_folder())))
 
-        self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop.png", self.get_current_folder())))
-        self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random.png", self.get_current_folder())))
+        # self.pb_loop.setIcon(image.create_pixmap(image.get_image_file("loop.png", self.get_current_folder())))
+        # self.pb_random.setIcon(image.create_pixmap(image.get_image_file("random.png", self.get_current_folder())))
+        # self.pb_crazy_random.setIcon(image.create_pixmap(image.get_image_file("crazy_random.png", self.get_current_folder())))
 
         # Signals
         self.pb_folder.released.connect(self.choose_folder)
@@ -158,13 +168,37 @@ class ESAPlayerMainWidget(QtGui.QWidget):
         self.le_filter.returnPressed.connect(self.fill_video_list)
         self.pb_filter.clicked.connect(self.fill_video_list)
         self.pb_clear.clicked.connect(self.clear_filters)
-        # self.lw_video.itemDoubleClicked.connect(self.play_video)
         self.lw_video.itemSelectionChanged.connect(self.play_video)
-        # self.lw_video.itemEntered.connect(self.play_video)
-        # self.pb_loop.toggled.connect(self.update_icons)
-        # self.pb_random.toggled.connect(self.update_icons)
         self.pb_track_prev.clicked.connect(self.play_prev)
         self.pb_track_next.clicked.connect(self.play_next)
+        self.pb_seek_random.clicked.connect(self.toggle_crazy_random)
+        self.tmr_crazy_random.timeout.connect(self.crazy_random_process)
+
+    def toggle_crazy_random(self):
+        """ Set the active or inactive state for crazy random option.
+        """
+        if self.pb_seek_random.isChecked():
+            # self.pb_crazy_random.setIcon(image.create_pixmap(image.get_image_file("crazy_random_checked.png", self.get_current_folder())))
+            # self.sb_crazy_random_seconds.setVisible(True)
+            self.tmr_crazy_random.start()
+        else:
+            # self.pb_crazy_random.setIcon(image.create_pixmap(image.get_image_file("crazy_random.png", self.get_current_folder())))
+            # self.sb_crazy_random_seconds.setVisible(False)
+            self.tmr_crazy_random.stop()
+            self.tmr_crazy_random_counter = 0
+
+    def crazy_random_process(self):
+        self.tmr_crazy_random_counter += 1
+        if self.tmr_crazy_random_counter >= self.sb_seek_random_seconds.value():
+            self.tmr_crazy_random.stop()
+            self.tmr_crazy_random_counter = 0
+
+            if self.video_player.is_ready():
+                if self.video_player.is_playing():
+                    self.video_player.force_random_seek = True
+                    self.play_next()
+
+            self.tmr_crazy_random.start()
 
     # def update_icons(self):
     #     """ Function to update some icons depending on the state of the ui controls.

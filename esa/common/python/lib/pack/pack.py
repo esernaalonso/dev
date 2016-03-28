@@ -5,6 +5,7 @@
 import os
 import shutil
 import inspect
+import compileall
 
 import esa.common.python.lib.logger.logger as logger
 import esa.common.python.lib.inspector.inspector as inspector
@@ -56,7 +57,7 @@ def create_install_bat(install_bat_file, remove_previous=False, **kwargs):
                     io.replace_line_in_file(install_bat_file, pip_pattern, pip_string)
 
 
-def create_execute_bat(execute_bat_file, execution_file_name, remove_previous=False, standalone=True, **kwargs):
+def create_execute_bat(execute_bat_file, execution_file_name, remove_previous=False, compiled=True, standalone=True, **kwargs):
     # Gets the logs level values from the kwargs
     level = 0
     if "level" in kwargs: level = kwargs["level"]
@@ -77,10 +78,15 @@ def create_execute_bat(execute_bat_file, execution_file_name, remove_previous=Fa
             logger.info(("Setting up execution string -> %s" % execute_bat_file), level=level)
             execute_pattern = "START <python_command> <file_name>"
             execute_string = "START <python_command> <file_name>"
+
             if standalone:
                 execute_string = execute_string.replace("<python_command>", os.path.join("python_dist", "python.exe"))
             else:
                 execute_string = execute_string.replace("<python_command>", "python")
+
+            if compiled:
+                execution_file_name = execution_file_name.replace(".py", ".pyc")
+
             execute_string = execute_string.replace("<file_name>", execution_file_name)
             io.replace_line_in_file(execute_bat_file, execute_pattern, execute_string)
 
@@ -207,6 +213,9 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
     remove_previous = False
     if "remove_previous" in kwargs: remove_previous = kwargs["remove_previous"]
 
+    compiled = True
+    if "compiled" in kwargs: compiled = kwargs["compiled"]
+
     standalone = True
     if "standalone" in kwargs: standalone = kwargs["standalone"]
 
@@ -227,7 +236,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
         package_sub_folder = ""
     elif os.path.basename(os.path.normpath(pack_folder)) != packaging_type:
         package_sub_folder = packaging_type
-        if not package_sub_folder.startswith("lib") and not pack_folder.endswith("lib"):
+        if not package_sub_folder.startswith("lib") and os.path.basename(os.path.normpath(pack_folder)) != "lib":
             package_sub_folder = os.path.join("lib", package_sub_folder)
     dest_folder = os.path.join(pack_folder, package_sub_folder)
     logger.info(("Destination Folder -> %s" % dest_folder), level=level)
@@ -256,7 +265,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
         # If the packaging_mode is root, need to create the execute.bat
         if packaging_mode == "root":
             execute_bat_file = os.path.join(os.path.dirname(dest_file), "execute.bat")
-            create_execute_bat(execute_bat_file, os.path.basename(dest_file), standalone=standalone, remove_previous=True, level=level+1)
+            create_execute_bat(execute_bat_file, os.path.basename(dest_file), compiled=compiled, standalone=standalone, remove_previous=True, level=level+1)
 
         # In this case is explorable. Can contain imports, ui dependencies, etc.
         if packaging_type in explorable_packaging_types and file_type in explorable_file_types:
@@ -267,7 +276,7 @@ def pack_file(source_file, pack_folder=None, recursive=True, **kwargs):
 
             # If it has imports info, packages the imports as libraries
             if imports_info:
-                import_relative_path = "lib" if packaging_mode=="root" else ""
+                import_relative_path = "lib" if packaging_mode == "root" else ""
 
                 for import_info in imports_info:
                     if import_info["type"] in packable_import_types:
@@ -443,7 +452,7 @@ def pack_dist(pack_folder=None, **kwargs):
                     os.remove(os.path.join(dist_folder, "Uninstall-Anaconda.exe"))
 
 
-def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous=True, standalone=True, **kwargs):
+def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous=True, compiled=True, standalone=True, **kwargs):
     """Packs a python file and all depedencies in and independent module folder.
 
     Args:
@@ -451,6 +460,7 @@ def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous
         pack_folder (string): The path to the folder to use as pack folder.
         custom_name (string, optional): Custom name for the packed module folder structure.
         remove_previous (bool, optional): Indicates if it has to remove the previous pack folder.
+        compiled (bool, optional): Indicates if it has to compile the .py files into .pyc.
         standalone (bool, optional): Indicates if it has to be executable standalone or needs python installed.
         **kwargs: Extra arguments like custom dependencies, etc.
     """
@@ -476,11 +486,20 @@ def pack_module(source_file, pack_folder=None, custom_name=None, remove_previous
         # Packs the file. Creates one more level folder to contain the actual application.
         # pack_module_folder = os.path.join(pack_folder, module_name, module_name)
         # pack_module_folder = os.path.join(pack_folder, module_name)
-        pack_file(source_file, pack_folder=pack_module_folder, level=1, remove_previous=remove_previous)
+        pack_file(source_file, pack_folder=pack_module_folder, level=1, remove_previous=remove_previous, standalone=standalone, compiled=compiled)
+
+        # Compiles the .py into .pyc and deletes the .py files if requested.
+        if compiled:
+            compileall.compile_dir(pack_module_folder, force=True)
+            py_files = io.get_files(pack_module_folder, extensions=[".py"])
+            for py_file in py_files:
+                os.remove(py_file)
 
         # Creates the python dist in case the mode is standalone:
         if standalone:
             pack_dist(pack_folder=pack_module_folder, level=1, remove_previous=remove_previous)
+
+        logger.info("Packaging Finished -> %s" % source_file)
 
     else:
         logger.error(("Source File must be provided -> %s" % source_file))

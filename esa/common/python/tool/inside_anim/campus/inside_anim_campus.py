@@ -6,12 +6,13 @@ import ctypes
 
 from PySide import QtCore, QtGui
 
-import esa.common.python.lib.utils as utils
-import esa.common.python.lib.ui.ui as ui
+import esa.common.python.tool.inside_anim.campus.credential.credential as credential
 import esa.common.python.lib.media.video_player as video_player
+import esa.common.python.lib.context.context as context
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.theme.theme as theme
-import esa.common.python.tool.inside_anim.campus.credential.credential as credential
+import esa.common.python.lib.utils as utils
+import esa.common.python.lib.ui.ui as ui
 
 #######################################
 # attributes
@@ -72,8 +73,8 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
     def __init__(self):
         super(InsideAnimCampusMainWidget, self).__init__()
         self.credentials = credential.Credentials()
-        self.initLoginUI()
-        # self.initUI()
+        # self.initLoginUI()
+        self.initUI()
 
     def get_current_file(self):
         return os.path.abspath(inspect.getsourcefile(lambda:0))
@@ -110,8 +111,9 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.pb_login.clicked.connect(self.check_login)
 
     def check_login(self):
-        self.credentials.validate(self.le_user.text(), self.le_pass.text())
-        self.lb_info.setText(self.credentials.get_connection_message())
+        with context.wait_cursor():
+            self.credentials.validate(self.le_user.text(), self.le_pass.text())
+            self.lb_info.setText(self.credentials.get_connection_message())
 
         if self.credentials.is_validated():
             while self.layout().count():
@@ -141,7 +143,8 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.video_player = video_player.video_player_widget()
         self.wg_test_video.layout().addWidget(self.video_player)
         self.video_player.set_step_options(mode="frame", size=1, pause_on_step=True)
-        self.video_player.set_controls_visibility(["pb_track_prev", "pb_track_next", "pb_loop", "pb_random"], False)
+        self.video_player.set_controls_visibility(["pb_track_prev", "pb_track_next", "pb_loop", "pb_random", "pb_seek_random"], False)
+        self.video_player.set_time_mode("frames")
         theme.apply_style(self.wg_test_video, "inside_anim_video_player.qss")
 
         video_0 = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_quarter.mp4"
@@ -152,13 +155,13 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         video_5 = "http://www.db.insideanim.com/media/campus/tmp/creatures01_lsn01_sbt01_the_basis_of_animal_behavior_full.mp4"
 
         self.video_player.add_url(video_0)
-        self.video_player.add_url(video_1)
+        # self.video_player.add_url(video_1)
         self.video_player.add_url(video_2)
-        self.video_player.add_url(video_3)
-        self.video_player.add_url(video_4)
+        # self.video_player.add_url(video_3)
+        # self.video_player.add_url(video_4)
         self.video_player.add_url(video_5)
 
-        self.video_player.set_current_url(2)
+        self.video_player.set_current_url(1)
 
 
 def InsideAnimCampusRun():

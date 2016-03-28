@@ -5,8 +5,10 @@ import os
 import sys
 import inspect
 import urllib
+import random
 
 import esa.common.python.lib.osys.power_management as power_management
+import esa.common.python.lib.decorator.decorator as decorator
 import esa.common.python.lib.theme.theme as theme
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.media.video as video
@@ -193,11 +195,14 @@ class VideoPlayer(QtGui.QWidget):
 
         self.seek_backup = None
         self.is_playing_backup = False
+        self.force_random_seek = False
+        # self.random_seek_end_seconds = 1
 
         # Step configuration parameters
         self.step_mode = "percent" # Can be "frame" or "percent". Indicates the mode to do steps.
         self.step_size = 0.05 # Number of frames in case of "frame" mode. Percent (0 to 1) of the total length in case of "percent" mode.
         self.pause_on_step = False # Indicates if pause when doing an step operation.
+        self.time_mode = "seconds" # Can be "seconds" or "frames". Indicates the time stamp mode for playback.
 
         self.timer = QtCore.QTimer()
         self.timer_hide_controls = QtCore.QTimer()
@@ -264,7 +269,7 @@ class VideoPlayer(QtGui.QWidget):
 
         self.pb_time = ui.get_child(self, "pb_time")
         self.pb_time_total = ui.get_child(self, "pb_time_total")
-        self.pb_time.setStyleSheet("QPushButton {text-align: left;}")
+        self.pb_time.setStyleSheet("QPushButton {text-align: right;}")
         self.pb_time_total.setStyleSheet("QPushButton {text-align: left;}")
 
         self.pb_refresh = ui.get_child(self, "pb_refresh")
@@ -280,6 +285,9 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_on = ui.get_child(self, "pb_volume_on")
         self.pb_loop = ui.get_child(self.ui, "pb_loop")
         self.pb_random = ui.get_child(self.ui, "pb_random")
+        self.pb_seek_random = ui.get_child(self.ui, "pb_seek_random")
+        self.sb_seek_random_seconds = ui.get_child(self.ui, "sb_seek_random_seconds")
+        self.sb_seek_random_seconds.setVisible(False)
         self.pb_size = ui.get_child(self.ui, "pb_size")
         self.pb_expand = ui.get_child(self, "pb_expand")
 
@@ -300,6 +308,8 @@ class VideoPlayer(QtGui.QWidget):
         self.loop_icon_checked = image.get_image_file("loop_checked.png", self.get_current_folder())
         self.random_icon = image.get_image_file("random.png", self.get_current_folder())
         self.random_icon_checked = image.get_image_file("random_checked.png", self.get_current_folder())
+        self.seek_random_icon = image.get_image_file("seek_random.png", self.get_current_folder())
+        self.seek_random_icon_checked = image.get_image_file("seek_random_checked.png", self.get_current_folder())
         self.expand_icon = image.get_image_file("expand.png", self.get_current_folder())
         self.size_icon = image.get_image_file("sizes.png", self.get_current_folder())
         self.reduce_icon = image.get_image_file("reduce.png", self.get_current_folder())
@@ -316,6 +326,7 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_on.setIcon(image.create_pixmap(self.volume_on_icon))
         self.pb_loop.setIcon(image.create_pixmap(self.loop_icon))
         self.pb_random.setIcon(image.create_pixmap(self.random_icon))
+        self.pb_seek_random.setIcon(image.create_pixmap(self.seek_random_icon))
         self.pb_size.setIcon(image.create_pixmap(self.size_icon))
         self.pb_expand.setIcon(image.create_pixmap(self.expand_icon))
 
@@ -340,6 +351,7 @@ class VideoPlayer(QtGui.QWidget):
         self.pb_volume_on.clicked.connect(self.toggle_volume)
         self.pb_loop.toggled.connect(self.update_icons)
         self.pb_random.toggled.connect(self.update_icons)
+        self.pb_seek_random.toggled.connect(self.update_icons)
         # self.pb_size.clicked.connect(self.show_sizes)
         self.pb_expand.clicked.connect(self.toggle_full_screen)
         self.timer.timeout.connect(self.update_buffering_ui)
@@ -369,9 +381,19 @@ class VideoPlayer(QtGui.QWidget):
         else:
             self.pb_random.setIcon(image.create_pixmap(self.random_icon))
 
+        if self.pb_seek_random.isChecked():
+            self.pb_seek_random.setIcon(image.create_pixmap(self.seek_random_icon_checked))
+            self.sb_seek_random_seconds.setVisible(True)
+        else:
+            self.pb_seek_random.setIcon(image.create_pixmap(self.seek_random_icon))
+            self.sb_seek_random_seconds.setVisible(False)
+
     def refresh(self):
         self.pause()
         self.set_current_url(self.url, reset=True)
+
+    def is_playing(self):
+        return self.video_player.isPlaying()
 
     def is_ready(self):
         if self.media_object and self.audio_output:
@@ -379,6 +401,7 @@ class VideoPlayer(QtGui.QWidget):
         else:
             return False
 
+    @decorator.wait_cursor
     def add_url(self, url):
         if url not in self.urls:
             self.urls.append((url, video.get_video_frame_rate(url), video.get_video_size(url)))
@@ -410,6 +433,7 @@ class VideoPlayer(QtGui.QWidget):
 
         self.update_sizes_menu()
 
+    @decorator.wait_cursor
     def set_current_url(self, url, reset=False):
         self.video_player.setVisible(False)
 
@@ -459,6 +483,11 @@ class VideoPlayer(QtGui.QWidget):
                 self.is_playing_backup = False
                 self.play()
 
+            if self.force_random_seek:
+                self.random_seek()
+                self.force_random_seek = False
+                # self.random_seek_end_seconds = 1
+
     def update_controls_visibility(self, tick=0, state=False):
         self.timer_hide_controls_ticks_count += 1
 
@@ -466,6 +495,11 @@ class VideoPlayer(QtGui.QWidget):
             self.wg_controls_bar.setVisible(state)
             if state:
                 self.timer_hide_controls_ticks_count = 0
+
+    def random_seek(self):
+        if self.media_object and self.media_object.isSeekable():
+            new_seek = random.randint(0, self.media_object.totalTime() - self.sb_seek_random_seconds.value()*1000)
+            self.video_player.seek(new_seek)
 
     def get_time(self, mode="current"):
         time_miliseconds = 0
@@ -489,9 +523,23 @@ class VideoPlayer(QtGui.QWidget):
 
         return hours, minutes, seconds, miliseconds, frames
 
+    def set_time_mode(self, new_mode):
+        if new_mode != self.time_mode and new_mode in ["seconds", "frames"]:
+            if new_mode == "seconds":
+                self.pb_time.setMinimumWidth(self.pb_time.size().width() - 10)
+                self.pb_time.setMaximumWidth(self.pb_time.size().width() - 10)
+            elif new_mode == "frames":
+                self.pb_time.setMinimumWidth(self.pb_time.size().width() + 10)
+                self.pb_time.setMaximumWidth(self.pb_time.size().width() + 10)
+
+            self.time_mode = new_mode
+
     def get_time_string(self, mode="current"):
         hours, minutes, seconds, miliseconds, frames = self.get_time(mode=mode)
-        return ("%d:%02d:%02d:%02d" %(hours, minutes, seconds, frames + 1))
+        if self.time_mode == "seconds":
+            return ("%d:%02d:%02d" %(hours, minutes, seconds))
+        elif self.time_mode == "frames":
+            return ("%d:%02d:%02d:%02d" %(hours, minutes, seconds, frames + 1))
 
     def update_time_label(self):
         self.pb_time_total.setText(self.get_time_string(mode="total"))
@@ -648,8 +696,8 @@ class VideoSizeMenu(QtGui.QMenu):
     def showEvent(self, event):
         super(VideoSizeMenu, self).showEvent(event)
         current_size = self.sizeHint()
-        x_offset = current_size.width() - 20
-        y_offset = current_size.height() + 22
+        x_offset = current_size.width() - 45
+        y_offset = current_size.height() + 21
         self.move((self.x() - x_offset), (self.y() - y_offset))
 
 def video_player_widget():
