@@ -518,7 +518,7 @@ if __name__ == "__main__":
 
     pack_folder = "F:\\project\\tmp\\pack"
 
-    pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True)
+    pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True, compiled=False)
     # pack_module(source_file, pack_folder=pack_folder, custom_name="summus_monitor_test", remove_previous=True)
-    # pack_module(source_file, pack_folder=pack_folder, custom_name="esa_player", remove_previous=True)
+    # pack_module(source_file, pack_folder=pack_folder, custom_name="esa_player2", remove_previous=True, compiled=True)
     # pack_module(source_file, pack_folder=pack_folder, custom_name="template_tool", remove_previous=True)

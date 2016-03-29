@@ -2,7 +2,7 @@
 #######################################
 # imports
 
-import esa.common.python.tool.inside_anim.campus.db.db as db
+import esa.common.python.tool.inside_anim.db.db as db
 
 reload(db)
 

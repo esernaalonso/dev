@@ -193,10 +193,10 @@ class ESAPlayerMainWidget(QtGui.QWidget):
             self.tmr_crazy_random.stop()
             self.tmr_crazy_random_counter = 0
 
-            if self.video_player.is_ready():
-                if self.video_player.is_playing():
-                    self.video_player.force_random_seek = True
-                    self.play_next()
+            # if self.video_player.is_ready():
+            #     if self.video_player.is_playing():
+            self.video_player.force_random_seek = True
+            self.play_next()
 
             self.tmr_crazy_random.start()
 

@@ -6,7 +6,8 @@ import ctypes
 
 from PySide import QtCore, QtGui
 
-import esa.common.python.tool.inside_anim.campus.credential.credential as credential
+import esa.common.python.tool.inside_anim.credential.credential as credential
+import esa.common.python.tool.inside_anim.ui.ui_utils as ui_utils
 import esa.common.python.lib.media.video_player as video_player
 import esa.common.python.lib.context.context as context
 import esa.common.python.lib.image.image as image
@@ -40,7 +41,7 @@ class InsideAnimCampus(QtGui.QDialog):
         # theme.apply_style(self, "inside_anim_dark.qss")
 
         # Icon for the window
-        image_app_icon = image.get_image_file("app_icon.png", self.get_current_folder())
+        image_app_icon = image.get_image_file("app_icon.png", ui_utils.get_folder())
         self.setWindowIcon(image.create_pixmap(image_app_icon))
 
         # Allows maximize and minimize
@@ -84,7 +85,7 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
 
     def initLoginUI(self):
         # Load UI file.
-        main_ui_file = ui.get_ui_file("login.ui", self.get_current_folder())
+        main_ui_file = ui.get_ui_file("login.ui", ui_utils.get_folder())
         self.ui = ui.loadUiWidget(main_ui_file, parent=self)
 
         # Layout.
@@ -102,8 +103,8 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
         self.pb_login = ui.get_child(self.ui, "pb_login")
 
         # Set the ui images.
-        image_logo_file = image.get_image_file("login_logo_full.png", self.get_current_folder())
-        image_wave_file = image.get_image_file("login_logo_wave.png", self.get_current_folder())
+        image_logo_file = image.get_image_file("login_logo_full.png", ui_utils.get_folder())
+        image_wave_file = image.get_image_file("login_logo_wave.png", ui_utils.get_folder())
         self.lb_image_logo.setPixmap(image.create_pixmap(image_logo_file))
         self.lb_image_wave.setPixmap(image.create_pixmap(image_wave_file))
 
@@ -122,9 +123,7 @@ class InsideAnimCampusMainWidget(QtGui.QWidget):
 
     def initUI(self):
         # Load UI file
-        current_file = self.get_current_file()
-        current_folder = os.path.dirname(current_file)
-        main_ui_file = ui.get_ui_file("main.ui", current_folder)
+        main_ui_file = ui.get_ui_file("main.ui", ui_utils.get_folder())
         self.ui = ui.loadUiWidget(main_ui_file, parent=self)
 
         # Layout

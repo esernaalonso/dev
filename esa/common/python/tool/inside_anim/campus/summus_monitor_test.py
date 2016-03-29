@@ -11,7 +11,7 @@ import esa.common.python.lib.ui.ui as ui
 import esa.common.python.lib.media.video_player as video_player
 import esa.common.python.lib.image.image as image
 import esa.common.python.lib.theme.theme as theme
-import esa.common.python.tool.inside_anim.campus.credential.credential as credential
+import esa.common.python.tool.inside_anim.credential.credential as credential
 
 #######################################
 # attributes
