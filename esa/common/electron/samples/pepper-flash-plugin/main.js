@@ -34,5 +34,5 @@ app.on('ready', function() {
     'height': 600,
     'web-preferences': {'plugins': true}
   });
-  mainWindow.loadUrl('http://www.adobe.com/software/flash/about/');
+  mainWindow.loadURL('http://www.adobe.com/software/flash/about/');
 });

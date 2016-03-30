@@ -1125,7 +1125,7 @@
         this.history.replaceState({}, document.title, this.root + this.fragment + loc.search);
       }
 
-      if (!this.options.silent) return this.loadUrl();
+      if (!this.options.silent) return this.loadURL();
     },
 
     // Disable Backbone.history, perhaps temporarily. Not useful in a real app,
@@ -1143,7 +1143,7 @@
     },
 
     // Checks the current URL to see if it has changed, and if it has,
-    // calls `loadUrl`, normalizing across the hidden iframe.
+    // calls `loadURL`, normalizing across the hidden iframe.
     checkUrl: function(e) {
       var current = this.getFragment();
       if (current === this.fragment && this.iframe) {
@@ -1151,13 +1151,13 @@
       }
       if (current === this.fragment) return false;
       if (this.iframe) this.navigate(current);
-      this.loadUrl() || this.loadUrl(this.getHash());
+      this.loadURL() || this.loadURL(this.getHash());
     },
 
     // Attempt to load the current URL fragment. If a route succeeds with a
     // match, returns `true`. If no defined routes matches the fragment,
     // returns `false`.
-    loadUrl: function(fragmentOverride) {
+    loadURL: function(fragmentOverride) {
       var fragment = this.fragment = this.getFragment(fragmentOverride);
       var matched = _.any(this.handlers, function(handler) {
         if (handler.route.test(fragment)) {
@@ -1204,7 +1204,7 @@
       } else {
         return this.location.assign(url);
       }
-      if (options.trigger) this.loadUrl(fragment);
+      if (options.trigger) this.loadURL(fragment);
     },
 
     // Update the hash location, either replacing the current entry, or adding

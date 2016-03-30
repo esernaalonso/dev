@@ -17,5 +17,5 @@ app.on('ready', function() {
     'height': 600,
   });
 
-  mainWindow.loadUrl('https://localhost:5000');
+  mainWindow.loadURL('https://localhost:5000');
 });
