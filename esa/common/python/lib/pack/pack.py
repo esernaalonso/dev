@@ -512,13 +512,14 @@ if __name__ == "__main__":
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI_launcher.py"
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\template\\templateToolStdUI.py"
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus_launcher.py"
-    source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus.py"
+    # source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\inside_anim_campus.py"
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\inside_anim\\campus\\summus_monitor_test_launcher.py"
     # source_file = "P:\\dev\\esa\\common\\python\\tool\\esa_player\\esa_player_launcher.py"
+    source_file = "P:\\dev\\esa\\common\\python\\tool\\esa_player\\esa_player.py"
 
     pack_folder = "F:\\project\\tmp\\pack"
 
-    pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True, compiled=False)
+    # pack_module(source_file, pack_folder=pack_folder, custom_name="inside_anim_campus", remove_previous=True, compiled=False)
     # pack_module(source_file, pack_folder=pack_folder, custom_name="summus_monitor_test", remove_previous=True)
-    # pack_module(source_file, pack_folder=pack_folder, custom_name="esa_player2", remove_previous=True, compiled=True)
+    pack_module(source_file, pack_folder=pack_folder, custom_name="esa_player", remove_previous=True, compiled=False, standalone=False)
     # pack_module(source_file, pack_folder=pack_folder, custom_name="template_tool", remove_previous=True)
