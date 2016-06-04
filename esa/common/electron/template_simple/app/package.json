@@ -1,0 +1,7 @@
+{
+    "name": "templateApp",
+    "description": "Simple Template App.",
+    "version": "0.1.0",
+    "author": "Eduardo Serna Alonso <edusernalonso@gmail.com>",
+    "main": "main.js"
+}

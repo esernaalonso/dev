@@ -1,0 +1,18 @@
+{
+  "main": "app/main.js",
+  "devDependencies": {
+    "electron-builder": "^3.25.0",
+    "electron-packager": "^7.0.3",
+    "electron-prebuilt": "^1.2.1"
+  },
+  "build": {
+    "x64": {
+      "appDirectory": "./app",
+      "outputDirectory": ".dist/"
+    }
+  },
+  "scripts": {
+    "package": "npm run package:win64",
+    "package:win64": "build --platform win32 --arch x64"
+  }
+}
